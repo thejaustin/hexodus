@@ -29,6 +29,7 @@ jobs:
           build-tools;34.0.0
           platforms;android-34
           ndk;25.1.8937393
+          emulator
         cmdline-tools-version: 'latest'
 
     - name: Grant execute permission for gradlew
@@ -45,16 +46,16 @@ jobs:
           ${{ runner.os }}-gradle-
 
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew build --no-daemon
 
     - name: Run unit tests
-      run: ./gradlew testDebugUnitTest
+      run: ./gradlew testDebugUnitTest --no-daemon
 
     - name: Build Debug APK
-      run: ./gradlew assembleDebug
+      run: ./gradlew assembleDebug --no-daemon
 
     - name: Build Release APK
-      run: ./gradlew assembleRelease
+      run: ./gradlew assembleRelease --no-daemon
 
     - name: Upload Debug APK
       uses: actions/upload-artifact@v4
@@ -74,7 +75,7 @@ jobs:
     strategy:
       matrix:
         api-level: [26, 28, 29, 30, 31, 33, 34]
-        target: [default]
+        target: [google_apis]
 
     steps:
     - uses: actions/checkout@v4
@@ -112,7 +113,7 @@ jobs:
         avd-name: test
         force-avd-creation: false
         emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-        disable-animations: false
+        disable-animations: true
         script: echo "Generated AVD snapshot for caching."
 
     - name: Run instrumentation tests
@@ -127,4 +128,4 @@ jobs:
         disable-animations: true
         script: |
           adb install app/build/outputs/apk/debug/app-debug.apk
-          ./gradlew connectedDebugAndroidTest
+          ./gradlew connectedDebugAndroidTest --no-daemon
