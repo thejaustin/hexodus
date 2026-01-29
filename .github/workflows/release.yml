@@ -1,0 +1,85 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+      with:
+        packages: tools, platform-tools, build-tools, platforms
+        cmdline-tools: true
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Build Release APK
+      run: ./gradlew assembleRelease
+
+    - name: Sign Release APK
+      uses: r0adkll/sign-android-release@v1
+      with:
+        releaseDirectory: app/build/outputs/apk/release
+        signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+        alias: ${{ secrets.ALIAS }}
+        keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+        keyPassword: ${{ secrets.KEY_PASSWORD }}
+      env:
+        BUILD_TOOLS_VERSION: "34.0.0"
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          ## What's New in Version ${{ github.ref_name }}
+          
+          This release includes:
+          - Enhanced theming engine with hex color support
+          - Material You override for Samsung One UI 8
+          - High contrast theme injection
+          - Foldable device support for Z Flip 5
+          - Shizuku integration for system-level operations
+          - Advanced overlay management
+          - Per-app theming capabilities
+          - Gesture and interaction customization
+          - Media and notification customization
+          - Backup and restore functionality
+          - System inspection capabilities
+          - Privacy and security features
+          - Network management capabilities
+          - Performance optimization tools
+          
+          For detailed changes, see the [full changelog](https://github.com/username/hexodus/blob/main/CHANGELOG.md).
+        draft: false
+        prerelease: false
+
+    - name: Upload Release APK
+      id: upload-release-apk
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: app/build/outputs/apk/release/app-release-unsigned.apk
+        asset_name: hexodus-${{ github.ref_name }}.apk
+        asset_content_type: application/vnd.android.package-archive

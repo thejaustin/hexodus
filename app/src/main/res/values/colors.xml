@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_color">#FF6200EE</color>
+    <color name="primary_variant_color">#FF3700B3</color>
+    <color name="secondary_color">#FF03DAC6</color>
+    <color name="background_color">#FFFFFFFF</color>
+    <color name="surface_color">#FFFFFFFF</color>
+    <color name="error_color">#FFB00020</color>
+    <color name="on_primary_color">#FFFFFFFF</color>
+    <color name="on_secondary_color">#FF000000</color>
+    <color name="on_background_color">#FF000000</color>
+    <color name="on_surface_color">#FF000000</color>
+    <color name="on_error_color">#FFFFFFFF</color>
+    
+    <!-- Hexodus specific colors -->
+    <color name="hexodus_blue">#FF2196F3</color>
+    <color name="hexodus_green">#FF4CAF50</color>
+    <color name="hexodus_purple">#FF9C27B0</color>
+    <color name="hexodus_orange">#FFFF9800</color>
+    <color name="hexodus_red">#FFF44336</color>
+</resources>

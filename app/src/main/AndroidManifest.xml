@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Permissions for deep system theming -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <uses-permission android:name="android.permission.DUMP" />
+    <uses-permission android:name="android.permission.INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+    
+    <!-- Samsung-specific permissions -->
+    <uses-permission android:name="com.samsung.android.providers.context.permission.WRITE_USE_APP_FEATURE_SURVEY" />
+    <uses-permission android:name="com.sec.android.provider.badge.permission.WRITE" />
+    <uses-permission android:name="com.sec.android.provider.badge.permission.READ" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Hexodus"
+        android:requestLegacyExternalStorage="true"
+        android:resizeableActivity="true"
+        android:enableOnBackInvokedCallback="true"
+        tools:targetApi="34">
+        
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Hexodus"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <!-- Shizuku Service Binding -->
+        <service
+            android:name=".services.ShizukuBridgeService"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+            
+        <!-- Overlay Activation Service -->
+        <service
+            android:name=".services.OverlayActivationService"
+            android:enabled="true"
+            android:exported="false" />
+            
+        <!-- Material You Override Service -->
+        <service
+            android:name=".services.MonetOverrideService"
+            android:enabled="true"
+            android:exported="false" />
+            
+        <!-- Foldable Display Listener Service -->
+        <service
+            android:name=".services.FoldableDisplayService"
+            android:enabled="true"
+            android:exported="false" />
+            
+        <!-- High Contrast Injector Service -->
+        <service
+            android:name=".services.HighContrastInjectorService"
+            android:enabled="true"
+            android:exported="false" />
+            
+        <!-- Theme Manager Service -->
+        <service
+            android:name=".services.ThemeManagerService"
+            android:enabled="true"
+            android:exported="false" />
+            
+        <!-- Shizuku Provider -->
+        <provider
+            android:name="moe.shizuku.manager.api.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+
+        <!-- System Tuner Service -->
+        <service
+            android:name=".services.SystemTunerService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- App Themer Service -->
+        <service
+            android:name=".services.AppThemerService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Gesture Manager Service -->
+        <service
+            android:name=".services.GestureManagerService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Media Notification Service -->
+        <service
+            android:name=".services.MediaNotificationService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Audio Manager Service -->
+        <service
+            android:name=".services.AudioManagerService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- App Manager Service -->
+        <service
+            android:name=".services.AppManagerService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Privacy Security Service -->
+        <service
+            android:name=".services.PrivacySecurityService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Network Firewall Service -->
+        <service
+            android:name=".services.NetworkFirewallService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Power Manager Service -->
+        <service
+            android:name=".services.PowerManagerService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Dynamic Color Service -->
+        <service
+            android:name=".services.DynamicColorService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Accessibility Checker Service -->
+        <service
+            android:name=".services.AccessibilityCheckerService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Security Validation Service -->
+        <service
+            android:name=".services.SecurityValidationService"
+            android:enabled="true"
+            android:exported="false" />
+    </application>
+
+</manifest>

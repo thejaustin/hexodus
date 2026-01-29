@@ -1,0 +1,50 @@
+# .gitignore for Hexodus project
+
+# Built application files
+*.apk
+*.aar
+*.jar
+
+# Local configuration files
+local.properties
+gradle.properties
+
+# Android Studio generated files
+captures/
+*.iml
+.idea/
+*.hprof
+*.pyc
+
+# Gradle
+.gradle/
+build/
+
+# Log files
+*.log
+!DOCUMENTATION.md
+!README.md
+!FEATURE_SUMMARY.md
+!CONTRIBUTING.md
+
+# Secrets and credentials
+**/secrets/**
+**/credentials/**
+**/config.properties
+**/local.properties
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Android build outputs
+*/build/
+!*/build/generated/
+!*/build/intermediates/
+!*/build/outputs/
+
+# Shizuku related
+**/shizuku/**
+!**/shizuku-api/**

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Hexodus</string>
+    <string name="title_activity_main">Hexodus Theming Engine</string>
+    <string name="primary_color_label">Primary Color</string>
+    <string name="accent_color_label">Accent Color</string>
+    <string name="background_color_label">Background Color</string>
+    <string name="apply_theme_button">Apply Theme</string>
+    <string name="save_theme_button">Save Theme</string>
+    <string name="preview_theme_button">Preview Theme</string>
+    <string name="theme_name_hint">Theme Name</string>
+    <string name="hex_color_hint">Enter Hex Color (#FF6200EE)</string>
+    <string name="select_components">Select Components to Theme</string>
+    <string name="status_bar">Status Bar</string>
+    <string name="navigation_bar">Navigation Bar</string>
+    <string name="system_ui">System UI</string>
+    <string name="settings_app">Settings App</string>
+    <string name="launcher">Launcher</string>
+    <string name="theme_created_success">Theme created successfully!</string>
+    <string name="theme_applied_success">Theme applied successfully!</string>
+    <string name="error_occurred">An error occurred. Please try again.</string>
+</resources>
