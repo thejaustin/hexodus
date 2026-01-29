@@ -1,6 +1,7 @@
 package com.hexodus
 
 import android.Manifest
+import android.app.ActivityManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -62,42 +63,32 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun startCoreServices() {
-        // Start core services
-        startService(Intent(this, ShizukuBridgeService::class.java))
-        startService(Intent(this, OverlayActivationService::class.java))
-        startService(Intent(this, MonetOverrideService::class.java))
-        startService(Intent(this, FoldableDisplayService::class.java))
-        startService(Intent(this, HighContrastInjectorService::class.java))
-        startService(Intent(this, ThemeManagerService::class.java))
-        startService(Intent(this, SystemTunerService::class.java))
-        startService(Intent(this, AppThemerService::class.java))
-        startService(Intent(this, GestureManagerService::class.java))
-        startService(Intent(this, MediaNotificationService::class.java))
-        startService(Intent(this, AudioManagerService::class.java))
-        startService(Intent(this, AppManagerService::class.java))
-        startService(Intent(this, PrivacySecurityService::class.java))
-        startService(Intent(this, NetworkFirewallService::class.java))
-        startService(Intent(this, PowerManagerService::class.java))
+        // Start core services that are essential for app functionality
+        // Only start services when actually needed, not all at once in onCreate
+        startServiceIfNeeded(ShizukuBridgeService::class.java)
+    }
+
+    private fun startServiceIfNeeded(serviceClass: Class<*>) {
+        // Check if service is already running before starting
+        if (!isServiceRunning(serviceClass)) {
+            startService(Intent(this, serviceClass))
+        }
+    }
+
+    private fun isServiceRunning(serviceClass: Class<*>): Boolean {
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (service in manager.getRunningServices(Int.MAX_VALUE)) {
+            if (serviceClass.name == service.service.className) {
+                return true
+            }
+        }
+        return false
     }
 
     override fun onDestroy() {
         super.onDestroy()
-
-        // Stop services when activity is destroyed
-        stopService(Intent(this, ShizukuBridgeService::class.java))
-        stopService(Intent(this, OverlayActivationService::class.java))
-        stopService(Intent(this, MonetOverrideService::class.java))
-        stopService(Intent(this, FoldableDisplayService::class.java))
-        stopService(Intent(this, HighContrastInjectorService::class.java))
-        stopService(Intent(this, ThemeManagerService::class.java))
-        stopService(Intent(this, SystemTunerService::class.java))
-        stopService(Intent(this, AppThemerService::class.java))
-        stopService(Intent(this, GestureManagerService::class.java))
-        stopService(Intent(this, MediaNotificationService::class.java))
-        stopService(Intent(this, AudioManagerService::class.java))
-        stopService(Intent(this, AppManagerService::class.java))
-        stopService(Intent(this, PrivacySecurityService::class.java))
-        stopService(Intent(this, NetworkFirewallService::class.java))
-        stopService(Intent(this, PowerManagerService::class.java))
+        // Don't stop services when activity is destroyed
+        // Services should manage their own lifecycle independently
+        // Only stop services when the app is explicitly closed or when needed
     }
 }

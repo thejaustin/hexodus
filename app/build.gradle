@@ -114,7 +114,7 @@ dependencies {
     implementation 'androidx.window:window-java:1.5.1'
 
     // Security
-    implementation 'androidx.security:security-crypto:1.1.0-alpha06'
+    implementation 'androidx.security:security-crypto:1.0.0'
 
     // Permissions (for Compose)
     implementation 'com.google.accompanist:accompanist-permissions:0.32.0'

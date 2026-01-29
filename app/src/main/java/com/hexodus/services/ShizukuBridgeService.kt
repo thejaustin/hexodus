@@ -88,21 +88,45 @@ class ShizukuBridgeService : Service() {
             Log.w(TAG, "Shizuku is not ready or permission not granted")
             return null
         }
-        
+
+        // Validate command to prevent injection
+        if (!isValidCommand(command)) {
+            Log.e(TAG, "Invalid command blocked: $command")
+            return null
+        }
+
         return try {
             // Execute the command using Shizuku's shell access
             val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
             val output = process.inputStream.bufferedReader().readText()
             val exitCode = process.waitFor()
-            
+
             Log.d(TAG, "Command executed: $command, Exit code: $exitCode")
             Log.d(TAG, "Command output: $output")
-            
+
             if (exitCode == 0) output else null
         } catch (e: Exception) {
             Log.e(TAG, "Error executing shell command: ${e.message}", e)
             null
         }
+    }
+
+    /**
+     * Validates commands to prevent injection attacks
+     */
+    private fun isValidCommand(command: String): Boolean {
+        // Define a whitelist of allowed commands for the app's functionality
+        val allowedCommands = listOf(
+            "cmd overlay",
+            "pm install",
+            "pm uninstall",
+            "cmd settings",
+            "settings put",
+            "settings get"
+        )
+
+        // Check if the command starts with an allowed prefix
+        return allowedCommands.any { command.startsWith(it) }
     }
     
     /**
