@@ -22,7 +22,12 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       with:
-        packages: tools,platform-tools,build-tools,platforms;android-34,ndk;25.1.8937393
+        packages: >
+          tools
+          platform-tools
+          build-tools
+          platforms;android-34
+          ndk;25.1.8937393
         cmdline-tools-version: 'latest'
 
     - name: Grant execute permission for gradlew
