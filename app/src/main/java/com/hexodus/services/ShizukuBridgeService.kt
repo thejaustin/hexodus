@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
+import java.io.IOException
 import rikka.shizuku.Shizuku
 import rikka.shizuku.Shizuku.UserServiceArgs
 
@@ -97,14 +98,31 @@ class ShizukuBridgeService : Service() {
             // Execute the command using Shizuku's shell access
             val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
             val output = process.inputStream.bufferedReader().readText()
+            val errorOutput = process.errorStream.bufferedReader().readText()
             val exitCode = process.waitFor()
 
             Log.d(TAG, "Command executed: $command, Exit code: $exitCode")
             Log.d(TAG, "Command output: $output")
+            if (errorOutput.isNotEmpty()) {
+                Log.w(TAG, "Command error output: $errorOutput")
+            }
 
-            if (exitCode == 0) output else null
+            if (exitCode == 0) output else {
+                Log.w(TAG, "Command failed with exit code $exitCode: $errorOutput")
+                null
+            }
+        } catch (e: SecurityException) {
+            Log.e(TAG, "Security exception executing shell command: ${e.message}", e)
+            null
+        } catch (e: IOException) {
+            Log.e(TAG, "IO exception executing shell command: ${e.message}", e)
+            null
+        } catch (e: InterruptedException) {
+            Log.e(TAG, "Command execution interrupted: ${e.message}", e)
+            Thread.currentThread().interrupt() // Restore interrupt status
+            null
         } catch (e: Exception) {
-            Log.e(TAG, "Error executing shell command: ${e.message}", e)
+            Log.e(TAG, "Unexpected error executing shell command: ${e.message}", e)
             null
         }
     }
@@ -124,7 +142,25 @@ class ShizukuBridgeService : Service() {
         )
 
         // Check if the command starts with an allowed prefix
-        return allowedCommands.any { command.startsWith(it) }
+        val isAllowedPrefix = allowedCommands.any { command.startsWith(it) }
+
+        // Additional validation: check for dangerous characters that shouldn't be in our commands
+        val hasDangerousChars = command.contains(Regex("""[;&|\$\n\r]"""))
+
+        // Check for path traversal attempts
+        val hasPathTraversal = command.contains("../") || command.contains("..\\")
+
+        // Check for command chaining attempts
+        val hasCommandChaining = command.contains("&&") || command.contains("||")
+
+        // Check for command substitution attempts
+        val hasCommandSubstitution = command.contains("\${") || command.contains("`")
+
+        return isAllowedPrefix &&
+               !hasDangerousChars &&
+               !hasPathTraversal &&
+               !hasCommandChaining &&
+               !hasCommandSubstitution
     }
     
     /**
@@ -135,7 +171,19 @@ class ShizukuBridgeService : Service() {
             Log.w(TAG, "Shizuku is not ready or permission not granted")
             return false
         }
-        
+
+        // Validate inputs
+        if (!isValidPackageName(packageName)) {
+            Log.e(TAG, "Invalid package name: $packageName")
+            return false
+        }
+
+        val validActions = listOf("enable", "disable", "set-priority")
+        if (action !in validActions) {
+            Log.e(TAG, "Invalid action: $action")
+            return false
+        }
+
         return try {
             val command = when (action) {
                 "enable" -> "cmd overlay enable $packageName"
@@ -143,12 +191,18 @@ class ShizukuBridgeService : Service() {
                 "set-priority" -> "cmd overlay set-priority $packageName 100"
                 else -> return false
             }
-            
+
+            // Validate the constructed command
+            if (!isValidCommand(command)) {
+                Log.e(TAG, "Constructed command failed validation: $command")
+                return false
+            }
+
             val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
             val exitCode = process.waitFor()
-            
+
             Log.d(TAG, "Overlay command executed: $command, Exit code: $exitCode")
-            
+
             exitCode == 0
         } catch (e: Exception) {
             Log.e(TAG, "Error executing overlay command: ${e.message}", e)
@@ -164,14 +218,20 @@ class ShizukuBridgeService : Service() {
             Log.w(TAG, "Shizuku is not ready or permission not granted")
             return false
         }
-        
+
+        // Validate the APK path to prevent path traversal and other attacks
+        if (!isValidFilePath(apkPath)) {
+            Log.e(TAG, "Invalid APK path: $apkPath")
+            return false
+        }
+
         return try {
             val command = "pm install -r -d -t '$apkPath'"
             val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
             val exitCode = process.waitFor()
-            
+
             Log.d(TAG, "APK installation attempted: $apkPath, Exit code: $exitCode")
-            
+
             exitCode == 0
         } catch (e: Exception) {
             Log.e(TAG, "Error installing APK: ${e.message}", e)
@@ -187,14 +247,20 @@ class ShizukuBridgeService : Service() {
             Log.w(TAG, "Shizuku is not ready or permission not granted")
             return false
         }
-        
+
+        // Validate the package name to ensure it's a proper Android package name
+        if (!isValidPackageName(packageName)) {
+            Log.e(TAG, "Invalid package name: $packageName")
+            return false
+        }
+
         return try {
             val command = "pm uninstall '$packageName'"
             val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
             val exitCode = process.waitFor()
-            
+
             Log.d(TAG, "Package uninstall attempted: $packageName, Exit code: $exitCode")
-            
+
             exitCode == 0
         } catch (e: Exception) {
             Log.e(TAG, "Error uninstalling package: ${e.message}", e)
@@ -210,20 +276,21 @@ class ShizukuBridgeService : Service() {
             Log.w(TAG, "Shizuku is not ready or permission not granted")
             return emptyList()
         }
-        
+
         return try {
             val command = "cmd overlay list | grep ENABLED"
             val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
             val output = process.inputStream.bufferedReader().readText()
             val exitCode = process.waitFor()
-            
+
             if (exitCode == 0) {
                 output.lines()
                     .filter { it.contains(":") }
-                    .map { line -> 
-                        line.substringAfterLast(":").trim() 
+                    .map { line ->
+                        line.substringAfterLast(":").trim()
                     }
                     .filter { it.isNotEmpty() }
+                    .filter { isValidPackageName(it) } // Additional validation
             } else {
                 emptyList()
             }
@@ -231,6 +298,35 @@ class ShizukuBridgeService : Service() {
             Log.e(TAG, "Error getting overlay packages: ${e.message}", e)
             emptyList()
         }
+    }
+
+    /**
+     * Validates file paths to prevent path traversal and other attacks
+     */
+    private fun isValidFilePath(path: String): Boolean {
+        // Check for path traversal attempts
+        if (path.contains("../") || path.contains("..\\") || path.contains("%2e%2e%2f") || path.contains("\\.\\.\\\\")) {
+            return false
+        }
+
+        // Check for null bytes
+        if (path.contains("\u0000")) {
+            return false
+        }
+
+        // Check if path is absolute and in allowed directories
+        val allowedPaths = listOf("/data/local/tmp/", "/sdcard/", "/storage/emulated/0/")
+        return allowedPaths.any { path.startsWith(it) }
+    }
+
+    /**
+     * Validates Android package names
+     */
+    private fun isValidPackageName(packageName: String): Boolean {
+        // Android package names follow the format: com.example.name
+        // They must start with a letter, contain only letters, numbers, dots, and underscores
+        // And each segment must start with a letter
+        return Regex("^[a-zA-Z][a-zA-Z0-9_]*(\\.[a-zA-Z][a-zA-Z0-9_]*)*$").matches(packageName)
     }
     
     /**

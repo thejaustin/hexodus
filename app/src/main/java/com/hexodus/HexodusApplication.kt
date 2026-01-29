@@ -77,8 +77,57 @@ class HexodusApplication : Application() {
     override fun onTerminate() {
         super.onTerminate()
         // Clean up Shizuku listeners
-        Shizuku.removeBinderReceivedListener(binderReceivedListener)
-        Shizuku.removeBinderDeadListener(binderDeadListener)
-        Shizuku.removeRequestPermissionResultListener(permissionResultListener)
+        cleanupShizukuListeners()
+    }
+
+    private fun cleanupShizukuListeners() {
+        try {
+            Shizuku.removeBinderReceivedListener(binderReceivedListener)
+            Shizuku.removeBinderDeadListener(binderDeadListener)
+            Shizuku.removeRequestPermissionResultListener(permissionResultListener)
+            Log.d(TAG, "Shizuku listeners cleaned up")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error cleaning up Shizuku listeners: ${e.message}", e)
+        }
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        Log.w(TAG, "Application running low on memory")
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        when (level) {
+            TRIM_MEMORY_RUNNING_MODERATE,
+            TRIM_MEMORY_RUNNING_LOW,
+            TRIM_MEMORY_RUNNING_CRITICAL -> {
+                Log.w(TAG, "Memory trim level: RUNNING_${
+                    when (level) {
+                        TRIM_MEMORY_RUNNING_MODERATE -> "MODERATE"
+                        TRIM_MEMORY_RUNNING_LOW -> "LOW"
+                        TRIM_MEMORY_RUNNING_CRITICAL -> "CRITICAL"
+                        else -> level
+                    }
+                }")
+            }
+            TRIM_MEMORY_UI_HIDDEN -> {
+                Log.d(TAG, "UI hidden, releasing memory")
+            }
+            TRIM_MEMORY_BACKGROUND,
+            TRIM_MEMORY_MODERATE,
+            TRIM_MEMORY_COMPLETE -> {
+                Log.w(TAG, "Memory trim level: ${
+                    when (level) {
+                        TRIM_MEMORY_BACKGROUND -> "BACKGROUND"
+                        TRIM_MEMORY_MODERATE -> "MODERATE"
+                        TRIM_MEMORY_COMPLETE -> "COMPLETE"
+                        else -> level
+                    }
+                }")
+                // Perform more aggressive memory cleanup
+                cleanupShizukuListeners()
+            }
+        }
     }
 }

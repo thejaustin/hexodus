@@ -11,15 +11,25 @@ object ColorUtils {
      * Shifts a color by a factor, making it lighter or darker
      */
     fun shiftColor(color: Int, factor: Float, lighter: Boolean = true): Int {
-        val r = Color.red(color)
-        val g = Color.green(color)
-        val b = Color.blue(color)
-        
-        val newR = if (lighter) minOf(255, (r * factor).toInt()) else maxOf(0, (r * factor).toInt())
-        val newG = if (lighter) minOf(255, (g * factor).toInt()) else maxOf(0, (g * factor).toInt())
-        val newB = if (lighter) minOf(255, (b * factor).toInt()) else maxOf(0, (b * factor).toInt())
-        
-        return Color.rgb(newR, newG, newB)
+        val hsv = FloatArray(3)
+        Color.colorToHSV(color, hsv)
+
+        // Extract brightness (value in HSV)
+        var brightness = hsv[2]
+
+        // Adjust brightness based on factor and direction
+        // The factor represents the proportion of the range to shift
+        val adjustment = factor.coerceIn(0f, 1f)
+
+        if (lighter) {
+            brightness = brightness + (1.0f - brightness) * adjustment
+        } else {
+            brightness = brightness - brightness * adjustment
+        }
+
+        hsv[2] = brightness.coerceIn(0f, 1f)
+
+        return Color.HSVToColor(hsv)
     }
     
     /**
@@ -43,12 +53,19 @@ object ColorUtils {
         return Color.HSVToColor(hsv)
     }
     
+    companion object {
+        private const val RED_WEIGHT = 0.299f
+        private const val GREEN_WEIGHT = 0.587f
+        private const val BLUE_WEIGHT = 0.114f
+        private const val DARKNESS_THRESHOLD = 0.5f
+    }
+
     /**
      * Determines if a color is light or dark
      */
     fun isColorLight(color: Int): Boolean {
-        val darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255
-        return darkness < 0.5
+        val darkness = 1 - (RED_WEIGHT * Color.red(color) + GREEN_WEIGHT * Color.green(color) + BLUE_WEIGHT * Color.blue(color)) / 255
+        return darkness < DARKNESS_THRESHOLD
     }
     
     /**
