@@ -36,8 +36,6 @@ jobs:
 
     - name: Validate Gradle Wrapper
       uses: gradle/actions/wrapper-validation@v3
-      with:
-        distribution-url: https://services.gradle.org/distributions/gradle-8.5-bin.zip
 
     - name: Cache Gradle packages
       uses: actions/cache@v4
