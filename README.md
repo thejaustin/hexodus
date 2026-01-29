@@ -158,6 +158,50 @@ All features are organized into clear categories:
 
 ### Core Components
 
+## 🚀 GitHub Actions Build Process
+
+Hexodus is configured with comprehensive GitHub Actions workflows that automatically build, test, and package the application when changes are pushed to the repository.
+
+### Build Workflow Features
+- **Automatic Building**: Builds debug and release APKs on every push
+- **Unit Testing**: Runs comprehensive unit tests with each build
+- **Multi-API Testing**: Tests on multiple Android API levels (26, 28, 29, 30, 31, 33, 34)
+- **Artifact Upload**: Automatically uploads built APKs as workflow artifacts
+- **Release Creation**: Creates GitHub releases with signed APKs when tags are pushed
+
+### Workflow Configuration
+The repository includes two main workflows:
+1. **Build Workflow** (`.github/workflows/build.yml`):
+   - Runs on every push and pull request
+   - Builds debug and release APKs
+   - Runs unit and instrumentation tests
+   - Uploads APK artifacts
+
+2. **Release Workflow** (`.github/workflows/release.yml`):
+   - Triggers when a new tag is pushed
+   - Creates a GitHub release
+   - Builds and signs release APK
+   - Uploads APK to release assets
+
+### Building Locally
+To build the project locally, ensure you have the Android SDK and build tools installed, then run:
+```bash
+./gradlew assembleDebug
+```
+or for a release build:
+```bash
+./gradlew assembleRelease
+```
+
+The APK files will be generated in `app/build/outputs/apk/`.
+
+### Continuous Integration
+The CI/CD pipeline ensures:
+- Code quality through automated testing
+- Compatibility across different Android versions
+- Proper APK signing for releases
+- Automatic documentation of changes
+
 1. **ThemeCompiler**: Compiles hex colors into overlay APK structures in memory
 2. **ShizukuBridgeService**: Proxies overlay commands through trusted shell processes
 3. **MonetOverrideService**: Spoofs the system's color palette generation
@@ -234,10 +278,24 @@ dependencies {
 ## 🛡️ Security Model
 
 Hexodus operates within Android's permission model while leveraging Shizuku for elevated operations:
-- All system modifications are reversible
-- Themes can be disabled instantly
-- No permanent system changes are made without user consent
-- Secure communication channels with system services
+
+### Core Security Principles
+- **All system modifications are reversible**: Every change can be undone
+- **Themes can be disabled instantly**: Immediate rollback capability
+- **No permanent system changes without consent**: Explicit user approval required
+- **Secure communication channels**: Encrypted communication with system services
+
+### Enhanced Security Features
+- **APK Signature Validation**: All overlay APKs are validated before installation
+- **Path Validation**: All file paths are validated to prevent directory traversal
+- **Input Sanitization**: All user inputs are sanitized to prevent injection attacks
+- **Command Filtering**: Shell commands are filtered to prevent dangerous operations
+- **Component Isolation**: Services are isolated to prevent unauthorized access
+- **Permission Validation**: Proper permission checks for all operations
+- **Secure Storage**: Sensitive data is stored using Android Keystore system
+- **Encrypted Preferences**: Sensitive settings are stored encrypted
+- **Runtime Validation**: All operations are validated at runtime
+- **Secure IPC**: Protected inter-process communication between components
 
 ## 🤝 Contributing
 
