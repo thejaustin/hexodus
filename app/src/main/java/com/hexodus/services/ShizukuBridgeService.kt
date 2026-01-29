@@ -6,8 +6,6 @@ import android.content.pm.PackageManager
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import moe.shizuku.api.ShizukuApiConstants
-import moe.shizuku.api.ShizukuProvider
 import rikka.shizuku.Shizuku
 import rikka.shizuku.Shizuku.UserServiceArgs
 

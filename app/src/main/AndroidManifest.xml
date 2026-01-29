@@ -88,7 +88,12 @@
             android:authorities="${applicationId}.shizuku"
             android:enabled="true"
             android:exported="true"
-            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+            android:multiprocess="false"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL">
+            <meta-data
+                android:name="moe.shizuku.client.V3_SUPPORT"
+                android:value="true" />
+        </provider>
 
         <!-- System Tuner Service -->
         <service
