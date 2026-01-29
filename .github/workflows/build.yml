@@ -61,13 +61,13 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: hexodus-debug-apk
-        path: app/build/outputs/apk/debug/app-debug.apk
+        path: app/build/outputs/apk/debug/**/*.apk
 
     - name: Upload Release APK
       uses: actions/upload-artifact@v4
       with:
         name: hexodus-release-apk
-        path: app/build/outputs/apk/release/app-release.apk
+        path: app/build/outputs/apk/release/**/*.apk
 
   test:
     needs: build
@@ -127,5 +127,5 @@ jobs:
         emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
         disable-animations: true
         script: |
-          adb install app/build/outputs/apk/debug/app-debug.apk
+          adb install app/build/outputs/apk/debug/*-debug.apk
           ./gradlew connectedDebugAndroidTest --no-daemon
