@@ -116,6 +116,12 @@ jobs:
         disable-animations: true
         script: echo "Generated AVD snapshot for caching."
 
+    - name: Download Debug APK
+      uses: actions/download-artifact@v4
+      with:
+        name: hexodus-debug-apk
+        path: app/build/outputs/apk/debug
+
     - name: Run instrumentation tests
       uses: reactivecircus/android-emulator-runner@v2
       with:
@@ -127,5 +133,5 @@ jobs:
         emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
         disable-animations: true
         script: |
-          adb install app/build/outputs/apk/debug/*-debug.apk
+          adb install app/build/outputs/apk/debug/*.apk
           ./gradlew connectedDebugAndroidTest --no-daemon
