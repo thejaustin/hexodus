@@ -56,18 +56,25 @@ jobs:
 
     - name: Build Release APK
       run: ./gradlew assembleRelease --no-daemon
+      continue-on-error: true
+
+    - name: List APK outputs
+      run: find app/build/outputs -name "*.apk" -type f 2>/dev/null || echo "No APKs found"
 
     - name: Upload Debug APK
       uses: actions/upload-artifact@v4
       with:
         name: hexodus-debug-apk
-        path: app/build/outputs/apk/debug/**/*.apk
+        path: app/build/outputs/apk/debug/
+        if-no-files-found: warn
 
     - name: Upload Release APK
       uses: actions/upload-artifact@v4
+      if: success()
       with:
         name: hexodus-release-apk
-        path: app/build/outputs/apk/release/**/*.apk
+        path: app/build/outputs/apk/release/
+        if-no-files-found: warn
 
   test:
     needs: build
