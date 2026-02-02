@@ -4,6 +4,7 @@
 *.apk
 *.aar
 *.jar
+!gradle/wrapper/gradle-wrapper.jar
 
 # Local configuration files
 local.properties
