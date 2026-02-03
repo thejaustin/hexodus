@@ -369,8 +369,10 @@ class DeviceSpecificService : Service() {
      */
     private fun getDisplaySize(display: Display?): Float {
         if (display == null) return 0f
-        
-        val metrics = display.metrics
+
+        val metrics = android.util.DisplayMetrics()
+        @Suppress("DEPRECATION")
+        display.getRealMetrics(metrics)
         val widthInches = metrics.widthPixels / metrics.xdpi
         val heightInches = metrics.heightPixels / metrics.ydpi
         return kotlin.math.sqrt((widthInches * widthInches + heightInches * heightInches).toDouble()).toFloat()
@@ -445,10 +447,9 @@ class DeviceSpecificService : Service() {
                         isTabletop = true
                         Log.d(TAG, "Device is in tabletop mode")
                     }
-                    FoldingFeature.State.SEAL -> {
-                        // Device is separating (in transition)
-                        isSeparating = true
-                        Log.d(TAG, "Device is in separating state")
+                    else -> {
+                        // Handle other states
+                        Log.d(TAG, "Device is in unknown folding state: ${feature.state}")
                     }
                 }
                 

@@ -15,6 +15,7 @@ import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import com.hexodus.core.ThemeCompiler
 
 /**
  * BackupRestoreService - Service for theme backup and restore functionality
