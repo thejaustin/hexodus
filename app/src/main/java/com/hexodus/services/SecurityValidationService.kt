@@ -264,7 +264,7 @@ class SecurityValidationService : Service() {
             }
             
             // Validate file name
-            val fileName = apKPath.substringAfterLast("/")
+            val fileName = apkPath.substringAfterLast("/")
             if (!SecurityUtils.isValidFileName(fileName)) {
                 Log.e(TAG, "Invalid APK filename: $fileName")
                 return false

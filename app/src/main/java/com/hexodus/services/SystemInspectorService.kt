@@ -32,7 +32,7 @@ class SystemInspectorService : Service() {
     }
     
     private lateinit var shizukuBridgeService: ShizukuBridgeService
-    private val packageManager by lazy { packageManager }
+    private val pm: PackageManager by lazy { applicationContext.packageManager }
     
     override fun onCreate() {
         super.onCreate()
@@ -459,12 +459,12 @@ class SystemInspectorService : Service() {
             }
             
             // Get app info from package manager
-            val appInfo = packageManager.getApplicationInfo(sanitizedPackageName, PackageManager.GET_META_DATA)
-            val packageInfo = packageManager.getPackageInfo(sanitizedPackageName, PackageManager.GET_PERMISSIONS)
+            val appInfo = pm.getApplicationInfo(sanitizedPackageName, PackageManager.GET_META_DATA)
+            val packageInfo = pm.getPackageInfo(sanitizedPackageName, PackageManager.GET_PERMISSIONS)
             
             val appDetails = mutableMapOf<String, Any>().apply {
                 put("package_name", sanitizedPackageName)
-                put("app_name", appInfo.loadLabel(packageManager).toString())
+                put("app_name", appInfo.loadLabel(pm).toString())
                 put("version_name", packageInfo.versionName ?: "Unknown")
                 put("version_code", packageInfo.versionCode.toLong())
                 put("first_install_time", packageInfo.firstInstallTime)
@@ -526,14 +526,14 @@ class SystemInspectorService : Service() {
             val apps = mutableListOf<Map<String, Any>>()
             
             // Get all installed packages
-            val packages = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS)
+            val packages = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
             
             for (pkgInfo in packages) {
                 val appInfo = pkgInfo.applicationInfo
                 
                 val appData = mapOf(
                     "package_name" to pkgInfo.packageName,
-                    "app_name" to appInfo.loadLabel(packageManager).toString(),
+                    "app_name" to appInfo.loadLabel(pm).toString(),
                     "version_name" to pkgInfo.versionName ?: "Unknown",
                     "version_code" to pkgInfo.versionCode.toLong(),
                     "is_system_app" to (appInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0),

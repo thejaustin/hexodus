@@ -193,7 +193,7 @@ class AdvancedFeatureService : Service() {
             // Broadcast results
             val successIntent = Intent("SYSTEM_RESOURCES_INSPECTED")
             successIntent.putExtra("package_name", sanitizedPackageName)
-            successIntent.putExtra("resources", resources)
+            successIntent.putExtra("resources", HashMap(resources))
             sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error inspecting system resources: ${e.message}", e)

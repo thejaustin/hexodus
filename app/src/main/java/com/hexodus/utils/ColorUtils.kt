@@ -6,7 +6,12 @@ import android.graphics.Color
  * Utility functions for color manipulation
  */
 object ColorUtils {
-    
+
+    private const val RED_WEIGHT = 0.299f
+    private const val GREEN_WEIGHT = 0.587f
+    private const val BLUE_WEIGHT = 0.114f
+    private const val DARKNESS_THRESHOLD = 0.5f
+
     /**
      * Shifts a color by a factor, making it lighter or darker
      */
@@ -51,13 +56,6 @@ object ColorUtils {
         Color.colorToHSV(color, hsv)
         hsv[1] = hsv[1] * factor
         return Color.HSVToColor(hsv)
-    }
-    
-    companion object {
-        private const val RED_WEIGHT = 0.299f
-        private const val GREEN_WEIGHT = 0.587f
-        private const val BLUE_WEIGHT = 0.114f
-        private const val DARKNESS_THRESHOLD = 0.5f
     }
 
     /**

@@ -338,7 +338,7 @@ fun MainActivityScreen(navController: NavController? = null) {
                 OutlinedButton(
                     onClick = {
                         // Save theme
-                        val themedComponents = mapOf(
+                        val themedComponents = hashMapOf(
                             "status_bar" to isStatusBarThemed,
                             "navigation_bar" to isNavigationBarThemed,
                             "system_ui" to isSystemUIThemed,
@@ -380,7 +380,7 @@ fun MainActivityScreen(navController: NavController? = null) {
             Button(
                 onClick = {
                     // Apply theme
-                    val themedComponents = mapOf(
+                    val themedComponents = hashMapOf(
                         "status_bar" to isStatusBarThemed,
                         "navigation_bar" to isNavigationBarThemed,
                         "system_ui" to isSystemUIThemed,
@@ -464,6 +464,7 @@ fun MainActivityScreen(navController: NavController? = null) {
                                         Color(android.graphics.Color.parseColor(
                                             if (hexColor.startsWith("#")) hexColor else "#$hexColor"
                                         ))
+                                    )
                             )
                         }
 

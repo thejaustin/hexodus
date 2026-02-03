@@ -1,8 +1,10 @@
 package com.hexodus.utils
 
+import android.os.Build
 import android.view.accessibility.AccessibilityManager
 import android.content.Context
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
@@ -13,6 +15,14 @@ import androidx.compose.ui.unit.dp
  * Ensures the app meets Android 16 accessibility standards
  */
 object AccessibilityUtils {
+
+    // Minimum contrast ratios for accessibility (WCAG AA)
+    const val MIN_NORMAL_TEXT_CONTRAST = 4.5
+    const val MIN_LARGE_TEXT_CONTRAST = 3.0
+    const val MIN_GRAPHICAL_OBJECT_CONTRAST = 3.0
+
+    // Minimum touch target size (48dp x 48dp)
+    const val MIN_TOUCH_TARGET_DP = 48
     
     /**
      * Checks if accessibility services are enabled
@@ -26,6 +36,15 @@ object AccessibilityUtils {
      * Checks if high contrast text is enabled
      */
     fun isHighContrastTextEnabled(context: Context): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            isHighContrastTextEnabledApi31(context)
+        } else {
+            false
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    private fun isHighContrastTextEnabledApi31(context: Context): Boolean {
         val am = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
         return am.isHighTextContrastEnabled
     }
@@ -151,15 +170,5 @@ object AccessibilityUtils {
     fun isValidFormFieldAccessibility(label: String?, hint: String?, contentDesc: String?): Boolean {
         // A form field should have at least one of these for accessibility
         return !label.isNullOrBlank() || !hint.isNullOrBlank() || !contentDesc.isNullOrBlank()
-    }
-    
-    companion object {
-        // Minimum contrast ratios for accessibility (WCAG AA)
-        const val MIN_NORMAL_TEXT_CONTRAST = 4.5
-        const val MIN_LARGE_TEXT_CONTRAST = 3.0
-        const val MIN_GRAPHICAL_OBJECT_CONTRAST = 3.0
-        
-        // Minimum touch target size (48dp x 48dp)
-        const val MIN_TOUCH_TARGET_DP = 48
     }
 }

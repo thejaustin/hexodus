@@ -230,7 +230,7 @@ class WallpaperThemerService : Service() {
                 
                 // Broadcast results
                 val successIntent = Intent("CURRENT_WALLPAPER_COLORS_RETRIEVED")
-                successIntent.putExtra("colors", colors)
+                successIntent.putExtra("colors", HashMap(colors))
                 sendBroadcast(successIntent)
                 
                 // Clean up bitmap
@@ -378,7 +378,7 @@ class WallpaperThemerService : Service() {
             val successIntent = Intent("PALETTE_GENERATED")
             successIntent.putExtra("image_path", imagePath)
             successIntent.putExtra("palette_type", paletteType)
-            successIntent.putExtra("colors", colors)
+            successIntent.putExtra("colors", HashMap(colors))
             sendBroadcast(successIntent)
             
             // Clean up bitmap
