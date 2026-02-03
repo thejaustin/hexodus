@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace 'com.hexodus'
-    compileSdk 35
+    compileSdk 34
 
     def versionPropsFile = rootProject.file('version.properties')
     def versionProps = new Properties()
@@ -18,7 +18,7 @@ android {
     defaultConfig {
         applicationId "com.hexodus"
         minSdk 26
-        targetSdk 35
+        targetSdk 34
         versionCode major * 10000 + minor * 100 + patch  // Format: MMmmddd (Major.Minor.Patch)
         versionName "${major}.${minor}.${patch}"
 
