@@ -15,7 +15,6 @@ import android.app.PendingIntent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.hexodus.MainActivity
-import com.hexodus.R
 
 /**
  * NetworkFirewallService - Service for network management and firewall features
@@ -382,7 +381,7 @@ class NetworkFirewallService : Service() {
         return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
             .setContentTitle("Network Firewall Active")
             .setContentText("Protecting your network privacy")
-            .setSmallIcon(R.drawable.ic_notification) // Assuming this icon exists
+            .setSmallIcon(android.R.drawable.stat_notify_sync) // Use system icon
             .setContentIntent(pendingIntent)
             .build()
     }

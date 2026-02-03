@@ -210,10 +210,8 @@ object SecurityUtils {
         return pattern.matcher(permission).matches()
     }
 
-    companion object {
-        // Security constants
-        const val MAX_FILE_PATH_LENGTH = 1024
-        const val MAX_COMMAND_LENGTH = 512
-        const val MAX_INPUT_LENGTH = 256
-    }
+    // Security constants
+    const val MAX_FILE_PATH_LENGTH = 1024
+    const val MAX_COMMAND_LENGTH = 512
+    const val MAX_INPUT_LENGTH = 256
 }

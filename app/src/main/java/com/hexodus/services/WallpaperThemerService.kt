@@ -9,6 +9,7 @@ import android.app.WallpaperManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.palette.graphics.Palette
+import java.io.File
 import java.io.IOException
 
 /**

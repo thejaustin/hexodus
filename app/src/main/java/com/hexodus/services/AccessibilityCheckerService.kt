@@ -7,6 +7,7 @@ import android.os.IBinder
 import android.util.Log
 import android.view.accessibility.AccessibilityManager
 import android.content.Context
+import androidx.annotation.RequiresApi
 import com.hexodus.utils.AccessibilityUtils
 
 /**
@@ -94,12 +95,7 @@ class AccessibilityCheckerService : Service() {
             results["accessibility_enabled"] = accessibilityManager.isEnabled
             
             // Check high contrast text setting (API 31+)
-            @Suppress("NewApi")
-            results["high_contrast_enabled"] = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                accessibilityManager.isHighTextContrastEnabled
-            } else {
-                false
-            }
+            results["high_contrast_enabled"] = getHighTextContrastEnabled()
             
             // Check touch exploration
             results["touch_exploration_enabled"] = accessibilityManager.isTouchExplorationEnabled
@@ -194,12 +190,7 @@ class AccessibilityCheckerService : Service() {
             val status = mutableMapOf<String, Any>()
             
             status["is_accessibility_enabled"] = accessibilityManager.isEnabled
-            @Suppress("NewApi")
-            status["is_high_contrast_enabled"] = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                accessibilityManager.isHighTextContrastEnabled
-            } else {
-                false
-            }
+            status["is_high_contrast_enabled"] = getHighTextContrastEnabled()
             status["is_touch_exploration_enabled"] = accessibilityManager.isTouchExplorationEnabled
             status["font_scale"] = resources.configuration.fontScale
             status["should_reduce_animations"] = AccessibilityUtils.shouldReduceAnimations(this)
@@ -224,22 +215,15 @@ class AccessibilityCheckerService : Service() {
     /**
      * Checks if the app is currently in an accessibility-friendly state
      */
-    @Suppress("NewApi")
     fun isAccessibilityFriendly(): Boolean {
-        val isHighContrast = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            accessibilityManager.isHighTextContrastEnabled
-        } else {
-            false
-        }
         return accessibilityManager.isEnabled ||
-               isHighContrast ||
+               getHighTextContrastEnabled() ||
                resources.configuration.fontScale > 1.0f
     }
     
     /**
      * Gets recommended adjustments for accessibility
      */
-    @Suppress("NewApi")
     fun getAccessibilityRecommendations(): List<String> {
         val recommendations = mutableListOf<String>()
 
@@ -247,12 +231,7 @@ class AccessibilityCheckerService : Service() {
             recommendations.add("Consider increasing text size for better readability")
         }
 
-        val isHighContrast = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            accessibilityManager.isHighTextContrastEnabled
-        } else {
-            false
-        }
-        if (!isHighContrast) {
+        if (!getHighTextContrastEnabled()) {
             recommendations.add("Enable high contrast mode for better visibility")
         }
         
@@ -262,7 +241,23 @@ class AccessibilityCheckerService : Service() {
         
         return recommendations
     }
-    
+
+    /**
+     * Gets the high text contrast enabled status in a way that compiles on all API levels
+     */
+    private fun getHighTextContrastEnabled(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            getHighTextContrastEnabledApi31()
+        } else {
+            false
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    private fun getHighTextContrastEnabledApi31(): Boolean {
+        return accessibilityManager.isHighTextContrastEnabled
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "AccessibilityCheckerService destroyed")
