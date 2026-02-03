@@ -8,7 +8,6 @@
 
 # Local configuration files
 local.properties
-gradle.properties
 
 # Android Studio generated files
 captures/
