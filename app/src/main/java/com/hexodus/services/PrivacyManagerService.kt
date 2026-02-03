@@ -208,7 +208,7 @@ class PrivacyManagerService : Service() {
             // Broadcast results
             val successIntent = Intent("USAGE_STATS_RETRIEVED")
             successIntent.putExtra("package_name", packageName)
-            successIntent.putExtra("usage_stats", usageStats)
+            successIntent.putExtra("usage_stats", HashMap(usageStats))
             sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting usage stats: ${e.message}", e)
@@ -286,7 +286,7 @@ class PrivacyManagerService : Service() {
             // Broadcast results
             val successIntent = Intent("PRIVACY_SCORE_CALCULATED")
             successIntent.putExtra("package_name", packageName)
-            successIntent.putExtra("privacy_score", privacyScore)
+            successIntent.putExtra("privacy_score", HashMap(privacyScore))
             sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error calculating privacy score: ${e.message}", e)

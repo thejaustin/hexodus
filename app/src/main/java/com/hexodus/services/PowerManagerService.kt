@@ -107,7 +107,7 @@ class PowerManagerService : Service() {
                 
                 // Broadcast success
                 val successIntent = Intent("BATTERY_STATS_RETRIEVED")
-                successIntent.putExtra("stats", batteryStats)
+                successIntent.putExtra("stats", HashMap(batteryStats))
                 sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to retrieve battery stats")
@@ -341,7 +341,7 @@ class PowerManagerService : Service() {
                 // Broadcast success
                 val successIntent = Intent("POWER_USAGE_RETRIEVED")
                 successIntent.putExtra("package_name", sanitizedPackageName)
-                successIntent.putExtra("power_usage", powerUsage)
+                successIntent.putExtra("power_usage", HashMap(powerUsage))
                 sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to get power usage for app: $sanitizedPackageName")

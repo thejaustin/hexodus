@@ -94,7 +94,7 @@ class SecurityValidationService : Service() {
             // Broadcast results
             val intent = Intent("INPUT_VALIDATION_COMPLETED")
             intent.putExtra("input", input)
-            intent.putExtra("validation_results", results)
+            intent.putExtra("validation_results", HashMap(results))
             sendBroadcast(intent)
             
         } catch (e: Exception) {
@@ -133,7 +133,7 @@ class SecurityValidationService : Service() {
             val intent = Intent("FILE_PATH_VALIDATION_COMPLETED")
             intent.putExtra("file_path", filePath)
             intent.putExtra("allowed_directories", ArrayList(allowedDirectories))
-            intent.putExtra("validation_results", results)
+            intent.putExtra("validation_results", HashMap(results))
             sendBroadcast(intent)
             
         } catch (e: Exception) {
@@ -168,7 +168,7 @@ class SecurityValidationService : Service() {
             // Broadcast results
             val intent = Intent("COMMAND_VALIDATION_COMPLETED")
             intent.putExtra("command", command)
-            intent.putExtra("validation_results", results)
+            intent.putExtra("validation_results", HashMap(results))
             sendBroadcast(intent)
             
         } catch (e: Exception) {
@@ -200,7 +200,7 @@ class SecurityValidationService : Service() {
             // Broadcast results
             val intent = Intent("PACKAGE_NAME_VALIDATION_COMPLETED")
             intent.putExtra("package_name", packageName)
-            intent.putExtra("validation_results", results)
+            intent.putExtra("validation_results", HashMap(results))
             sendBroadcast(intent)
             
         } catch (e: Exception) {

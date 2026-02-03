@@ -222,17 +222,17 @@ class ThemeCompiler {
         val materialYouXml = """<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Material You Dynamic Colors -->
-    <color name="system_accent1_0">#${tones[50].toString(16).substring(2).uppercase()}</color>
-    <color name="system_accent1_10">#${tones[100].toString(16).substring(2).uppercase()}</color>
-    <color name="system_accent1_50">#${tones[200].toString(16).substring(2).uppercase()}</color>
-    <color name="system_accent1_100">#${tones[300].toString(16).substring(2).uppercase()}</color>
-    <color name="system_accent1_200">#${tones[400].toString(16).substring(2).uppercase()}</color>
-    <color name="system_accent1_300">#${tones[500].toString(16).substring(2).uppercase()}</color>
-    <color name="system_accent1_400">#${tones[600].toString(16).substring(2).uppercase()}</color>
-    <color name="system_accent1_500">#${tones[700].toString(16).substring(2).uppercase()}</color>
-    <color name="system_accent1_600">#${tones[800].toString(16).substring(2).uppercase()}</color>
-    <color name="system_accent1_700">#${tones[900].toString(16).substring(2).uppercase()}</color>
-    <color name="system_accent1_800">#${tones[950].toString(16).substring(2).uppercase()}</color>
+    <color name="system_accent1_0">#${tones.getValue(50).toString(16).substring(2).uppercase()}</color>
+    <color name="system_accent1_10">#${tones.getValue(100).toString(16).substring(2).uppercase()}</color>
+    <color name="system_accent1_50">#${tones.getValue(200).toString(16).substring(2).uppercase()}</color>
+    <color name="system_accent1_100">#${tones.getValue(300).toString(16).substring(2).uppercase()}</color>
+    <color name="system_accent1_200">#${tones.getValue(400).toString(16).substring(2).uppercase()}</color>
+    <color name="system_accent1_300">#${tones.getValue(500).toString(16).substring(2).uppercase()}</color>
+    <color name="system_accent1_400">#${tones.getValue(600).toString(16).substring(2).uppercase()}</color>
+    <color name="system_accent1_500">#${tones.getValue(700).toString(16).substring(2).uppercase()}</color>
+    <color name="system_accent1_600">#${tones.getValue(800).toString(16).substring(2).uppercase()}</color>
+    <color name="system_accent1_700">#${tones.getValue(900).toString(16).substring(2).uppercase()}</color>
+    <color name="system_accent1_800">#${tones.getValue(950).toString(16).substring(2).uppercase()}</color>
     
     <!-- Secondary accent colors -->
     <color name="system_accent2_0">#${shiftColor(colorInt, 0.3f, true).toString(16).substring(2).uppercase()}</color>

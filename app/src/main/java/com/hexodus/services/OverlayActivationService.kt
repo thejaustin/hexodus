@@ -161,7 +161,7 @@ class OverlayActivationService : Service() {
     /**
      * Refreshes the system UI to apply theme changes
      */
-    private fun refreshSystemUI() {
+    fun refreshSystemUI() {
         try {
             // Use Shizuku to execute system commands
             shizukuBridgeService.executeShellCommand("am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS")

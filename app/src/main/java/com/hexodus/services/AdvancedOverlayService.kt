@@ -380,7 +380,7 @@ class AdvancedOverlayService : Service() {
             // Broadcast results
             val successIntent = Intent("OVERLAY_DEPENDENCIES_RETRIEVED")
             successIntent.putExtra("package_name", sanitizedPackageName)
-            successIntent.putExtra("dependencies", dependencies)
+            successIntent.putExtra("dependencies", HashMap(dependencies))
             sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting overlay dependencies: ${e.message}", e)

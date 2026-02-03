@@ -330,10 +330,10 @@ $componentXml
             // This would normally execute: cmd overlay disable <package_name>
             
             // Clean up temporary files
-            val tempDirs = File(applicationContext.cacheDir).listFiles { file ->
+            val tempDirs = applicationContext.cacheDir.listFiles()?.filter { file ->
                 file.isDirectory && file.name.startsWith("hc_temp_")
             }
-            
+
             tempDirs?.forEach { dir ->
                 dir.deleteRecursively()
             }

@@ -382,7 +382,7 @@ class FontIconManagerService : Service() {
             
             // Broadcast results
             val successIntent = Intent("CURRENT_FONT_RETRIEVED")
-            successIntent.putExtra("current_font", currentFont)
+            successIntent.putExtra("current_font", HashMap(currentFont))
             sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting current font: ${e.message}", e)
@@ -411,7 +411,7 @@ class FontIconManagerService : Service() {
             
             // Broadcast results
             val successIntent = Intent("CURRENT_ICON_PACK_RETRIEVED")
-            successIntent.putExtra("current_icon_pack", currentIconPack)
+            successIntent.putExtra("current_icon_pack", HashMap(currentIconPack))
             sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting current icon pack: ${e.message}", e)

@@ -101,9 +101,9 @@ class FoldableDisplayService : Service() {
                         isCoverScreen = determineIfCoverScreen()
                         isMainScreen = !isCoverScreen
                     }
-                    FoldingFeature.State.SEAL -> {
-                        // Device is separating (in transition)
-                        isSeparating = true
+                    else -> {
+                        // Handle other states (in transition or unknown)
+                        Log.d(TAG, "Device is in state: ${feature.state}")
                     }
                 }
                 

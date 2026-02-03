@@ -127,6 +127,7 @@ class AdvancedFeatureService : Service() {
                 val themeData = themeCompiler.compileTheme(
                     "#${Integer.toHexString(primaryColor).substring(2).uppercase()}",
                     "wallpaper_theme_${System.currentTimeMillis()}",
+                    "Wallpaper Theme",
                     mapOf(
                         "status_bar" to true,
                         "navigation_bar" to true,

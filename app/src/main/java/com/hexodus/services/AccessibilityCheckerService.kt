@@ -111,10 +111,10 @@ class AccessibilityCheckerService : Service() {
             results["reduce_motion_enabled"] = false // Simplified check
             
             Log.d(TAG, "Accessibility checks completed")
-            
+
             // Broadcast results
             val intent = Intent("ACCESSIBILITY_CHECKS_COMPLETED")
-            intent.putExtra("results", results)
+            intent.putExtra("results", HashMap(results))
             sendBroadcast(intent)
             
         } catch (e: Exception) {
@@ -172,7 +172,7 @@ class AccessibilityCheckerService : Service() {
             // Broadcast results
             val intent = Intent("COMPONENT_VALIDATION_COMPLETED")
             intent.putExtra("component_type", componentType)
-            intent.putExtra("validation_results", validationResults)
+            intent.putExtra("validation_results", HashMap(validationResults))
             sendBroadcast(intent)
             
         } catch (e: Exception) {
@@ -208,7 +208,7 @@ class AccessibilityCheckerService : Service() {
             
             // Broadcast status
             val intent = Intent("ACCESSIBILITY_STATUS_RETRIEVED")
-            intent.putExtra("status", status)
+            intent.putExtra("status", HashMap(status))
             sendBroadcast(intent)
             
         } catch (e: Exception) {

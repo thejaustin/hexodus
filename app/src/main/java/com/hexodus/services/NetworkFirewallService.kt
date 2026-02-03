@@ -14,6 +14,8 @@ import android.app.NotificationChannel
 import android.app.PendingIntent
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import com.hexodus.MainActivity
+import com.hexodus.R
 
 /**
  * NetworkFirewallService - Service for network management and firewall features
@@ -215,7 +217,7 @@ class NetworkFirewallService : Service() {
             // Broadcast results
             val successIntent = Intent("APP_NETWORK_ACCESS_RETRIEVED")
             successIntent.putExtra("package_name", sanitizedPackageName)
-            successIntent.putExtra("network_access", networkAccess)
+            successIntent.putExtra("network_access", HashMap(networkAccess))
             sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting app network access: ${e.message}", e)
@@ -255,7 +257,7 @@ class NetworkFirewallService : Service() {
             
             // Broadcast results
             val successIntent = Intent("NETWORK_ACTIVITY_RETRIEVED")
-            successIntent.putExtra("network_activity", networkActivity)
+            successIntent.putExtra("network_activity", HashMap(networkActivity))
             sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting network activity: ${e.message}", e)
@@ -332,7 +334,7 @@ class NetworkFirewallService : Service() {
             
             // Broadcast results
             val successIntent = Intent("FIREWALL_STATUS_RETRIEVED")
-            successIntent.putExtra("firewall_status", firewallStatus)
+            successIntent.putExtra("firewall_status", HashMap(firewallStatus))
             sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting firewall status: ${e.message}", e)

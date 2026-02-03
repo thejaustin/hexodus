@@ -109,7 +109,7 @@ class PerformanceOptimizerService : Service() {
             
             // Broadcast results
             val successIntent = Intent("BATTERY_STATS_RETRIEVED")
-            successIntent.putExtra("battery_stats", batteryStats)
+            successIntent.putExtra("battery_stats", HashMap(batteryStats))
             sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting battery stats: ${e.message}", e)
@@ -220,7 +220,7 @@ class PerformanceOptimizerService : Service() {
             
             // Broadcast results
             val successIntent = Intent("STORAGE_STATS_RETRIEVED")
-            successIntent.putExtra("storage_stats", storageStats)
+            successIntent.putExtra("storage_stats", HashMap(storageStats))
             sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting storage stats: ${e.message}", e)
@@ -296,7 +296,7 @@ class PerformanceOptimizerService : Service() {
             
             // Broadcast results
             val successIntent = Intent("MEMORY_INFO_RETRIEVED")
-            successIntent.putExtra("memory_info", memoryInfo)
+            successIntent.putExtra("memory_info", HashMap(memoryInfo))
             sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting memory info: ${e.message}", e)

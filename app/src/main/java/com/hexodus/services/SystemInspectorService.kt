@@ -391,7 +391,7 @@ class SystemInspectorService : Service() {
             // Broadcast results
             val successIntent = Intent("APP_ABI_RETRIEVED")
             successIntent.putExtra("package_name", sanitizedPackageName)
-            successIntent.putExtra("abi_info", abiInfo)
+            successIntent.putExtra("abi_info", HashMap(abiInfo))
             sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting app ABI: ${e.message}", e)

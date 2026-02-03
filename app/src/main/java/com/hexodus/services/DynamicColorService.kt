@@ -81,8 +81,8 @@ class DynamicColorService : Service() {
             // Broadcast the generated colors
             val intent = Intent("DYNAMIC_COLORS_GENERATED")
             intent.putExtra("base_color", baseColor)
-            intent.putExtra("color_palette", palette)
-            intent.putExtra("tonal_palette", tonalPalette)
+            intent.putExtra("color_palette", HashMap(palette))
+            intent.putExtra("tonal_palette", HashMap(tonalPalette))
             intent.putExtra("source", source)
             intent.putStringArrayListExtra("components", components)
             sendBroadcast(intent)

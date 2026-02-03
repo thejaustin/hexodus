@@ -113,7 +113,7 @@ class DeviceSpecificService : Service() {
             
             // Broadcast results
             val successIntent = Intent("DEVICE_INFO_RETRIEVED")
-            successIntent.putExtra("device_info", deviceInfo)
+            successIntent.putExtra("device_info", HashMap(deviceInfo))
             sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting device info: ${e.message}", e)
@@ -167,7 +167,7 @@ class DeviceSpecificService : Service() {
             
             // Broadcast results
             val successIntent = Intent("DISPLAY_FEATURES_RETRIEVED")
-            successIntent.putExtra("display_features", displayFeatures)
+            successIntent.putExtra("display_features", HashMap(displayFeatures))
             sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting display features: ${e.message}", e)
@@ -256,7 +256,7 @@ class DeviceSpecificService : Service() {
             
             // Broadcast results
             val successIntent = Intent("BIXBY_CAPABILITIES_RETRIEVED")
-            successIntent.putExtra("bixby_capabilities", bixbyCapabilities)
+            successIntent.putExtra("bixby_capabilities", HashMap(bixbyCapabilities))
             sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting Bixby capabilities: ${e.message}", e)

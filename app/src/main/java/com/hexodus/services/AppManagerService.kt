@@ -368,7 +368,7 @@ class AppManagerService : Service() {
             successIntent.putExtra("operation_type", operationType)
             successIntent.putExtra("success_count", successCount)
             successIntent.putExtra("total_count", packageNames.size)
-            successIntent.putStringArrayListExtra("failed_packages", failedPackages)
+            successIntent.putStringArrayListExtra("failed_packages", ArrayList(failedPackages))
             sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error performing batch operation: ${e.message}", e)
@@ -408,7 +408,7 @@ class AppManagerService : Service() {
                 // Broadcast success
                 val successIntent = Intent("APP_INFO_RETRIEVED")
                 successIntent.putExtra("package_name", sanitizedPackageName)
-                successIntent.putExtra("app_info", appInfo)
+                successIntent.putExtra("app_info", HashMap(appInfo))
                 sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to get app info: $sanitizedPackageName")
