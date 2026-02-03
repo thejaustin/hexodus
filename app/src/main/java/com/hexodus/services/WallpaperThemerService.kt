@@ -413,17 +413,17 @@ class WallpaperThemerService : Service() {
             // Generate complementary colors
             val complementaryColors = generateComplementaryColors(dominantColor)
             
-            val themeConfig = mapOf(
+            val themeConfig = mapOf<String, String>(
                 "primary_color" to hexColor,
-                "secondary_color" to complementaryColors["secondary"] ?: "#FF03DAC6",
-                "background_color" to complementaryColors["background"] ?: "#FFFFFFFF",
-                "surface_color" to complementaryColors["surface"] ?: "#FFFFFFFF",
-                "error_color" to complementaryColors["error"] ?: "#FFB00020",
-                "on_primary_color" to if (isColorLight(dominantColor)) "#000000" else "#FFFFFF",
-                "on_secondary_color" to if (isColorLight(android.graphics.Color.parseColor(complementaryColors["secondary"] ?: "#FF03DAC6"))) "#000000" else "#FFFFFF",
-                "on_background_color" to if (isColorLight(android.graphics.Color.parseColor(complementaryColors["background"] ?: "#FFFFFFFF"))) "#000000" else "#FFFFFF",
-                "on_surface_color" to if (isColorLight(android.graphics.Color.parseColor(complementaryColors["surface"] ?: "#FFFFFFFF"))) "#000000" else "#FFFFFF",
-                "on_error_color" to if (isColorLight(android.graphics.Color.parseColor(complementaryColors["error"] ?: "#FFB00020"))) "#000000" else "#FFFFFF"
+                "secondary_color" to (complementaryColors["secondary"] ?: "#FF03DAC6"),
+                "background_color" to (complementaryColors["background"] ?: "#FFFFFFFF"),
+                "surface_color" to (complementaryColors["surface"] ?: "#FFFFFFFF"),
+                "error_color" to (complementaryColors["error"] ?: "#FFB00020"),
+                "on_primary_color" to (if (isColorLight(dominantColor)) "#000000" else "#FFFFFF"),
+                "on_secondary_color" to (if (isColorLight(android.graphics.Color.parseColor(complementaryColors["secondary"] ?: "#FF03DAC6"))) "#000000" else "#FFFFFF"),
+                "on_background_color" to (if (isColorLight(android.graphics.Color.parseColor(complementaryColors["background"] ?: "#FFFFFFFF"))) "#000000" else "#FFFFFF"),
+                "on_surface_color" to (if (isColorLight(android.graphics.Color.parseColor(complementaryColors["surface"] ?: "#FFFFFFFF"))) "#000000" else "#FFFFFF"),
+                "on_error_color" to (if (isColorLight(android.graphics.Color.parseColor(complementaryColors["error"] ?: "#FFB00020"))) "#000000" else "#FFFFFF")
             )
             
             // Clean up bitmap
