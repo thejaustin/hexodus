@@ -254,9 +254,13 @@ class AccessibilityCheckerService : Service() {
         }
     }
 
-    @Suppress("NewApi")
     private fun getHighTextContrastEnabledApi31(): Boolean {
-        return accessibilityManager.isHighTextContrastEnabled
+        return try {
+            val method = accessibilityManager.javaClass.getMethod("isHighTextContrastEnabled")
+            method.invoke(accessibilityManager) as Boolean
+        } catch (e: Exception) {
+            false
+        }
     }
 
     override fun onDestroy() {

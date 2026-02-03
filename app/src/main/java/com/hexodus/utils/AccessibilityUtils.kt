@@ -43,10 +43,14 @@ object AccessibilityUtils {
         }
     }
 
-    @Suppress("NewApi")
     private fun isHighContrastTextEnabledApi31(context: Context): Boolean {
-        val am = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-        return am.isHighTextContrastEnabled
+        return try {
+            val am = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+            val method = am.javaClass.getMethod("isHighTextContrastEnabled")
+            method.invoke(am) as Boolean
+        } catch (e: Exception) {
+            false
+        }
     }
     
     /**
