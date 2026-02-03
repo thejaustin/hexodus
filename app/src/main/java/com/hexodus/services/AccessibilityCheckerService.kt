@@ -2,6 +2,7 @@ package com.hexodus.services
 
 import android.app.Service
 import android.content.Intent
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import android.view.accessibility.AccessibilityManager
@@ -92,8 +93,12 @@ class AccessibilityCheckerService : Service() {
             // Check if accessibility services are enabled
             results["accessibility_enabled"] = accessibilityManager.isEnabled
             
-            // Check high contrast text setting
-            results["high_contrast_enabled"] = accessibilityManager.isHighTextContrastEnabled
+            // Check high contrast text setting (API 31+)
+            results["high_contrast_enabled"] = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                accessibilityManager.isHighTextContrastEnabled
+            } else {
+                false
+            }
             
             // Check touch exploration
             results["touch_exploration_enabled"] = accessibilityManager.isTouchExplorationEnabled
@@ -188,7 +193,11 @@ class AccessibilityCheckerService : Service() {
             val status = mutableMapOf<String, Any>()
             
             status["is_accessibility_enabled"] = accessibilityManager.isEnabled
-            status["is_high_contrast_enabled"] = accessibilityManager.isHighTextContrastEnabled
+            status["is_high_contrast_enabled"] = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                accessibilityManager.isHighTextContrastEnabled
+            } else {
+                false
+            }
             status["is_touch_exploration_enabled"] = accessibilityManager.isTouchExplorationEnabled
             status["font_scale"] = resources.configuration.fontScale
             status["should_reduce_animations"] = AccessibilityUtils.shouldReduceAnimations(this)
@@ -214,8 +223,13 @@ class AccessibilityCheckerService : Service() {
      * Checks if the app is currently in an accessibility-friendly state
      */
     fun isAccessibilityFriendly(): Boolean {
-        return accessibilityManager.isEnabled || 
-               accessibilityManager.isHighTextContrastEnabled ||
+        val isHighContrast = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            accessibilityManager.isHighTextContrastEnabled
+        } else {
+            false
+        }
+        return accessibilityManager.isEnabled ||
+               isHighContrast ||
                resources.configuration.fontScale > 1.0f
     }
     
@@ -229,7 +243,12 @@ class AccessibilityCheckerService : Service() {
             recommendations.add("Consider increasing text size for better readability")
         }
         
-        if (!accessibilityManager.isHighTextContrastEnabled) {
+        val isHighContrast = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            accessibilityManager.isHighTextContrastEnabled
+        } else {
+            false
+        }
+        if (!isHighContrast) {
             recommendations.add("Enable high contrast mode for better visibility")
         }
         

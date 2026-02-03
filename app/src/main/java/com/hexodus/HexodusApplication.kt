@@ -25,8 +25,7 @@ class HexodusApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // Initialize Shizuku with the application context
-        Shizuku.setApplicationContext(this)
+        // Initialize Shizuku listeners (context handled by ShizukuProvider)
         initShizuku()
     }
 

@@ -32,6 +32,7 @@ class AdvancedOverlayService : Service() {
         const val EXTRA_OVERLAY_OPERATION = "overlay_operation" // enable, disable, remove
         const val EXTRA_OVERLAY_BATCH = "overlay_batch"
         const val EXTRA_VALIDATE_SIGNATURE = "validate_signature"
+        const val EXTRA_OVERLAY_PATH = "overlay_path"
     }
     
     private lateinit var shizukuBridgeService: ShizukuBridgeService

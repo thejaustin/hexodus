@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
+import com.hexodus.core.ThemeCompiler
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -40,6 +41,10 @@ class AdvancedThemingService : Service() {
         const val EXTRA_THEME_TRANSITION_SPEED = "transition_speed"
         const val EXTRA_ANIMATION_DURATION = "animation_duration"
         const val EXTRA_THEME_PRESET_NAME = "preset_name"
+        const val EXTRA_COMPONENT_NAME = "component_name"
+        const val EXTRA_HEX_COLOR = "hex_color"
+        const val EXTRA_FROM_THEME = "from_theme"
+        const val EXTRA_TO_THEME = "to_theme"
     }
     
     private lateinit var shizukuBridgeService: ShizukuBridgeService

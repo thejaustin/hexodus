@@ -6,6 +6,7 @@ import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 import com.hexodus.utils.AccessibilityUtils
+import com.hexodus.core.ThemeCompiler
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory

@@ -190,6 +190,25 @@ class OverlayActivationService : Service() {
     fun uninstallOverlay(packageName: String): Boolean {
         return shizukuBridgeService.uninstallPackage(packageName)
     }
+
+    /**
+     * Applies a compiled theme
+     */
+    fun applyTheme(themeData: ByteArray, themeName: String) {
+        try {
+            Log.d(TAG, "Applying theme: $themeName")
+
+            // Write theme data to a temp file and install it
+            val tempFile = java.io.File(cacheDir, "$themeName.apk")
+            tempFile.writeBytes(themeData)
+
+            activateOverlay("com.hexodus.theme.$themeName", tempFile.absolutePath, false)
+
+            Log.d(TAG, "Theme applied successfully: $themeName")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error applying theme: ${e.message}", e)
+        }
+    }
     
     override fun onDestroy() {
         super.onDestroy()
