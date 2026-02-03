@@ -254,7 +254,7 @@ class AccessibilityCheckerService : Service() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
+    @Suppress("NewApi")
     private fun getHighTextContrastEnabledApi31(): Boolean {
         return accessibilityManager.isHighTextContrastEnabled
     }
