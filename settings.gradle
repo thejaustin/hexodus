@@ -11,7 +11,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
-        maven { url 'https://maven.rikka.dev' }
+        maven { url 'https://maven.dev.rikka.app' }
     }
 }
 rootProject.name = "Hexodus"
