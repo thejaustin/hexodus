@@ -430,7 +430,7 @@ class SystemInspectorService : Service() {
             
             // Broadcast results
             val successIntent = Intent("SYSTEM_HEALTH_RETRIEVED")
-            successIntent.putExtra("system_health", systemHealth)
+            successIntent.putExtra("system_health", HashMap(systemHealth))
             sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting system health: ${e.message}", e)
