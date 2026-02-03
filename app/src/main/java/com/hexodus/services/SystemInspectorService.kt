@@ -531,10 +531,10 @@ class SystemInspectorService : Service() {
             for (pkgInfo in packages) {
                 val appInfo = pkgInfo.applicationInfo
                 
-                val appData = mapOf(
+                val appData = mapOf<String, Any>(
                     "package_name" to pkgInfo.packageName,
                     "app_name" to appInfo.loadLabel(pm).toString(),
-                    "version_name" to pkgInfo.versionName ?: "Unknown",
+                    "version_name" to (pkgInfo.versionName ?: "Unknown"),
                     "version_code" to pkgInfo.versionCode.toLong(),
                     "is_system_app" to (appInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0),
                     "first_install_time" to pkgInfo.firstInstallTime,
