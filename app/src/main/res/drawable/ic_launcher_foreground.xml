@@ -4,7 +4,16 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-  <path
-      android:fillColor="#FF6200EE"
-      android:pathData="M0,0 L108,0 L108,108 L0,108 Z"/>
+    <!-- Hexagon shape centered in the safe zone (66x66 centered, so 21 to 87) -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M54,24 L76,35.5 L76,58.5 L54,70 L32,58.5 L32,35.5 Z"/>
+    <!-- Inner hexagon outline -->
+    <path
+        android:fillColor="#FF6200EE"
+        android:pathData="M54,30 L71,39.5 L71,54.5 L54,64 L37,54.5 L37,39.5 Z"/>
+    <!-- Letter H in center -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M45,42 L45,56 L48,56 L48,50.5 L60,50.5 L60,56 L63,56 L63,42 L60,42 L60,47.5 L48,47.5 L48,42 Z"/>
 </vector>
