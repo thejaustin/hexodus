@@ -34,13 +34,13 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Build Release APK
-      run: ./gradlew assembleRelease --no-daemon
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug --no-daemon
 
     - name: Rename APK
       run: |
         mkdir -p release
-        cp app/build/outputs/apk/release/*.apk release/hexodus-${{ github.ref_name }}.apk
+        cp app/build/outputs/apk/debug/*.apk release/hexodus-${{ github.ref_name }}.apk
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
