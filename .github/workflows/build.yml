@@ -33,12 +33,12 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Build Release APK
-      run: ./gradlew assembleRelease --no-daemon
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug --no-daemon
 
-    - name: Upload Release APK
+    - name: Upload Debug APK
       uses: actions/upload-artifact@v4
       with:
-        name: hexodus-release
-        path: app/build/outputs/apk/release/*.apk
+        name: hexodus-debug
+        path: app/build/outputs/apk/debug/*.apk
         if-no-files-found: error
