@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.AssetManager
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import java.io.File
@@ -60,6 +61,15 @@ class HighContrastInjectorService : Service() {
      */
     private fun injectHighContrastTheme(hexColor: String, themeName: String, components: List<String>) {
         try {
+            // Fake package technique is blocked on One UI 7 (API 35+)
+            if (Build.VERSION.SDK_INT >= 35) {
+                Log.w(TAG, "High contrast injection via fake packages is not supported on API 35+")
+                val unsupportedIntent = Intent("HIGH_CONTRAST_INJECTION_FAILURE")
+                unsupportedIntent.putExtra("error", "Not supported on Android 15+ (One UI 7)")
+                sendBroadcast(unsupportedIntent)
+                return
+            }
+
             // Generate a fake high contrast theme package
             val fakePackageName = generateFakeHighContrastPackage(hexColor, themeName, components)
             

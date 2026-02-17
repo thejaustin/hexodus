@@ -19,6 +19,9 @@ class ShizukuBridgeService : Service() {
     companion object {
         private const val TAG = "ShizukuBridgeService"
         private const val REQUEST_CODE_PERMISSION = 1001
+        @Volatile
+        var isRunning = false
+            private set
     }
     
     private val binder = ShizukuBinder()
@@ -29,8 +32,9 @@ class ShizukuBridgeService : Service() {
     
     override fun onCreate() {
         super.onCreate()
+        isRunning = true
         Log.d(TAG, "ShizukuBridgeService created")
-        
+
         // Initialize Shizuku
         initShizuku()
     }
@@ -373,6 +377,7 @@ class ShizukuBridgeService : Service() {
     }
     
     override fun onDestroy() {
+        isRunning = false
         super.onDestroy()
         Shizuku.removeRequestPermissionResultListener(permissionResultListener)
         Shizuku.removeBinderReceivedListener(binderReceivedListener)

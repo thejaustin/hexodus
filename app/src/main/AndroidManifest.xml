@@ -37,10 +37,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Hexodus"
-        android:requestLegacyExternalStorage="true"
         android:resizeableActivity="true"
         android:enableOnBackInvokedCallback="true"
-        tools:targetApi="34">
+        tools:targetApi="35">
         
         <activity
             android:name=".MainActivity"

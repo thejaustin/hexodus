@@ -1,14 +1,16 @@
 package com.hexodus
 
 import android.Manifest
-import android.app.ActivityManager
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,24 +24,20 @@ class MainActivity : ComponentActivity() {
 
     companion object {
         private const val TAG = "MainActivity"
-        private val REQUIRED_PERMISSIONS = mutableListOf(
-            Manifest.permission.QUERY_ALL_PACKAGES,
-            Manifest.permission.DUMP,
-            Manifest.permission.INSTALL_PACKAGES,
-            Manifest.permission.WRITE_SECURE_SETTINGS,
-            Manifest.permission.SET_WALLPAPER,
-            Manifest.permission.SYSTEM_ALERT_WINDOW
-        ).apply {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                add(Manifest.permission.MANAGE_EXTERNAL_STORAGE)
-            }
-        }.toTypedArray()
+    }
+
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { results ->
+        results.forEach { (permission, granted) ->
+            Log.d(TAG, "Permission $permission granted: $granted")
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Request necessary permissions
+        // Request necessary runtime permissions
         requestPermissions()
 
         // Start core services
@@ -47,7 +45,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             HexodusTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -59,37 +56,47 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun requestPermissions() {
-        // Note: In a real implementation, you would use Accompanist Permissions
-        // or another library to handle runtime permissions properly
+        // SYSTEM_ALERT_WINDOW requires Settings intent, not requestPermissions
+        if (!Settings.canDrawOverlays(this)) {
+            val intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:$packageName")
+            )
+            startActivity(intent)
+        }
+
+        // Collect runtime permissions that haven't been granted yet
+        val needed = mutableListOf<String>()
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SET_WALLPAPER)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            needed.add(Manifest.permission.SET_WALLPAPER)
+        }
+
+        // Storage permissions for older APIs
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                needed.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+        }
+
+        if (needed.isNotEmpty()) {
+            permissionLauncher.launch(needed.toTypedArray())
+        }
     }
 
     private fun startCoreServices() {
-        // Start core services that are essential for app functionality
-        // Only start services when actually needed, not all at once in onCreate
-        startServiceIfNeeded(ShizukuBridgeService::class.java)
-    }
-
-    private fun startServiceIfNeeded(serviceClass: Class<*>) {
-        // Check if service is already running before starting
-        if (!isServiceRunning(serviceClass)) {
-            startService(Intent(this, serviceClass))
+        if (!ShizukuBridgeService.isRunning) {
+            startService(Intent(this, ShizukuBridgeService::class.java))
         }
-    }
-
-    private fun isServiceRunning(serviceClass: Class<*>): Boolean {
-        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        for (service in manager.getRunningServices(Int.MAX_VALUE)) {
-            if (serviceClass.name == service.service.className) {
-                return true
-            }
-        }
-        return false
     }
 
     override fun onDestroy() {
         super.onDestroy()
         // Don't stop services when activity is destroyed
         // Services should manage their own lifecycle independently
-        // Only stop services when the app is explicitly closed or when needed
     }
 }

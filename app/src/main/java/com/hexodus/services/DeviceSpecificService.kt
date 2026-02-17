@@ -1,22 +1,21 @@
 package com.hexodus.services
 
 import android.app.Service
-import android.content.Intent
-import android.os.IBinder
-import android.util.Log
-import com.hexodus.utils.SecurityUtils
 import android.content.Context
+import android.content.Intent
 import android.hardware.display.DisplayManager
-import android.view.Display
 import android.os.Build
+import android.os.IBinder
 import android.provider.Settings
+import android.util.Log
+import android.view.Display
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
 import androidx.window.layout.WindowLayoutInfo
+import com.hexodus.utils.SecurityUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.collect
 
 /**
  * DeviceSpecificService - Service for device-specific features and optimizations
@@ -370,12 +369,24 @@ class DeviceSpecificService : Service() {
     private fun getDisplaySize(display: Display?): Float {
         if (display == null) return 0f
 
-        val metrics = android.util.DisplayMetrics()
-        @Suppress("DEPRECATION")
-        display.getRealMetrics(metrics)
-        val widthInches = metrics.widthPixels / metrics.xdpi
-        val heightInches = metrics.heightPixels / metrics.ydpi
-        return kotlin.math.sqrt((widthInches * widthInches + heightInches * heightInches).toDouble()).toFloat()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val windowManager = getSystemService(Context.WINDOW_SERVICE) as android.view.WindowManager
+            val windowMetrics = windowManager.currentWindowMetrics
+            val bounds = windowMetrics.bounds
+            val xdpi = resources.displayMetrics.xdpi
+            val ydpi = resources.displayMetrics.ydpi
+            if (xdpi <= 0f || ydpi <= 0f) return 0f
+            val widthInches = bounds.width() / xdpi
+            val heightInches = bounds.height() / ydpi
+            return kotlin.math.sqrt((widthInches * widthInches + heightInches * heightInches).toDouble()).toFloat()
+        } else {
+            val metrics = android.util.DisplayMetrics()
+            @Suppress("DEPRECATION")
+            display.getRealMetrics(metrics)
+            val widthInches = metrics.widthPixels / metrics.xdpi
+            val heightInches = metrics.heightPixels / metrics.ydpi
+            return kotlin.math.sqrt((widthInches * widthInches + heightInches * heightInches).toDouble()).toFloat()
+        }
     }
     
     /**
