@@ -86,12 +86,12 @@ dependencies {
     implementation 'com.google.android.material:material:1.12.0'
 
     // Shizuku integration (from Maven Central)
-    implementation 'dev.rikka.shizuku:api:14.0.0'
-    implementation 'dev.rikka.shizuku:provider:14.0.0'
+    implementation 'dev.rikka.shizuku:api:13.1.5'
+    implementation 'dev.rikka.shizuku:provider:13.1.5'
 
     // Window management (for foldables)
-    implementation 'androidx.window:window:1.6.0'
-    implementation 'androidx.window:window-java:1.6.0'
+    implementation 'androidx.window:window:1.5.1'
+    implementation 'androidx.window:window-java:1.5.1'
 
     // Security
     implementation 'androidx.security:security-crypto:1.1.0-alpha06'
