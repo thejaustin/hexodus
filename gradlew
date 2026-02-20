@@ -205,16 +205,4 @@ set -- \
         org.gradle.wrapper.GradleWrapperMain \
         "$@"
 
-# Stop when "xargs" is not available.
-if ! command -v xargs >/dev/null 2>&1
-then
-    die "xargs is not available"
-fi
-
-# Use "xargs" to parse quoted args.
-#
-# This is a brilliant usage of xargs to parse arguments the same way the shell does.
-# See https://lists.gnu.org/archive/html/bug-gnu-utils/2002-04/msg00001.html
-# The xargs option -t would be helpful for debugging, but unfortunately it's not portable.
-# shellcheck disable=SC2086
-"$JAVACMD" $GRADLE_OPTS "$@" 2>&1 | xargs -I {} echo {}
+exec "$JAVACMD" "$@"

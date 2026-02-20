@@ -14,6 +14,11 @@ import android.renderscript.Element
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
 import androidx.palette.graphics.Palette
+import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.util.zip.ZipEntry
@@ -23,7 +28,7 @@ import java.util.zip.ZipOutputStream
  * AdvancedThemingService - Service for advanced theming features
  * Inspired by various theming projects from awesome-shizuku
  */
-class AdvancedThemingService : Service() {
+class AdvancedThemingService : LifecycleService() {
     
     companion object {
         private const val TAG = "AdvancedThemingService"
@@ -108,102 +113,104 @@ class AdvancedThemingService : Service() {
      * Creates a gradient theme using multiple colors
      */
     private fun createGradientTheme(colors: List<String>, componentName: String) {
-        try {
-            if (!shizukuBridgeService.isReady()) {
-                Log.e(TAG, "Shizuku is not ready")
-                return
-            }
-            
-            // Validate inputs
-            for (color in colors) {
-                if (!SecurityUtils.validateHexColor(color)) {
-                    Log.e(TAG, "Invalid hex color: $color")
-                    return
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                if (!shizukuBridgeService.isReady()) {
+                    Log.e(TAG, "Shizuku is not ready")
+                    return@launch
                 }
-            }
-            
-            if (SecurityUtils.containsDangerousChars(componentName)) {
-                Log.e(TAG, "Dangerous characters detected in component name")
-                return
-            }
-            
-            // Validate component name
-            val validComponents = listOf(
-                "status_bar", "navigation_bar", "system_ui", 
-                "settings", "launcher", "quick_settings"
-            )
-            
-            if (componentName !in validComponents) {
-                Log.e(TAG, "Invalid component name: $componentName")
-                return
-            }
-            
-            // In a real implementation, this would create a gradient overlay
-            // For this example, we'll simulate the process
-            Log.d(TAG, "Created gradient theme with colors: ${colors.joinToString(", ")} for component: $componentName")
-            
-            // Generate a unique package name for the gradient theme
-            val packageName = "com.hexodus.gradient.${componentName.replace("_", "")}.${System.currentTimeMillis()}"
-            
-            // Compile the theme using the theme compiler
-            val themeData = themeCompiler.compileTheme(
-                colors.first(), // Use first color as base
-                packageName,
-                "Gradient Theme for $componentName",
-                mapOf(componentName to true) // Apply to specified component
-            )
-            
-            // Save the theme to internal storage temporarily
-            val tempFile = File(cacheDir, "${packageName}.apk")
-            FileOutputStream(tempFile).use { it.write(themeData) }
-            
-            // Install the overlay using Shizuku
-            val installSuccess = shizukuBridgeService.installApk(tempFile.absolutePath)
-            
-            if (installSuccess) {
-                // Enable the overlay
-                val enableSuccess = shizukuBridgeService.executeOverlayCommand(packageName, "enable")
                 
-                if (enableSuccess) {
-                    Log.d(TAG, "Successfully created and enabled gradient theme: $packageName")
+                // Validate inputs
+                for (color in colors) {
+                    if (!SecurityUtils.validateHexColor(color)) {
+                        Log.e(TAG, "Invalid hex color: $color")
+                        return@launch
+                    }
+                }
+                
+                if (SecurityUtils.containsDangerousChars(componentName)) {
+                    Log.e(TAG, "Dangerous characters detected in component name")
+                    return@launch
+                }
+                
+                // Validate component name
+                val validComponents = listOf(
+                    "status_bar", "navigation_bar", "system_ui", 
+                    "settings", "launcher", "quick_settings"
+                )
+                
+                if (componentName !in validComponents) {
+                    Log.e(TAG, "Invalid component name: $componentName")
+                    return@launch
+                }
+                
+                // In a real implementation, this would create a gradient overlay
+                // For this example, we'll simulate the process
+                Log.d(TAG, "Created gradient theme with colors: ${colors.joinToString(", ")} for component: $componentName")
+                
+                // Generate a unique package name for the gradient theme
+                val packageName = "com.hexodus.gradient.${componentName.replace("_", "")}.${System.currentTimeMillis()}"
+                
+                // Compile the theme using the theme compiler
+                val themeData = themeCompiler.compileTheme(
+                    colors.first(), // Use first color as base
+                    packageName,
+                    "Gradient Theme for $componentName",
+                    mapOf(componentName to true) // Apply to specified component
+                )
+                
+                // Save the theme to internal storage temporarily
+                val tempFile = File(cacheDir, "${packageName}.apk")
+                FileOutputStream(tempFile).use { it.write(themeData) }
+                
+                // Install the overlay using Shizuku
+                val installSuccess = shizukuBridgeService.installApk(tempFile.absolutePath)
+                
+                if (installSuccess) {
+                    // Enable the overlay
+                    val enableSuccess = shizukuBridgeService.executeOverlayCommand(packageName, "enable")
                     
-                    // Broadcast success
-                    val successIntent = Intent("GRADIENT_THEME_CREATED")
-                    successIntent.putExtra("package_name", packageName)
-                    successIntent.putStringArrayListExtra("colors", ArrayList(colors))
-                    successIntent.putExtra("component", componentName)
-                    sendBroadcast(successIntent)
-                    
-                    // Clean up temp file
-                    tempFile.delete()
+                    if (enableSuccess) {
+                        Log.d(TAG, "Successfully created and enabled gradient theme: $packageName")
+                        
+                        // Broadcast success
+                        val successIntent = Intent("GRADIENT_THEME_CREATED")
+                        successIntent.putExtra("package_name", packageName)
+                        successIntent.putStringArrayListExtra("colors", ArrayList(colors))
+                        successIntent.putExtra("component", componentName)
+                        sendBroadcast(successIntent)
+                        
+                        // Clean up temp file
+                        tempFile.delete()
+                    } else {
+                        Log.e(TAG, "Failed to enable gradient theme overlay: $packageName")
+                        
+                        // Broadcast failure
+                        val failureIntent = Intent("GRADIENT_THEME_CREATION_FAILED")
+                        failureIntent.putExtra("package_name", packageName)
+                        failureIntent.putExtra("error", "Failed to enable overlay")
+                        sendBroadcast(failureIntent)
+                        
+                        // Clean up temp file
+                        tempFile.delete()
+                    }
                 } else {
-                    Log.e(TAG, "Failed to enable gradient theme overlay: $packageName")
+                    Log.e(TAG, "Failed to install gradient theme APK: $packageName")
                     
                     // Broadcast failure
-                    val failureIntent = Intent("GRADIENT_THEME_CREATION_FAILED")
+                    val failureIntent = Intent("GRADIENT_THEME_INSTALL_FAILED")
                     failureIntent.putExtra("package_name", packageName)
-                    failureIntent.putExtra("error", "Failed to enable overlay")
+                    failureIntent.putExtra("error", "Failed to install APK")
                     sendBroadcast(failureIntent)
-                    
-                    // Clean up temp file
-                    tempFile.delete()
                 }
-            } else {
-                Log.e(TAG, "Failed to install gradient theme APK: $packageName")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error creating gradient theme: ${e.message}", e)
                 
-                // Broadcast failure
-                val failureIntent = Intent("GRADIENT_THEME_INSTALL_FAILED")
-                failureIntent.putExtra("package_name", packageName)
-                failureIntent.putExtra("error", "Failed to install APK")
-                sendBroadcast(failureIntent)
+                // Broadcast error
+                val errorIntent = Intent("GRADIENT_THEME_ERROR")
+                errorIntent.putExtra("error_message", e.message)
+                sendBroadcast(errorIntent)
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error creating gradient theme: ${e.message}", e)
-            
-            // Broadcast error
-            val errorIntent = Intent("GRADIENT_THEME_ERROR")
-            errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
         }
     }
     
@@ -602,8 +609,29 @@ class AdvancedThemingService : Service() {
                 Log.e(TAG, "Image file does not exist: $imagePath")
                 return null
             }
+
+            // Safe decoding with scaling to prevent OOM
+            val options = BitmapFactory.Options().apply {
+                inJustDecodeBounds = true
+            }
+            BitmapFactory.decodeFile(imagePath, options)
+
+            // Scale down if image is larger than 1024px
+            val reqWidth = 1024
+            val reqHeight = 1024
+            var inSampleSize = 1
+            if (options.outHeight > reqHeight || options.outWidth > reqWidth) {
+                val halfHeight = options.outHeight / 2
+                val halfWidth = options.outWidth / 2
+                while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+                    inSampleSize *= 2
+                }
+            }
+
+            options.inJustDecodeBounds = false
+            options.inSampleSize = inSampleSize
             
-            val bitmap = BitmapFactory.decodeFile(imagePath)
+            val bitmap = BitmapFactory.decodeFile(imagePath, options)
             if (bitmap == null) {
                 Log.e(TAG, "Failed to decode image: $imagePath")
                 return null

@@ -78,9 +78,14 @@ class ShizukuBridgeService : Service() {
      * Checks if Shizuku is ready for use
      */
     fun isReady(): Boolean {
-        return !Shizuku.isPreV11() && 
-               Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED &&
-               Shizuku.pingBinder()
+        return try {
+            !Shizuku.isPreV11() && 
+            Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED &&
+            Shizuku.pingBinder()
+        } catch (e: Exception) {
+            Log.w(TAG, "Shizuku not ready: ${e.message}")
+            false
+        }
     }
     
     /**
@@ -99,13 +104,13 @@ class ShizukuBridgeService : Service() {
         }
 
         return try {
-            // Execute the command using Shizuku's shell access
-            val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
+            // Execute the command using Shizuku's privileged shell access
+            val process = Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
             val output = process.inputStream.bufferedReader().readText()
             val errorOutput = process.errorStream.bufferedReader().readText()
             val exitCode = process.waitFor()
 
-            Log.d(TAG, "Command executed: $command, Exit code: $exitCode")
+            Log.d(TAG, "Privileged command executed: $command, Exit code: $exitCode")
             Log.d(TAG, "Command output: $output")
             if (errorOutput.isNotEmpty()) {
                 Log.w(TAG, "Command error output: $errorOutput")
@@ -188,11 +193,14 @@ class ShizukuBridgeService : Service() {
             return false
         }
 
+        // Escape for shell
+        val escapedPackage = packageName.replace("'", "'\\''")
+
         return try {
             val command = when (action) {
-                "enable" -> "cmd overlay enable $packageName"
-                "disable" -> "cmd overlay disable $packageName"
-                "set-priority" -> "cmd overlay set-priority $packageName 100"
+                "enable" -> "cmd overlay enable $escapedPackage"
+                "disable" -> "cmd overlay disable $escapedPackage"
+                "set-priority" -> "cmd overlay set-priority $escapedPackage 100"
                 else -> return false
             }
 
@@ -202,7 +210,7 @@ class ShizukuBridgeService : Service() {
                 return false
             }
 
-            val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
+            val process = Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
             val exitCode = process.waitFor()
 
             Log.d(TAG, "Overlay command executed: $command, Exit code: $exitCode")
@@ -229,9 +237,12 @@ class ShizukuBridgeService : Service() {
             return false
         }
 
+        // Escape path for shell to prevent command injection via file names
+        val escapedPath = apkPath.replace("'", "'\\''")
+
         return try {
-            val command = "pm install -r -d -t '$apkPath'"
-            val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
+            val command = "pm install -r -d -t '$escapedPath'"
+            val process = Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
             val exitCode = process.waitFor()
 
             Log.d(TAG, "APK installation attempted: $apkPath, Exit code: $exitCode")
@@ -258,9 +269,12 @@ class ShizukuBridgeService : Service() {
             return false
         }
 
+        // Escape package name for shell
+        val escapedPackage = packageName.replace("'", "'\\''")
+
         return try {
-            val command = "pm uninstall '$packageName'"
-            val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
+            val command = "pm uninstall '$escapedPackage'"
+            val process = Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
             val exitCode = process.waitFor()
 
             Log.d(TAG, "Package uninstall attempted: $packageName, Exit code: $exitCode")
@@ -283,7 +297,7 @@ class ShizukuBridgeService : Service() {
 
         return try {
             val command = "cmd overlay list | grep ENABLED"
-            val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
+            val process = Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
             val output = process.inputStream.bufferedReader().readText()
             val exitCode = process.waitFor()
 

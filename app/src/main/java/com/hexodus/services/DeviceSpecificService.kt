@@ -513,9 +513,13 @@ class DeviceSpecificService : Service() {
      * Gets the One UI version
      */
     private fun getOneUIVersion(): String {
-        // In a real implementation, this would check the actual One UI version
-        // For this example, we'll return a mock version
-        return "8.0" // Assuming One UI 8
+        return when (Build.VERSION.SDK_INT) {
+            36 -> "8.0"
+            35 -> "7.0"
+            34 -> "6.1"
+            33 -> "5.1"
+            else -> "8.0" // Default for future/mock
+        }
     }
     
     override fun onDestroy() {

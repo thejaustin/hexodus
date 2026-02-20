@@ -58,11 +58,15 @@ class MainActivity : ComponentActivity() {
     private fun requestPermissions() {
         // SYSTEM_ALERT_WINDOW requires Settings intent, not requestPermissions
         if (!Settings.canDrawOverlays(this)) {
-            val intent = Intent(
-                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:$packageName")
-            )
-            startActivity(intent)
+            try {
+                val intent = Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:$packageName")
+                ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to start overlay permission activity", e)
+            }
         }
 
         // Collect runtime permissions that haven't been granted yet
@@ -84,13 +88,21 @@ class MainActivity : ComponentActivity() {
         }
 
         if (needed.isNotEmpty()) {
-            permissionLauncher.launch(needed.toTypedArray())
+            try {
+                permissionLauncher.launch(needed.toTypedArray())
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to launch permission request", e)
+            }
         }
     }
 
     private fun startCoreServices() {
-        if (!ShizukuBridgeService.isRunning) {
-            startService(Intent(this, ShizukuBridgeService::class.java))
+        try {
+            if (!ShizukuBridgeService.isRunning) {
+                startService(Intent(this, ShizukuBridgeService::class.java))
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to start ShizukuBridgeService", e)
         }
     }
 

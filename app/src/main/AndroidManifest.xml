@@ -39,12 +39,13 @@
         android:theme="@style/Theme.Hexodus"
         android:resizeableActivity="true"
         android:enableOnBackInvokedCallback="true"
-        tools:targetApi="35">
+        tools:targetApi="36">
         
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Hexodus"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboardHidden"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -57,13 +58,15 @@
             android:name=".services.ShizukuBridgeService"
             android:enabled="true"
             android:exported="false"
+            android:foregroundServiceType="specialUse"
             android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
             
         <!-- Overlay Activation Service -->
         <service
             android:name=".services.OverlayActivationService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
             
         <!-- Material You Override Service -->
         <service
