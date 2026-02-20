@@ -472,10 +472,10 @@ class SystemInspectorService : Service() {
                 put("target_sdk_version", packageInfo.applicationInfo.targetSdkVersion)
                 put("min_sdk_version", packageInfo.applicationInfo.minSdkVersion)
                 put("permissions", packageInfo.requestedPermissions?.toList() ?: emptyList<String>())
-                put("is_system_app", appInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0)
-                put("is_user_app", appInfo.flags and ApplicationInfo.FLAG_SYSTEM == 0)
-                put("data_dir", appInfo.dataDir)
-                put("source_dir", appInfo.sourceDir)
+                put("is_system_app", appInfo?.let { it.flags and ApplicationInfo.FLAG_SYSTEM != 0 } ?: false)
+                put("is_user_app", appInfo?.let { it.flags and ApplicationInfo.FLAG_SYSTEM == 0 } ?: false)
+                put("data_dir", appInfo?.dataDir ?: "")
+                put("source_dir", appInfo?.sourceDir ?: "")
             }
             
             // Get additional info using Shizuku
@@ -533,13 +533,13 @@ class SystemInspectorService : Service() {
                 
                 val appData = mapOf<String, Any>(
                     "package_name" to pkgInfo.packageName,
-                    "app_name" to appInfo.loadLabel(pm).toString(),
+                    "app_name" to (appInfo?.loadLabel(pm)?.toString() ?: pkgInfo.packageName),
                     "version_name" to (pkgInfo.versionName ?: "Unknown"),
                     "version_code" to pkgInfo.versionCode.toLong(),
-                    "is_system_app" to (appInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0),
+                    "is_system_app" to (appInfo?.let { it.flags and ApplicationInfo.FLAG_SYSTEM != 0 } ?: false),
                     "first_install_time" to pkgInfo.firstInstallTime,
                     "last_update_time" to pkgInfo.lastUpdateTime,
-                    "target_sdk" to appInfo.targetSdkVersion,
+                    "target_sdk" to (appInfo?.targetSdkVersion ?: 0),
                     "permissions_count" to (pkgInfo.requestedPermissions?.size ?: 0)
                 )
                 

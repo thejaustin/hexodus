@@ -105,7 +105,7 @@ class ShizukuBridgeService : Service() {
 
         return try {
             // Execute the command using Shizuku's privileged shell access
-            val process = Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
+            val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
             val output = process.inputStream.bufferedReader().readText()
             val errorOutput = process.errorStream.bufferedReader().readText()
             val exitCode = process.waitFor()
@@ -210,7 +210,7 @@ class ShizukuBridgeService : Service() {
                 return false
             }
 
-            val process = Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
+            val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
             val exitCode = process.waitFor()
 
             Log.d(TAG, "Overlay command executed: $command, Exit code: $exitCode")
@@ -242,7 +242,7 @@ class ShizukuBridgeService : Service() {
 
         return try {
             val command = "pm install -r -d -t '$escapedPath'"
-            val process = Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
+            val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
             val exitCode = process.waitFor()
 
             Log.d(TAG, "APK installation attempted: $apkPath, Exit code: $exitCode")
@@ -274,7 +274,7 @@ class ShizukuBridgeService : Service() {
 
         return try {
             val command = "pm uninstall '$escapedPackage'"
-            val process = Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
+            val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
             val exitCode = process.waitFor()
 
             Log.d(TAG, "Package uninstall attempted: $packageName, Exit code: $exitCode")
@@ -297,7 +297,7 @@ class ShizukuBridgeService : Service() {
 
         return try {
             val command = "cmd overlay list | grep ENABLED"
-            val process = Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
+            val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
             val output = process.inputStream.bufferedReader().readText()
             val exitCode = process.waitFor()
 

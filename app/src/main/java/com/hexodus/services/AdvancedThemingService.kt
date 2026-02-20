@@ -62,7 +62,10 @@ class AdvancedThemingService : LifecycleService() {
         Log.d(TAG, "AdvancedThemingService created")
     }
     
-    override fun onBind(intent: Intent?): IBinder? = null
+    override fun onBind(intent: Intent): IBinder? {
+        super.onBind(intent)
+        return null
+    }
     
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
