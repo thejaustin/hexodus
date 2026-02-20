@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace 'com.hexodus'
-    compileSdk 35
+    compileSdk 36
 
     def versionPropsFile = rootProject.file('version.properties')
     def versionProps = new Properties()
