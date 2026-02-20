@@ -130,7 +130,7 @@ echo "Project Name: Hexodus"
 echo "Package: com.hexodus"
 echo "Min SDK: 26"
 echo "Target SDK: 36"
-echo "Compile SDK: 36"
+echo "Compile SDK: 35"
 echo ""
 
 # Show build commands that will be used in GitHub Actions
