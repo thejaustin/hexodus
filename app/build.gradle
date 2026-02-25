@@ -62,7 +62,9 @@ android {
 }
 
 dependencies {
-    implementation 'com.github.thejaustin:ShizukuPlus-API:13.2.0-plus'
+    // Shizuku API (real artifact from maven.dev.rikka.app)
+    implementation 'dev.rikka.shizuku:api:13.1.5'
+    implementation 'dev.rikka.shizuku:provider:13.1.5'
     // Core Android libraries
     implementation 'androidx.core:core-ktx:1.17.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.9.0'
@@ -82,10 +84,6 @@ dependencies {
 
     // Material Design components
     implementation 'com.google.android.material:material:1.12.0'
-
-    // Shizuku integration (from Maven Central)
-    
-    
 
     // Window management (for foldables)
     implementation 'androidx.window:window:1.5.1'

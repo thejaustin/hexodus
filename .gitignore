@@ -48,3 +48,4 @@ Thumbs.db
 # Shizuku related
 **/shizuku/**
 !**/shizuku-api/**
+!app/src/main/java/moe/shizuku/plus/**

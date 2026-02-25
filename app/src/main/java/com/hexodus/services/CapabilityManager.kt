@@ -157,4 +157,3 @@ class CapabilityManager(private val context: Context) {
         return hasBaseRequirement
     }
 }
-}
