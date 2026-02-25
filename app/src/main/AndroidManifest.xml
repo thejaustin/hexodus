@@ -160,6 +160,78 @@
             android:enabled="true"
             android:exported="false" />
 
+        <!-- Device Specific Service -->
+        <service
+            android:name=".services.DeviceSpecificService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Advanced Feature Service -->
+        <service
+            android:name=".services.AdvancedFeatureService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Advanced Overlay Service -->
+        <service
+            android:name=".services.AdvancedOverlayService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Advanced Theming Service -->
+        <service
+            android:name=".services.AdvancedThemingService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Automation Service -->
+        <service
+            android:name=".services.AutomationService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Backup Restore Service -->
+        <service
+            android:name=".services.BackupRestoreService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Font Icon Manager Service -->
+        <service
+            android:name=".services.FontIconManagerService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Performance Optimizer Service -->
+        <service
+            android:name=".services.PerformanceOptimizerService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Privacy Manager Service -->
+        <service
+            android:name=".services.PrivacyManagerService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Resource Manager Service -->
+        <service
+            android:name=".services.ResourceManagerService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- System Inspector Service -->
+        <service
+            android:name=".services.SystemInspectorService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Wallpaper Themer Service -->
+        <service
+            android:name=".services.WallpaperThemerService"
+            android:enabled="true"
+            android:exported="false" />
+
         <!-- Dynamic Color Service -->
         <service
             android:name=".services.DynamicColorService"
@@ -177,6 +249,29 @@
             android:name=".services.SecurityValidationService"
             android:enabled="true"
             android:exported="false" />
+        <!-- Feature Flags Service -->
+        <service
+            android:name=".services.FeatureFlagsService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Shizuku Installer Service -->
+        <service
+            android:name=".services.ShizukuInstallerService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- File Provider for APK Installation -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
     </application>
 
 </manifest>

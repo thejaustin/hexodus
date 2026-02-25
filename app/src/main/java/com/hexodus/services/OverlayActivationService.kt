@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
+import com.hexodus.utils.PrefsManager
+import moe.shizuku.plus.ShizukuPlusAPI
 
 /**
  * OverlayActivationService - Enhanced service for overlay management
@@ -25,6 +27,7 @@ class OverlayActivationService : Service() {
     }
     
     private lateinit var shizukuBridgeService: ShizukuBridgeService
+    private lateinit var prefsManager: PrefsManager
     
     override fun onCreate() {
         super.onCreate()
@@ -32,9 +35,14 @@ class OverlayActivationService : Service() {
         
         // Initialize dependencies
         shizukuBridgeService = ShizukuBridgeService()
+        prefsManager = PrefsManager.getInstance(this)
     }
     
     override fun onBind(intent: Intent?): IBinder? = null
+
+    private fun useEnhancedApi(): Boolean {
+        return prefsManager.preferShizukuPlus && ShizukuPlusAPI.isEnhancedApiSupported()
+    }
     
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
@@ -78,7 +86,11 @@ class OverlayActivationService : Service() {
             }
             
             // First install the APK if needed
-            val installSuccess = shizukuBridgeService.installApk(apkPath)
+            val installSuccess = if (useEnhancedApi()) {
+                try { ShizukuPlusAPI.PackageManager.installPackage(apkPath); true } catch (e: Exception) { false }
+            } else {
+                shizukuBridgeService.installApk(apkPath)
+            }
             
             if (!installSuccess) {
                 Log.e(TAG, "Failed to install overlay APK: $apkPath")
@@ -86,13 +98,21 @@ class OverlayActivationService : Service() {
             }
             
             // Then enable the overlay
-            val enableSuccess = shizukuBridgeService.executeOverlayCommand(packageName, "enable")
+            val enableSuccess = if (useEnhancedApi()) {
+                try { ShizukuPlusAPI.OverlayManager.enableOverlay(packageName); true } catch (e: Exception) { false }
+            } else {
+                shizukuBridgeService.executeOverlayCommand(packageName, "enable")
+            }
             
             if (enableSuccess) {
                 Log.d(TAG, "Successfully activated overlay: $packageName")
                 
                 // Set priority for the overlay
-                shizukuBridgeService.executeOverlayCommand(packageName, "set-priority")
+                if (useEnhancedApi()) {
+                    ShizukuPlusAPI.Shell.executeCommand("cmd overlay set-priority $packageName 100")
+                } else {
+                    shizukuBridgeService.executeOverlayCommand(packageName, "set-priority")
+                }
                 
                 // Refresh system UI to apply changes
                 refreshSystemUI()
@@ -126,7 +146,11 @@ class OverlayActivationService : Service() {
      */
     private fun deactivateOverlay(packageName: String) {
         try {
-            val success = shizukuBridgeService.executeOverlayCommand(packageName, "disable")
+            val success = if (useEnhancedApi()) {
+                try { ShizukuPlusAPI.OverlayManager.disableOverlay(packageName); true } catch (e: Exception) { false }
+            } else {
+                shizukuBridgeService.executeOverlayCommand(packageName, "disable")
+            }
             
             if (success) {
                 Log.d(TAG, "Successfully deactivated overlay: $packageName")
@@ -163,9 +187,14 @@ class OverlayActivationService : Service() {
      */
     fun refreshSystemUI() {
         try {
-            // Use Shizuku to execute system commands
-            shizukuBridgeService.executeShellCommand("am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS")
-            shizukuBridgeService.executeShellCommand("killall com.android.systemui")
+            if (useEnhancedApi()) {
+                ShizukuPlusAPI.Shell.executeCommand("am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS")
+                ShizukuPlusAPI.Shell.executeCommand("killall com.android.systemui")
+            } else {
+                // Use Shizuku to execute system commands
+                shizukuBridgeService.executeShellCommand("am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS")
+                shizukuBridgeService.executeShellCommand("killall com.android.systemui")
+            }
             
             Log.d(TAG, "System UI refreshed")
             
@@ -181,14 +210,26 @@ class OverlayActivationService : Service() {
      * Gets list of currently active overlays
      */
     fun getActiveOverlays(): List<String> {
-        return shizukuBridgeService.getOverlayPackages()
+        return if (useEnhancedApi()) {
+            val result = ShizukuPlusAPI.Shell.executeCommand("cmd overlay list | grep ENABLED")
+            result.output.lines()
+                .filter { it.contains(":") }
+                .map { it.substringAfterLast(":").trim() }
+                .filter { it.isNotEmpty() }
+        } else {
+            shizukuBridgeService.getOverlayPackages()
+        }
     }
     
     /**
      * Uninstalls an overlay package
      */
     fun uninstallOverlay(packageName: String): Boolean {
-        return shizukuBridgeService.uninstallPackage(packageName)
+        return if (useEnhancedApi()) {
+            try { ShizukuPlusAPI.PackageManager.uninstallPackage(packageName); true } catch (e: Exception) { false }
+        } else {
+            shizukuBridgeService.uninstallPackage(packageName)
+        }
     }
 
     /**

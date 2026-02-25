@@ -103,6 +103,7 @@ class DeviceSpecificService : Service() {
                 "release_version" to Build.VERSION.RELEASE,
                 "is_samsung_device" to (Build.MANUFACTURER.lowercase() == "samsung"),
                 "is_foldable" to isFoldableDevice(),
+                "is_s22_ultra" to isS22Ultra(),
                 "display_features" to getDisplayFeaturesInternal(),
                 "ram_gb" to getRamSizeGB(),
                 "storage_gb" to getStorageSizeGB()
@@ -362,7 +363,14 @@ class DeviceSpecificService : Service() {
     private fun isSamsungDevice(): Boolean {
         return Build.MANUFACTURER.lowercase() == "samsung"
     }
-    
+
+    /**
+     * Checks if the device is a Samsung S22 Ultra
+     */
+    private fun isS22Ultra(): Boolean {
+        return isSamsungDevice() && Build.MODEL.uppercase().contains("S908")
+    }
+
     /**
      * Gets display size in inches
      */

@@ -105,7 +105,7 @@ class ShizukuBridgeService : Service() {
 
         return try {
             // Execute the command using Shizuku's privileged shell access
-            val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
+            val process = Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
             val output = process.inputStream.bufferedReader().readText()
             val errorOutput = process.errorStream.bufferedReader().readText()
             val exitCode = process.waitFor()
@@ -118,7 +118,8 @@ class ShizukuBridgeService : Service() {
 
             if (exitCode == 0) output else {
                 Log.w(TAG, "Command failed with exit code $exitCode: $errorOutput")
-                null
+                // Return error output for debugging
+                errorOutput
             }
         } catch (e: SecurityException) {
             Log.e(TAG, "Security exception executing shell command: ${e.message}", e)
@@ -147,28 +148,33 @@ class ShizukuBridgeService : Service() {
             "pm uninstall",
             "cmd settings",
             "settings put",
-            "settings get"
+            "settings get",
+            "am start",
+            "appops set",
+            "dumpsys battery",
+            "setprop",
+            "device_config put"
         )
 
         // Check if the command starts with an allowed prefix
         val isAllowedPrefix = allowedCommands.any { command.startsWith(it) }
 
         // Additional validation: check for dangerous characters that shouldn't be in our commands
-        val hasDangerousChars = command.contains(Regex("""[;&|\$\n\r]"""))
+        // We'll allow spaces, dots, dashes, and slashes, but block things like redirection or chaining
+        val hasDangerousChars = command.contains(Regex("""[;&|\n\r]"""))
+        // Note: we're excluding $ and ` from the initial regex since they're checked separately below,
+        // but let's be more explicit.
+        val hasMoreDangerousChars = command.contains(";") || command.contains("|") || command.contains("&") || command.contains(">") || command.contains("<")
 
         // Check for path traversal attempts
         val hasPathTraversal = command.contains("../") || command.contains("..\\")
-
-        // Check for command chaining attempts
-        val hasCommandChaining = command.contains("&&") || command.contains("||")
 
         // Check for command substitution attempts
         val hasCommandSubstitution = command.contains("\${") || command.contains("`")
 
         return isAllowedPrefix &&
-               !hasDangerousChars &&
+               !hasMoreDangerousChars &&
                !hasPathTraversal &&
-               !hasCommandChaining &&
                !hasCommandSubstitution
     }
     

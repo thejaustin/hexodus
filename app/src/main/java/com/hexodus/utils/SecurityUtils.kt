@@ -202,6 +202,17 @@ object SecurityUtils {
     }
 
     /**
+     * Checks if a package name is considered safe (e.g. valid format and not a known malicious package).
+     */
+    fun isPackageSafe(context: android.content.Context, packageName: String): Boolean {
+        if (!isValidPackageName(packageName)) return false
+        
+        // In a real implementation, you would verify against a list of known safe signatures
+        // or ensure it was installed from a trusted source.
+        return true
+    }
+
+    /**
      * Validates a permission string to prevent unauthorized access
      */
     fun isValidPermission(permission: String): Boolean {

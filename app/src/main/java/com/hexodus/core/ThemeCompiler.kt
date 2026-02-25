@@ -105,19 +105,23 @@ class ThemeCompiler {
     android:versionCode="1"
     android:versionName="1.0">
     
+    <!-- Explicitly set isStatic to false to allow safe-mode recovery and dynamic disabling -->
     <overlay
         android:targetPackage="android"
         android:category="android.theme.customization.accent_color"
+        android:isStatic="false"
         android:priority="1" />
         
     <overlay
         android:targetPackage="com.android.systemui"
         android:category="android.theme.customization.status_bar"
+        android:isStatic="false"
         android:priority="1" />
         
     <overlay
         android:targetPackage="com.android.systemui"
         android:category="android.theme.customization.navigation_bar"
+        android:isStatic="false"
         android:priority="1" />
         
     <application

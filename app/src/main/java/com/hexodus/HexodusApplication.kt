@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Intent
 import android.util.Log
 import rikka.shizuku.Shizuku
+import com.hexodus.utils.CrashHandler
 
 class HexodusApplication : Application() {
     companion object {
@@ -16,6 +17,7 @@ class HexodusApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        CrashHandler.setup(this)
         checkShizukuSupport()
         initShizuku()
     }

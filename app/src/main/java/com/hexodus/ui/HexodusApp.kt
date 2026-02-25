@@ -35,5 +35,18 @@ fun HexodusApp() {
                 onBackClick = { navController.popBackStack() }
             )
         }
+        composable("awesome_shizuku") {
+            AwesomeShizukuScreen(navController)
+        }
+        composable("shizuku_detail/{appName}") { backStackEntry ->
+            val appName = backStackEntry.arguments?.getString("appName") ?: ""
+            ShizukuAppDetailScreen(navController, appName)
+        }
+        composable("custom_mods") {
+            CustomModsScreen(navController)
+        }
+        composable("settings") {
+            SettingsScreen(navController)
+        }
     }
 }

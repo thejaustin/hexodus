@@ -31,6 +31,9 @@ fun FeatureExplorerScreen(
         "Network" -> getNetworkFeatures()
         "Audio" -> getAudioFeatures()
         "Interaction" -> getInteractionFeatures()
+        "Device Specific" -> getDeviceSpecificFeatures()
+        "Camera" -> getCameraFeatures()
+        "NextGen" -> getNextGenFeatures()
         else -> emptyList()
     }
 
@@ -107,6 +110,13 @@ fun getThemingFeatures(): List<Feature> {
             status = FeatureStatus.Enabled
         ),
         Feature(
+            title = "3D Glassmorphism (One UI 8.5)",
+            description = "Forces the floating design language and 3D icons from Android 16 on older system UI elements",
+            icon = Icons.Default.Layers,
+            color = Color(0xFF9C27B0),
+            status = FeatureStatus.Available
+        ),
+        Feature(
             title = "High Contrast Injection",
             description = "Exploits Samsung's High Contrast accessibility themes to bypass standard theme checks",
             icon = Icons.Default.Visibility,
@@ -133,6 +143,13 @@ fun getSystemFeatures(): List<Feature> {
             status = FeatureStatus.Enabled
         ),
         Feature(
+            title = "Vector Framework Hub",
+            description = "Kotlin-based successor to LSPosed for Android 16 hooking and system modification",
+            icon = Icons.Default.Hub,
+            color = Color(0xFF9C27B0),
+            status = FeatureStatus.Available
+        ),
+        Feature(
             title = "System UI Tuner",
             description = "Access and modify hidden system settings",
             icon = Icons.Default.Tune,
@@ -147,9 +164,9 @@ fun getSystemFeatures(): List<Feature> {
             status = FeatureStatus.Enabled
         ),
         Feature(
-            title = "Immersive Mode Toggle",
-            description = "Enable/disable immersive mode programmatically",
-            icon = Icons.Default.Fullscreen,
+            title = "Privileged Command Shell",
+            description = "Execute advanced scripts with Shizuku or Vector system-level privileges",
+            icon = Icons.Default.Terminal,
             color = Color(0xFF9C27B0),
             status = FeatureStatus.Available
         )
@@ -316,6 +333,182 @@ fun getInteractionFeatures(): List<Feature> {
             description = "Assign different actions to various gestures",
             icon = Icons.Default.Gesture,
             color = Color(0xFF9E9E9E),
+            status = FeatureStatus.Available
+        )
+    )
+}
+
+fun getDeviceSpecificFeatures(): List<Feature> {
+    return listOf(
+        Feature(
+            title = "Now Brief (S25 Exclusive)",
+            description = "Unlocks the hidden daily summary widget on lock screen (via smart suggestions developer mode)",
+            icon = Icons.Default.AutoAwesome,
+            color = Color(0xFF00BCD4),
+            status = FeatureStatus.Available
+        ),
+        Feature(
+            title = "Advanced Battery Health",
+            description = "View exact battery cycle count and estimated health percentage",
+            icon = Icons.Default.BatteryChargingFull,
+            color = Color(0xFF00BCD4),
+            status = FeatureStatus.Available
+        ),
+        Feature(
+            title = "Scoped Storage Bypass",
+            description = "Enables access to Android/data and Android/obb folders for supported file managers",
+            icon = Icons.Default.FolderSpecial,
+            color = Color(0xFF00BCD4),
+            status = FeatureStatus.Available
+        ),
+        Feature(
+            title = "Per-App Dark Mode (DarQ)",
+            description = "Force dark mode on specific apps that don't support it natively",
+            icon = Icons.Default.DarkMode,
+            color = Color(0xFF00BCD4),
+            status = FeatureStatus.Available
+        ),
+        Feature(
+            title = "Light Performance Mode",
+            description = "Prioritize battery life and cooling over raw speed (S23 feature backported)",
+            icon = Icons.Default.Speed,
+            color = Color(0xFF00BCD4),
+            status = FeatureStatus.Available
+        ),
+        Feature(
+            title = "Enhanced Processing",
+            description = "Forces CPU to jump to higher performance states more aggressively for better responsiveness",
+            icon = Icons.Default.Bolt,
+            color = Color(0xFF00BCD4),
+            status = FeatureStatus.Available
+        ),
+        Feature(
+            title = "Vertical App Drawer",
+            description = "Enables the hidden Home Up vertical scroll for the app drawer (One UI 7.0 style)",
+            icon = Icons.Default.ViewStream,
+            color = Color(0xFF00BCD4),
+            status = FeatureStatus.Available
+        ),
+        Feature(
+            title = "Circle to Search",
+            description = "Backports the AI-powered 'Circle to Search' capability (requires recent Google App)",
+            icon = Icons.Default.Search,
+            color = Color(0xFF00BCD4),
+            status = FeatureStatus.Available
+        ),
+        Feature(
+            title = "Now Bar (One UI 7.0+)",
+            description = "Enables the persistent pill-shaped status bar notification for active tasks",
+            icon = Icons.Default.ViewHeadline,
+            color = Color(0xFF00BCD4),
+            status = FeatureStatus.Available
+        ),
+        Feature(
+            title = "Priority Notifications (One UI 8.5)",
+            description = "Backports the Galaxy AI glow effect that highlights important alerts at the top of the shade",
+            icon = Icons.Default.NotificationsActive,
+            color = Color(0xFF00BCD4),
+            status = FeatureStatus.Available
+        ),
+        Feature(
+            title = "Vertical Quick Panel (One UI 8.5)",
+            description = "Switches the brightness and volume sliders to vertical orientation in the Quick Settings",
+            icon = Icons.Default.ViewQuilt,
+            color = Color(0xFF00BCD4),
+            status = FeatureStatus.Available
+        ),
+        Feature(
+            title = "Magic Editor (Pixelify)",
+            description = "Unlocks Pixel-exclusive AI editing (Reimagine, Magic Eraser) in Google Photos via LSPatch",
+            icon = Icons.Default.AutoFixHigh,
+            color = Color(0xFF00BCD4),
+            status = FeatureStatus.Available
+        )
+    )
+}
+
+fun getCameraFeatures(): List<Feature> {
+    return listOf(
+        Feature(
+            title = "GCam (LMC 8.4)",
+            description = "Optimized Google Camera port for S22 Ultra 108MP sensor. Includes Leica colors and better dynamic range.",
+            icon = Icons.Default.Camera,
+            color = Color(0xFFFF5722),
+            status = FeatureStatus.Available
+        ),
+        Feature(
+            title = "Camera Assistant",
+            description = "Advanced Samsung settings: disable auto-lens switching, faster shutter, and clean HDMI.",
+            icon = Icons.Default.SettingsSuggest,
+            color = Color(0xFFFF5722),
+            status = FeatureStatus.Available
+        ),
+        Feature(
+            title = "Expert RAW Mods",
+            description = "Unlock 50MP/108MP RAW output and community custom processing libraries (requires root for libs).",
+            icon = Icons.Default.PhotoCamera,
+            color = Color(0xFFFF5722),
+            status = FeatureStatus.Available
+        ),
+        Feature(
+            title = "Sketch to Image",
+            description = "AI-powered Drawing Assist from One UI 6.1.1. Turns simple sketches into realistic objects.",
+            icon = Icons.Default.Edit,
+            color = Color(0xFFFF5722),
+            status = FeatureStatus.Available
+        )
+    )
+}
+
+fun getNextGenFeatures(): List<Feature> {
+    return listOf(
+        Feature(
+            title = "Notification Cooldown (Android 16)",
+            description = "Automatically lowers volume for apps that send rapid-fire notifications.",
+            icon = Icons.Default.NotificationsPaused,
+            color = Color(0xFFFFC107),
+            status = FeatureStatus.Available
+        ),
+        Feature(
+            title = "Freeform Desktop Windowing",
+            description = "Unlocks Android 16's resizable windowing framework, previously restricted to foldables and tablets.",
+            icon = Icons.Default.DesktopWindows,
+            color = Color(0xFFFFC107),
+            status = FeatureStatus.Available
+        ),
+        Feature(
+            title = "Screen-Off FOD",
+            description = "Allows the ultrasonic fingerprint scanner to unlock the device without waking the screen first.",
+            icon = Icons.Default.Fingerprint,
+            color = Color(0xFFFFC107),
+            status = FeatureStatus.Available
+        ),
+        Feature(
+            title = "Sensitive Notification Redaction",
+            description = "Uses AI to automatically hide OTPs or sensitive details on the lock screen.",
+            icon = Icons.Default.Security,
+            color = Color(0xFFFFC107),
+            status = FeatureStatus.Available
+        ),
+        Feature(
+            title = "Vertical Quick Panel (One UI 8.5)",
+            description = "Backports the S26's vertical brightness and volume sliders to the Quick Settings.",
+            icon = Icons.Default.ViewQuilt,
+            color = Color(0xFFE91E63),
+            status = FeatureStatus.Available
+        ),
+        Feature(
+            title = "Priority Notifications",
+            description = "Galaxy AI glow effect highlighting critical alerts, pulled from One UI 8.5.",
+            icon = Icons.Default.NotificationsActive,
+            color = Color(0xFFE91E63),
+            status = FeatureStatus.Available
+        ),
+        Feature(
+            title = "3D Glassmorphism",
+            description = "Forces the floating design language and translucent 3D elements of Android 16.",
+            icon = Icons.Default.Layers,
+            color = Color(0xFFE91E63),
             status = FeatureStatus.Available
         )
     )

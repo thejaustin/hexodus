@@ -7,17 +7,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.hexodus.ui.components.CategoryHeader
+import com.hexodus.services.CapabilityManager
+import com.hexodus.utils.RedundancyEngine
 import com.hexodus.ui.components.FeatureToggleCard
 
 import androidx.navigation.NavController
@@ -25,6 +26,9 @@ import androidx.navigation.NavController
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FeatureDashboardScreen(navController: NavController? = null) {
+    val context = LocalContext.current
+    val capabilityManager = remember { CapabilityManager(context) }
+    
     // State variables for all features
     var themingEnabled by remember { mutableStateOf(true) }
     var systemTunerEnabled by remember { mutableStateOf(false) }
@@ -37,12 +41,132 @@ fun FeatureDashboardScreen(navController: NavController? = null) {
     var networkFirewallEnabled by remember { mutableStateOf(false) }
     var powerManagerEnabled by remember { mutableStateOf(false) }
 
-    var shizukuConnected by remember { mutableStateOf(false) }
+    // 2026 Experimental Features
+    var notificationCooldownEnabled by remember { mutableStateOf(false) }
+    var desktopModeEnabled by remember { mutableStateOf(false) }
+    var screenOffFodEnabled by remember { mutableStateOf(false) }
+    var verticalQsEnabled by remember { mutableStateOf(false) }
+    var priorityNotifsEnabled by remember { mutableStateOf(false) }
+    var glassmorphismEnabled by remember { mutableStateOf(false) }
 
-    // Check Shizuku connection status
+    var showAllFeatures by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
+    var caps by remember { mutableStateOf<CapabilityManager.Capabilities?>(null) }
+
+    // Check capabilities
     LaunchedEffect(Unit) {
-        // In a real implementation, we would check the actual Shizuku status
-        shizukuConnected = true // Placeholder
+        caps = capabilityManager.detectCapabilities()
+    }
+
+    @Composable
+    fun FrameworkChip(label: String, isActive: Boolean, icon: ImageVector) {
+        Surface(
+            color = if (isActive) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier.padding(2.dp)
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                    tint = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (isActive) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun FeatureCard(
+        title: String,
+        description: String,
+        icon: ImageVector,
+        isEnabled: Boolean,
+        onToggle: (Boolean) -> Unit,
+        requirements: List<String>
+    ) {
+        // Search filtering
+        if (searchQuery.isNotEmpty() && !title.contains(searchQuery, ignoreCase = true) && !description.contains(searchQuery, ignoreCase = true)) {
+            return
+        }
+
+        val isCompatible = caps?.let { capabilityManager.isCompatible(requirements, it) } ?: true
+        val conflictingApps = RedundancyEngine.getConflictingApps(title)
+        val installedConflicts = remember(conflictingApps) {
+            conflictingApps.filter { appName ->
+                try {
+                    context.packageManager.getPackageInfo(appName, 0)
+                    true
+                } catch (e: Exception) {
+                    false 
+                }
+            }
+        }
+
+        if (isCompatible || showAllFeatures) {
+            Column {
+                if (installedConflicts.isNotEmpty()) {
+                    Surface(
+                        color = MaterialTheme.colorScheme.errorContainer,
+                        shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp)
+                    ) {
+                        Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(14.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                "Conflict: ${installedConflicts.joinToString()} detected. Hexodus handles this natively.",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        }
+                    }
+                }
+                FeatureToggleCard(
+                    title = title,
+                    description = description,
+                    icon = icon,
+                    isEnabled = isEnabled,
+                    onToggle = onToggle,
+                    colorIndicator = MaterialTheme.colorScheme.primary, // Switched to Material Theme Color
+                    modifier = Modifier.alpha(if (isCompatible) 1f else 0.5f)
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun CategoryButton(title: String, icon: ImageVector, route: String) {
+        if (searchQuery.isNotEmpty() && !title.contains(searchQuery, ignoreCase = true)) return
+        
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { navController?.navigate(route) }
+                .height(IntrinsicSize.Min),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+            shape = RoundedCornerShape(20.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                Spacer(modifier = Modifier.weight(1f))
+                Icon(Icons.Default.KeyboardArrowRight, contentDescription = null)
+            }
+        }
     }
 
     Column(
@@ -50,506 +174,224 @@ fun FeatureDashboardScreen(navController: NavController? = null) {
             .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // Header
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min), // Ensures minimum touch target size
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
-            ),
-            shape = RoundedCornerShape(28.dp) // M3E shape standard
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+            shape = RoundedCornerShape(28.dp)
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp), // Increased padding for accessibility
+                modifier = Modifier.fillMaxWidth().padding(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Hexodus Feature Dashboard",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Hexodus Dashboard",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    
+                    Row {
+                        IconButton(onClick = { showAllFeatures = !showAllFeatures }) {
+                            Icon(
+                                if (showAllFeatures) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                contentDescription = "Toggle hidden features"
+                            )
+                        }
+                        IconButton(onClick = { navController?.navigate("settings") }) {
+                            Icon(Icons.Default.Settings, contentDescription = "Settings")
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Shizuku status indicator with improved accessibility
+                // Framework Status Indicators
                 Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = if (shizukuConnected) Icons.Outlined.CheckCircle else Icons.Outlined.Error,
-                        contentDescription = if (shizukuConnected) "Shizuku Connected" else "Shizuku Disconnected", // Accessibility description
-                        tint = if (shizukuConnected) Color.Green else Color.Red,
-                        modifier = Modifier.size(24.dp) // Ensure minimum touch target
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(
-                        text = if (shizukuConnected) "Shizuku Connected" else "Shizuku Disconnected",
-                        color = if (shizukuConnected) Color.Green else Color.Red,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+                    FrameworkChip("Shizuku", caps?.isShizukuReady == true, Icons.Default.Bolt)
+                    FrameworkChip("Dhizuku", caps?.isDhizukuReady == true, Icons.Default.Shield)
+                    FrameworkChip("Vector", caps?.isVectorActive == true, Icons.Default.Hub)
+                    FrameworkChip("Root", caps?.isRooted == true, Icons.Default.Terminal)
                 }
             }
         }
+
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text("Search toggles, features, or mods...") },
+            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+            trailingIcon = {
+                if (searchQuery.isNotEmpty()) {
+                    IconButton(onClick = { searchQuery = "" }) {
+                        Icon(Icons.Default.Clear, contentDescription = "Clear")
+                    }
+                }
+            },
+            shape = RoundedCornerShape(16.dp),
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = Color.Transparent
+            )
+        )
         
-        // Theming Features - M3E compliant category header
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { navController?.navigate("features/Theming") }
-                .height(IntrinsicSize.Min), // Ensures minimum touch target size
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
-            ),
-            shape = RoundedCornerShape(20.dp) // M3E shape standard
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ColorLens,
-                    contentDescription = "Theming & Customization Category", // Accessibility description
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp) // Larger icon for better visibility
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = "Theming & Customization",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // --- Quick Actions / Featured Toggles ---
+        if (searchQuery.isEmpty()) {
+            Text("Quick Actions", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 8.dp))
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        FeatureToggleCard(
-            title = "Hex-to-Overlay Compilation",
-            description = "Convert hex colors to system-compatible overlays",
-            icon = Icons.Default.Colorize,
-            isEnabled = themingEnabled,
-            onToggle = { themingEnabled = it },
-            colorIndicator = Color(0xFF6200EE)
-        )
-        
-        FeatureToggleCard(
-            title = "Material You Override",
-            description = "Bypass One UI 8's aggressive Monet enforcement",
-            icon = Icons.Default.Style,
-            isEnabled = themingEnabled,
-            onToggle = { themingEnabled = it },
-            colorIndicator = Color(0xFF03DAC6)
-        )
-        
-        FeatureToggleCard(
-            title = "High Contrast Injection",
-            description = "Exploit accessibility themes for deeper customization",
-            icon = Icons.Default.Visibility,
-            isEnabled = themingEnabled,
-            onToggle = { themingEnabled = it },
-            colorIndicator = Color(0xFFFF9800)
-        )
-        
-        // System Integration Features - M3E compliant category header
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { navController?.navigate("features/System") }
-                .height(IntrinsicSize.Min), // Ensures minimum touch target size
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
-            ),
-            shape = RoundedCornerShape(20.dp) // M3E shape standard
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = "System Integration Category", // Accessibility description
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp) // Larger icon for better visibility
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = "System Integration",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        FeatureToggleCard(
-            title = "System Tuner",
-            description = "Access and modify hidden system settings",
-            icon = Icons.Default.Tune,
+
+        FeatureCard(
+            title = "Circle to Search",
+            description = "AI Search by circling anything on screen",
+            icon = Icons.Default.Search,
             isEnabled = systemTunerEnabled,
             onToggle = { systemTunerEnabled = it },
-            colorIndicator = Color(0xFF9C27B0)
+            requirements = listOf("Samsung", "Shizuku")
         )
-        
-        FeatureToggleCard(
-            title = "Overlay Management",
-            description = "Manage system overlays without root",
-            icon = Icons.Default.ViewCompact,
+
+        FeatureCard(
+            title = "Vertical App Drawer",
+            description = "Switch to vertical scroll for app drawer",
+            icon = Icons.Default.ViewStream,
             isEnabled = systemTunerEnabled,
             onToggle = { systemTunerEnabled = it },
-            colorIndicator = Color(0xFF9C27B0)
+            requirements = listOf("Samsung", "Shizuku")
         )
-        
-        // App Management Features - M3E compliant category header
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { navController?.navigate("features/App Management") }
-                .height(IntrinsicSize.Min), // Ensures minimum touch target size
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
-            ),
-            shape = RoundedCornerShape(20.dp) // M3E shape standard
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Apps,
-                    contentDescription = "App Management Category", // Accessibility description
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp) // Larger icon for better visibility
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = "App Management",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        FeatureToggleCard(
-            title = "App Themer",
-            description = "Per-app theming and dark mode control",
-            icon = Icons.Default.InvertColors,
-            isEnabled = appThemerEnabled,
-            onToggle = { appThemerEnabled = it },
-            colorIndicator = Color(0xFF4CAF50)
+
+        FeatureCard(
+            title = "Now Brief (S25 Exclusive)",
+            description = "Enable hidden Smart Suggestions summary",
+            icon = Icons.Default.AutoAwesome,
+            isEnabled = systemTunerEnabled,
+            onToggle = { systemTunerEnabled = it },
+            requirements = listOf("S22Ultra", "Samsung")
         )
-        
-        FeatureToggleCard(
-            title = "App Manager",
-            description = "Freeze, hide, and manage apps",
-            icon = Icons.Default.HideSource,
-            isEnabled = appManagerEnabled,
-            onToggle = { appManagerEnabled = it },
-            colorIndicator = Color(0xFF4CAF50)
-        )
-        
-        // Privacy & Security Features - M3E compliant category header
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { navController?.navigate("features/Privacy") }
-                .height(IntrinsicSize.Min), // Ensures minimum touch target size
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
-            ),
-            shape = RoundedCornerShape(20.dp) // M3E shape standard
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Lock,
-                    contentDescription = "Privacy & Security Category", // Accessibility description
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp) // Larger icon for better visibility
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = "Privacy & Security",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        FeatureToggleCard(
-            title = "App Lock",
-            description = "Secure apps with PIN or biometric",
-            icon = Icons.Default.Lock,
-            isEnabled = privacySecurityEnabled,
-            onToggle = { privacySecurityEnabled = it },
-            colorIndicator = Color(0xFFF44336)
-        )
-        
-        FeatureToggleCard(
-            title = "File Hider",
-            description = "Hide sensitive files from other apps",
-            icon = Icons.Default.VisibilityOff,
-            isEnabled = privacySecurityEnabled,
-            onToggle = { privacySecurityEnabled = it },
-            colorIndicator = Color(0xFFF44336)
-        )
-        
-        // Network & Power Features - M3E compliant category header
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { navController?.navigate("features/Network") }
-                .height(IntrinsicSize.Min), // Ensures minimum touch target size
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
-            ),
-            shape = RoundedCornerShape(20.dp) // M3E shape standard
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.NetworkCheck,
-                    contentDescription = "Network & Power Category", // Accessibility description
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp) // Larger icon for better visibility
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = "Network & Power",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        FeatureToggleCard(
-            title = "App Firewall",
-            description = "Block network access for specific apps",
-            icon = Icons.Default.Shield,
-            isEnabled = networkFirewallEnabled,
-            onToggle = { networkFirewallEnabled = it },
-            colorIndicator = Color(0xFF2196F3)
-        )
-        
-        FeatureToggleCard(
-            title = "Power Manager",
-            description = "Battery optimization and doze control",
-            icon = Icons.Default.BatterySaver,
+
+        FeatureCard(
+            title = "Advanced Battery Stats",
+            description = "View real cycle count and actual health",
+            icon = Icons.Default.BatteryChargingFull,
             isEnabled = powerManagerEnabled,
             onToggle = { powerManagerEnabled = it },
-            colorIndicator = Color(0xFF2196F3)
+            requirements = listOf("Shizuku")
         )
-        
-        // Audio & Media Features - M3E compliant category header
+
+        FeatureCard(
+            title = "Enhanced Processing",
+            description = "Boost CPU responsiveness for smoother UI",
+            icon = Icons.Default.Bolt,
+            isEnabled = systemTunerEnabled,
+            onToggle = { systemTunerEnabled = it },
+            requirements = listOf("Samsung", "Shizuku")
+        )
+
+        if (searchQuery.isEmpty()) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("Android 16 (Next-Gen)", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 8.dp))
+        }
+
+        FeatureCard(
+            title = "Notification Cooldown",
+            description = "Android 16 Baklava feature to quiet rapid-fire alerts",
+            icon = Icons.Default.NotificationsPaused,
+            isEnabled = notificationCooldownEnabled,
+            onToggle = { notificationCooldownEnabled = it },
+            requirements = listOf("Shizuku")
+        )
+
+        FeatureCard(
+            title = "Desktop Windowing",
+            description = "Android 16 Freeform Resizable Desktop Mode",
+            icon = Icons.Default.DesktopWindows,
+            isEnabled = desktopModeEnabled,
+            onToggle = { desktopModeEnabled = it },
+            requirements = listOf("Shizuku")
+        )
+
+        FeatureCard(
+            title = "Screen-Off FOD",
+            description = "Unlock device without waking display (requires ultrasonic sensor)",
+            icon = Icons.Default.Fingerprint,
+            isEnabled = screenOffFodEnabled,
+            onToggle = { screenOffFodEnabled = it },
+            requirements = listOf("Shizuku")
+        )
+
+        FeatureCard(
+            title = "Vertical Quick Panel (UI 8.5)",
+            description = "S26/One UI 8.5 redesigned vertical volume/brightness sliders",
+            icon = Icons.Default.ViewQuilt,
+            isEnabled = verticalQsEnabled,
+            onToggle = { verticalQsEnabled = it },
+            requirements = listOf("Samsung", "Shizuku")
+        )
+
+        FeatureCard(
+            title = "Priority AI Notifications",
+            description = "One UI 8.5 smart glow effect for critical alerts",
+            icon = Icons.Default.NotificationsActive,
+            isEnabled = priorityNotifsEnabled,
+            onToggle = { priorityNotifsEnabled = it },
+            requirements = listOf("Samsung", "Shizuku")
+        )
+
+        FeatureCard(
+            title = "3D Glassmorphism Icons",
+            description = "One UI 8.5 floating translucent design language",
+            icon = Icons.Default.Layers,
+            isEnabled = glassmorphismEnabled,
+            onToggle = { glassmorphismEnabled = it },
+            requirements = listOf("Samsung", "Shizuku")
+        )
+
+        if (searchQuery.isEmpty()) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("Exploration & Categories", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 8.dp))
+        }
+
+        // Awesome Shizuku & Frameworks Repo
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { navController?.navigate("features/Audio") }
-                .height(IntrinsicSize.Min), // Ensures minimum touch target size
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
-            ),
-            shape = RoundedCornerShape(20.dp) // M3E shape standard
+                .clickable { navController?.navigate("awesome_shizuku") }
+                .height(IntrinsicSize.Min),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+            shape = RoundedCornerShape(20.dp)
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Default.Audiotrack,
-                    contentDescription = "Audio & Media Category", // Accessibility description
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp) // Larger icon for better visibility
-                )
+                Icon(Icons.Default.Explore, contentDescription = null, tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.size(28.dp))
                 Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = "Audio & Media",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                Text("Awesome Shizuku & Repos", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.tertiary)
                 Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Icon(Icons.Default.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
+
+        CategoryButton("Device Specific Options", Icons.Default.Smartphone, "features/Device Specific")
+        CategoryButton("Camera Enhancements", Icons.Default.CameraAlt, "features/Camera")
+        CategoryButton("Custom Mod Extensions", Icons.Default.Extension, "custom_mods")
+        CategoryButton("Theming & Customization", Icons.Default.ColorLens, "features/Theming")
+        CategoryButton("System Integration", Icons.Default.Settings, "features/System")
         
-        FeatureToggleCard(
-            title = "Audio Enhancer",
-            description = "Equalizer and audio effects",
-            icon = Icons.Default.Equalizer,
-            isEnabled = audioManagerEnabled,
-            onToggle = { audioManagerEnabled = it },
-            colorIndicator = Color(0xFF3F51B5)
-        )
-        
-        FeatureToggleCard(
-            title = "Now Playing",
-            description = "Media information display",
-            icon = Icons.Default.PlayCircle,
-            isEnabled = mediaNotificationEnabled,
-            onToggle = { mediaNotificationEnabled = it },
-            colorIndicator = Color(0xFF3F51B5)
-        )
-        
-        // Interaction Features - M3E compliant category header
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { navController?.navigate("features/Interaction") }
-                .height(IntrinsicSize.Min), // Ensures minimum touch target size
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
-            ),
-            shape = RoundedCornerShape(20.dp) // M3E shape standard
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.TouchApp,
-                    contentDescription = "Interaction Category", // Accessibility description
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp) // Larger icon for better visibility
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = "Interaction",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        FeatureToggleCard(
-            title = "Gesture Manager",
-            description = "Customize device gestures",
-            icon = Icons.Default.TouchApp,
-            isEnabled = gestureManagerEnabled,
-            onToggle = { gestureManagerEnabled = it },
-            colorIndicator = Color(0xFF9E9E9E)
-        )
-        
-        // Foldable Device Features - M3E compliant category header
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { navController?.navigate("features/Theming") }
-                .height(IntrinsicSize.Min), // Ensures minimum touch target size
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
-            ),
-            shape = RoundedCornerShape(20.dp) // M3E shape standard
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.DeviceHub,
-                    contentDescription = "Foldable Support Category", // Accessibility description
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp) // Larger icon for better visibility
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = "Foldable Support",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        FeatureToggleCard(
-            title = "Foldable Display",
-            description = "Optimize for Z Flip 5 and foldables",
-            icon = Icons.Default.DeviceHub,
-            isEnabled = themingEnabled, // Uses theming engine
-            onToggle = { themingEnabled = it },
-            colorIndicator = Color(0xFF795548)
-        )
     }
 }
