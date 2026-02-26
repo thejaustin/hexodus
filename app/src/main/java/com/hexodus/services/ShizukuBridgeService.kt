@@ -104,8 +104,13 @@ class ShizukuBridgeService : Service() {
         }
 
         return try {
-            // Execute the command using Shizuku's privileged shell access
-            val process = Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
+            // Execute the command using Shizuku's privileged shell access.
+            // newProcess is package-private in the Maven artifact, so access via reflection.
+            val newProcessMethod = rikka.shizuku.Shizuku::class.java.getDeclaredMethod(
+                "newProcess", Array<String>::class.java, Array<String>::class.java, String::class.java
+            )
+            newProcessMethod.isAccessible = true
+            val process = newProcessMethod.invoke(null, arrayOf("sh", "-c", command), null, null) as Process
             val output = process.inputStream.bufferedReader().readText()
             val errorOutput = process.errorStream.bufferedReader().readText()
             val exitCode = process.waitFor()

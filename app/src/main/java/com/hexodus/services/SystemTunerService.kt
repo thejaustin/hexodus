@@ -1,5 +1,9 @@
 package com.hexodus.services
 
+import android.app.Service
+import android.content.Intent
+import android.os.IBinder
+import android.util.Log
 import com.hexodus.core.ThemeCompiler
 import com.hexodus.utils.SecurityUtils
 import com.hexodus.utils.PrefsManager
@@ -209,12 +213,6 @@ class SystemTunerService : Service() {
             shizukuBridgeService.executeShellCommand("am broadcast -a android.intent.action.CONFIGURATION_CHANGED")
         }
     }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "SystemTunerService destroyed")
-    }
-}
     
     override fun onDestroy() {
         super.onDestroy()
