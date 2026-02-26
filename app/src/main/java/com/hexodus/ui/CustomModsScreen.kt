@@ -1,5 +1,6 @@
 package com.hexodus.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -56,7 +57,7 @@ fun CustomModsScreen(navController: NavController) {
         } else if (mods.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(Icons.Default.Extension, contentDescription = null, size = 48.dp, tint = MaterialTheme.colorScheme.secondary)
+                    Icon(Icons.Default.Extension, contentDescription = null, modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.secondary)
                     Spacer(modifier = Modifier.height(16.dp))
                     Text("No custom mods discovered.")
                     Text("Install mod APKs with 'com.hexodus.intent.action.MOD_EXTENSION' support.", style = MaterialTheme.typography.bodySmall)

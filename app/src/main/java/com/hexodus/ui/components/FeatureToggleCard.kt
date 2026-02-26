@@ -25,10 +25,11 @@ fun FeatureToggleCard(
     icon: ImageVector,
     isEnabled: Boolean,
     onToggle: (Boolean) -> Unit,
-    colorIndicator: androidx.compose.ui.graphics.Color? = null
+    colorIndicator: androidx.compose.ui.graphics.Color? = null,
+    modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min), // Ensures minimum touch target size
         colors = CardDefaults.cardColors(
