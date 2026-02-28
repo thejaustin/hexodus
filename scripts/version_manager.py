@@ -18,13 +18,11 @@ def get_commits_since_last_tag():
         tag = subprocess.check_output(['git', 'describe', '--tags', '--abbrev=0']).strip().decode('utf-8')
         # Get commits since tag
         commits = subprocess.check_output(['git', 'log', f'{tag}..HEAD', '--pretty=format:%s']).strip().decode('utf-8')
-        return commits.split('
-') if commits else []
+        return commits.split('\n') if commits else []
     except:
         # No tags yet, get all commits
         commits = subprocess.check_output(['git', 'log', '--pretty=format:%s']).strip().decode('utf-8')
-        return commits.split('
-')
+        return commits.split('\n')
 
 def calculate_bump(commits):
     major = False
@@ -78,14 +76,12 @@ def bump_version(props, bump_type, pre_release=None):
 
 def save_version(props):
     with open('version.properties', 'w') as f:
-        f.write("# Version properties for Hexodus
-")
+        f.write("# Version properties for Hexodus\n")
         # Ensure order
         keys = ['version.major', 'version.minor', 'version.patch', 'version.name', 'version.code']
         for key in keys:
             if key in props:
-                f.write(f"{key}={props[key]}
-")
+                f.write(f"{key}={props[key]}\n")
 
 if __name__ == "__main__":
     # Usage: python3 version_manager.py [alpha|beta]
