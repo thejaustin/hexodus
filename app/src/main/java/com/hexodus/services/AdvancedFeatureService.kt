@@ -31,6 +31,15 @@ object AdvancedFeatureService {
     private val contentResolver: android.content.ContentResolver get() = context.contentResolver
     private val packageManager: android.content.pm.PackageManager get() = context.packageManager
     private val applicationContext: android.content.Context get() = context
+    private val resources: android.content.res.Resources get() = context.resources
+
+    
+    
+    
+    
+    
+    
+    
 
     
 
@@ -90,7 +99,7 @@ object AdvancedFeatureService {
             }
         }
         
-        return android.app.Service.android.app.Service.START_STICKY
+        return android.app.Service.START_STICKY
     }
     
     /**

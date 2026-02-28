@@ -22,6 +22,15 @@ object SystemInspectorService {
     private val contentResolver: android.content.ContentResolver get() = context.contentResolver
     private val packageManager: android.content.pm.PackageManager get() = context.packageManager
     private val applicationContext: android.content.Context get() = context
+    private val resources: android.content.res.Resources get() = context.resources
+
+    
+    
+    
+    
+    
+    
+    
 
     private const val TAG = "SystemInspectorService"
     private const val ACTION_GET_APP_LIBRARIES = "com.hexodus.GET_APP_LIBRARIES"
@@ -86,7 +95,7 @@ object SystemInspectorService {
             }
         }
         
-        return android.app.Service.android.app.Service.START_STICKY
+        return android.app.Service.START_STICKY
     }
     
     /**
