@@ -1,18 +1,22 @@
-name: Release
+name: Build & Release
 
 on:
   push:
+    branches:
+      - main
     tags:
       - 'v*'
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Necessary for git history to calculate version
 
     - name: Set up JDK 21
       uses: actions/setup-java@v4
@@ -21,29 +25,46 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-      with:
-        packages: >
-          tools
-          platform-tools
-          build-tools;36.0.0
-          platforms;android-36
-        cmdline-tools-version: 'latest'
-
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug --no-daemon
+    - name: Calculate Version (Non-tag)
+      if: startsWith(github.ref, 'refs/tags/') != true
+      run: |
+        VERSION=$(python3 scripts/version_manager.py alpha)
+        echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
+        echo "IS_PRERELEASE=true" >> $GITHUB_ENV
 
-    - name: Rename APK
+    - name: Use Tagged Version
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        TAG_NAME=${GITHUB_REF#refs/tags/}
+        # Strip 'v' prefix for version.properties
+        VERSION=${TAG_NAME#v}
+        # Update version.properties to match tag exactly
+        sed -i "s/version.name=.*/version.name=$VERSION/" version.properties
+        echo "NEW_VERSION=$TAG_NAME" >> $GITHUB_ENV
+        if [[ $TAG_NAME == *"-"* ]]; then
+          echo "IS_PRERELEASE=true" >> $GITHUB_ENV
+        else
+          echo "IS_PRERELEASE=false" >> $GITHUB_ENV
+        fi
+
+    - name: Build with Gradle
+      run: ./gradlew assembleDebug
+
+    - name: Prepare Release Asset
       run: |
         mkdir -p release
-        cp app/build/outputs/apk/debug/*.apk release/hexodus-${{ github.ref_name }}.apk
+        cp app/build/outputs/apk/debug/*.apk release/hexodus-${{ env.NEW_VERSION }}.apk
 
-    - name: Create Release
+    - name: Upload Alpha/Beta Release
       uses: softprops/action-gh-release@v2
       with:
-        files: release/hexodus-${{ github.ref_name }}.apk
+        tag_name: ${{ env.NEW_VERSION }}
+        files: release/hexodus-${{ env.NEW_VERSION }}.apk
+        prerelease: ${{ env.IS_PRERELEASE }}
+        name: Hexodus ${{ env.NEW_VERSION }}
         generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
