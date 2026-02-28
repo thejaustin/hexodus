@@ -23,7 +23,7 @@ import com.hexodus.utils.PrefsManager
 object ShizukuInstaller {
     private const val TAG = "ShizukuInstaller"
 
-    suspend fun downloadAndInstall(apkUrl: String, appName: String) = withContext(Dispatchers.IO) {
+    suspend fun downloadAndInstall(apkUrl: String, appName: String): Unit = withContext(Dispatchers.IO) {
         val prefsManager = PrefsManager.getInstance(HexodusApplication.context)
         
         try {
