@@ -129,7 +129,7 @@ object AdvancedFeatureService {
                 
                 // Apply the generated theme
                  // Use OverlayManager instead
-                OverlayManager.applyTheme(this, themeData, "wallpaper_based_theme")
+                OverlayManager.applyTheme(HexodusApplication.context, themeData, "wallpaper_based_theme")
                 
                 // Broadcast success
                 val successIntent = Intent("WALLPAPER_THEME_APPLIED")

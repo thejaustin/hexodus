@@ -320,7 +320,7 @@ object DeviceSpecificService {
      * Internal method to get display features
      */
     private fun getDisplayFeaturesInternal(): Map<String, Any> {
-        val displayManager = getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
+        val displayManager = HexodusApplication.context.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
         val displays = displayManager.displays
         
         val features = mutableMapOf<String, Any>()
@@ -369,7 +369,7 @@ object DeviceSpecificService {
         if (display == null) return 0f
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val windowManager = getSystemService(Context.WINDOW_SERVICE) as android.view.WindowManager
+            val windowManager = HexodusApplication.context.getSystemService(Context.WINDOW_SERVICE) as android.view.WindowManager
             val windowMetrics = windowManager.currentWindowMetrics
             val bounds = windowMetrics.bounds
             val xdpi = resources.displayMetrics.xdpi
@@ -393,7 +393,7 @@ object DeviceSpecificService {
      */
     private fun getRamSizeGB(): Float {
         val memInfo = android.app.ActivityManager.MemoryInfo()
-        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
+        val activityManager = HexodusApplication.context.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
         activityManager.getMemoryInfo(memInfo)
         
         // This gets available RAM, but we want total RAM
@@ -405,8 +405,8 @@ object DeviceSpecificService {
      * Gets storage size in GB
      */
     private fun getStorageSizeGB(): Float {
-        val storageManager = getSystemService(Context.STORAGE_SERVICE) as android.os.storage.StorageManager
-        val storageStatsManager = getSystemService(Context.STORAGE_STATS_SERVICE) as android.app.usage.StorageStatsManager
+        val storageManager = HexodusApplication.context.getSystemService(Context.STORAGE_SERVICE) as android.os.storage.StorageManager
+        val storageStatsManager = HexodusApplication.context.getSystemService(Context.STORAGE_STATS_SERVICE) as android.app.usage.StorageStatsManager
         
         // In a real implementation, we'd get actual storage stats
         // For this example, return a common value

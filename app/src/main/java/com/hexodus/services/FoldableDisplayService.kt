@@ -126,7 +126,7 @@ object FoldableDisplayService {
      * Gets the screen diagonal size in inches using modern APIs
      */
     private fun getScreenSizeInches(): Float {
-        val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val windowManager = HexodusApplication.context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val windowMetrics: WindowMetrics = windowManager.currentWindowMetrics
             val bounds = windowMetrics.bounds

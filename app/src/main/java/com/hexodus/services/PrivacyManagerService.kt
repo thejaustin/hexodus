@@ -38,41 +38,41 @@ object PrivacyManagerService {
         
         when (action) {
             ACTION_GET_APP_PERMISSIONS -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
-                if (!packageName.isNullOrEmpty()) {
-                    getAppPermissions(packageName)
+                val HexodusApplication.context.packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                if (!HexodusApplication.context.packageName.isNullOrEmpty()) {
+                    getAppPermissions(HexodusApplication.context.packageName)
                 }
             }
             ACTION_SET_APP_PERMISSION -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val HexodusApplication.context.packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val permissionName = intent.getStringExtra(EXTRA_PERMISSION_NAME)
                 val granted = intent.getBooleanExtra(EXTRA_PERMISSION_GRANTED, false)
                 
-                if (!packageName.isNullOrEmpty() && !permissionName.isNullOrEmpty()) {
-                    setAppPermission(packageName, permissionName, granted)
+                if (!HexodusApplication.context.packageName.isNullOrEmpty() && !permissionName.isNullOrEmpty()) {
+                    setAppPermission(HexodusApplication.context.packageName, permissionName, granted)
                 }
             }
             ACTION_GET_USAGE_STATS -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val HexodusApplication.context.packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val timeRange = intent.getLongExtra(EXTRA_TIME_RANGE, 0L)
                 
-                if (!packageName.isNullOrEmpty()) {
-                    getUsageStats(packageName, timeRange)
+                if (!HexodusApplication.context.packageName.isNullOrEmpty()) {
+                    getUsageStats(HexodusApplication.context.packageName, timeRange)
                 }
             }
             ACTION_MANAGE_APP_TRACKING -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val HexodusApplication.context.packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val trackingLevel = intent.getStringExtra(EXTRA_TRACKING_LEVEL)
                 
-                if (!packageName.isNullOrEmpty() && !trackingLevel.isNullOrEmpty()) {
-                    manageAppTracking(packageName, trackingLevel)
+                if (!HexodusApplication.context.packageName.isNullOrEmpty() && !trackingLevel.isNullOrEmpty()) {
+                    manageAppTracking(HexodusApplication.context.packageName, trackingLevel)
                 }
             }
             ACTION_GET_PRIVACY_SCORE -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val HexodusApplication.context.packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 
-                if (!packageName.isNullOrEmpty()) {
-                    getPrivacyScore(packageName)
+                if (!HexodusApplication.context.packageName.isNullOrEmpty()) {
+                    getPrivacyScore(HexodusApplication.context.packageName)
                 }
             }
         }
@@ -83,7 +83,7 @@ object PrivacyManagerService {
     /**
      * Gets permissions for an app using Shizuku
      */
-    private fun getAppPermissions(packageName: String) {
+    private fun getAppPermissions(HexodusApplication.context.packageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -91,9 +91,9 @@ object PrivacyManagerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(HexodusApplication.context.packageName)
+            if (sanitizedPackageName != HexodusApplication.context.packageName) {
+                Log.w(TAG, "Package name was sanitized: $HexodusApplication.context.packageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, this would query the package manager for permissions
@@ -141,7 +141,7 @@ object PrivacyManagerService {
     /**
      * Sets a permission for an app using Shizuku
      */
-    private fun setAppPermission(packageName: String, permissionName: String, granted: Boolean) {
+    private fun setAppPermission(HexodusApplication.context.packageName: String, permissionName: String, granted: Boolean) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -149,9 +149,9 @@ object PrivacyManagerService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(HexodusApplication.context.packageName)
+            if (sanitizedPackageName != HexodusApplication.context.packageName) {
+                Log.w(TAG, "Package name was sanitized: $HexodusApplication.context.packageName -> $sanitizedPackageName")
             }
             
             if (!SecurityUtils.isValidPermission(permissionName)) {
@@ -182,9 +182,9 @@ object PrivacyManagerService {
     /**
      * Gets usage statistics for an app
      */
-    private fun getUsageStats(packageName: String, timeRange: Long) {
+    private fun getUsageStats(HexodusApplication.context.packageName: String, timeRange: Long) {
         try {
-            val usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+            val usageStatsManager = HexodusApplication.context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
             
             // In a real implementation, this would query usage stats
             // For this example, we'll simulate the process
@@ -194,11 +194,11 @@ object PrivacyManagerService {
                 "usage_count" to 15
             )
             
-            Log.d(TAG, "Retrieved usage stats for: $packageName")
+            Log.d(TAG, "Retrieved usage stats for: $HexodusApplication.context.packageName")
             
             // Broadcast results
             val successIntent = Intent("USAGE_STATS_RETRIEVED")
-            successIntent.putExtra("package_name", packageName)
+            successIntent.putExtra("package_name", HexodusApplication.context.packageName)
             successIntent.putExtra("usage_stats", HashMap(usageStats))
             HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
@@ -214,7 +214,7 @@ object PrivacyManagerService {
     /**
      * Manages app tracking settings
      */
-    private fun manageAppTracking(packageName: String, trackingLevel: String) {
+    private fun manageAppTracking(HexodusApplication.context.packageName: String, trackingLevel: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -222,9 +222,9 @@ object PrivacyManagerService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(HexodusApplication.context.packageName)
+            if (sanitizedPackageName != HexodusApplication.context.packageName) {
+                Log.w(TAG, "Package name was sanitized: $HexodusApplication.context.packageName -> $sanitizedPackageName")
             }
             
             val validLevels = listOf("minimal", "standard", "aggressive", "none")
@@ -255,7 +255,7 @@ object PrivacyManagerService {
     /**
      * Calculates a privacy score for an app
      */
-    private fun getPrivacyScore(packageName: String) {
+    private fun getPrivacyScore(HexodusApplication.context.packageName: String) {
         try {
             // In a real implementation, this would analyze app permissions, behavior, etc.
             // For this example, we'll simulate the process
@@ -272,11 +272,11 @@ object PrivacyManagerService {
                 )
             )
             
-            Log.d(TAG, "Calculated privacy score for: $packageName (Score: 75/100)")
+            Log.d(TAG, "Calculated privacy score for: $HexodusApplication.context.packageName (Score: 75/100)")
             
             // Broadcast results
             val successIntent = Intent("PRIVACY_SCORE_CALCULATED")
-            successIntent.putExtra("package_name", packageName)
+            successIntent.putExtra("package_name", HexodusApplication.context.packageName)
             successIntent.putExtra("privacy_score", HashMap(privacyScore))
             HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
@@ -330,7 +330,7 @@ object PrivacyManagerService {
     /**
      * Revokes all dangerous permissions for an app
      */
-    fun revokeDangerousPermissions(packageName: String): Boolean {
+    fun revokeDangerousPermissions(HexodusApplication.context.packageName: String): Boolean {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -338,9 +338,9 @@ object PrivacyManagerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(HexodusApplication.context.packageName)
+            if (sanitizedPackageName != HexodusApplication.context.packageName) {
+                Log.w(TAG, "Package name was sanitized: $HexodusApplication.context.packageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, this would revoke dangerous permissions

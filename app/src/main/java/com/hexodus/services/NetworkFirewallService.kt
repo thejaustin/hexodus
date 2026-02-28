@@ -53,26 +53,26 @@ object NetworkFirewallService {
         
         when (action) {
             ACTION_BLOCK_APP_NETWORK -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val HexodusApplication.context.packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val networkType = intent.getStringExtra(EXTRA_NETWORK_TYPE) ?: "all"
                 
-                if (!packageName.isNullOrEmpty()) {
-                    blockAppNetwork(packageName, networkType)
+                if (!HexodusApplication.context.packageName.isNullOrEmpty()) {
+                    blockAppNetwork(HexodusApplication.context.packageName, networkType)
                 }
             }
             ACTION_ALLOW_APP_NETWORK -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val HexodusApplication.context.packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val networkType = intent.getStringExtra(EXTRA_NETWORK_TYPE) ?: "all"
                 
-                if (!packageName.isNullOrEmpty()) {
-                    allowAppNetwork(packageName, networkType)
+                if (!HexodusApplication.context.packageName.isNullOrEmpty()) {
+                    allowAppNetwork(HexodusApplication.context.packageName, networkType)
                 }
             }
             ACTION_GET_APP_NETWORK_ACCESS -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val HexodusApplication.context.packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 
-                if (!packageName.isNullOrEmpty()) {
-                    getAppNetworkAccess(packageName)
+                if (!HexodusApplication.context.packageName.isNullOrEmpty()) {
+                    getAppNetworkAccess(HexodusApplication.context.packageName)
                 }
             }
             ACTION_GET_NETWORK_ACTIVITY -> {
@@ -97,7 +97,7 @@ object NetworkFirewallService {
     /**
      * Blocks network access for an app using Shizuku
      */
-    private fun blockAppNetwork(packageName: String, networkType: String) {
+    private fun blockAppNetwork(HexodusApplication.context.packageName: String, networkType: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -105,9 +105,9 @@ object NetworkFirewallService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(HexodusApplication.context.packageName)
+            if (sanitizedPackageName != HexodusApplication.context.packageName) {
+                Log.w(TAG, "Package name was sanitized: $HexodusApplication.context.packageName -> $sanitizedPackageName")
             }
             
             val validNetworkTypes = listOf("wifi", "mobile", "all")
@@ -138,7 +138,7 @@ object NetworkFirewallService {
     /**
      * Allows network access for an app using Shizuku
      */
-    private fun allowAppNetwork(packageName: String, networkType: String) {
+    private fun allowAppNetwork(HexodusApplication.context.packageName: String, networkType: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -146,9 +146,9 @@ object NetworkFirewallService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(HexodusApplication.context.packageName)
+            if (sanitizedPackageName != HexodusApplication.context.packageName) {
+                Log.w(TAG, "Package name was sanitized: $HexodusApplication.context.packageName -> $sanitizedPackageName")
             }
             
             val validNetworkTypes = listOf("wifi", "mobile", "all")
@@ -179,7 +179,7 @@ object NetworkFirewallService {
     /**
      * Gets network access status for an app
      */
-    private fun getAppNetworkAccess(packageName: String) {
+    private fun getAppNetworkAccess(HexodusApplication.context.packageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -187,9 +187,9 @@ object NetworkFirewallService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(HexodusApplication.context.packageName)
+            if (sanitizedPackageName != HexodusApplication.context.packageName) {
+                Log.w(TAG, "Package name was sanitized: $HexodusApplication.context.packageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, this would query network access status
@@ -346,7 +346,7 @@ object NetworkFirewallService {
         
         // In a real implementation, this would start monitoring network activity
         // For this example, we'll create a foreground service notification
-        startForeground(NOTIFICATION_ID, createNotification())
+        // startForeground not supported in object)
     }
     
     /**
@@ -358,17 +358,17 @@ object NetworkFirewallService {
         isMonitoring = false
         Log.d(TAG, "Stopped network monitoring")
         
-        stopForeground(STOP_FOREGROUND_REMOVE)
+        // stopForeground not supported in object
     }
     
     /**
      * Creates a notification for the foreground service
      */
     private fun createNotification(): android.app.Notification {
-        val notificationIntent = Intent(this, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
+        val notificationIntent = Intent(HexodusApplication.context, MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(HexodusApplication.context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
         
-        return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+        return NotificationCompat.Builder(HexodusApplication.context, NOTIFICATION_CHANNEL_ID)
             .setContentTitle("Network Firewall Active")
             .setContentText("Protecting your network privacy")
             .setSmallIcon(android.R.drawable.stat_notify_sync) // Use system icon
@@ -389,7 +389,7 @@ object NetworkFirewallService {
                 description = "Network firewall and monitoring service"
             }
             
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager = HexodusApplication.context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }

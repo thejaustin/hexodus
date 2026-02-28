@@ -32,7 +32,7 @@ object OverlayActivationService {
                 val validateSignature = intent.getBooleanExtra(EXTRA_VALIDATE_SIGNATURE, true)
                 
                 if (!packageName.isNullOrEmpty() && !apkPath.isNullOrEmpty()) {
-                    val success = OverlayManager.activateOverlay(this, packageName, apkPath, validateSignature)
+                    val success = OverlayManager.activateOverlay(HexodusApplication.context, packageName, apkPath, validateSignature)
                     val resultIntent = Intent(if (success) "OVERLAY_ACTIVATION_SUCCESS" else "OVERLAY_ACTIVATION_FAILURE")
                     resultIntent.putExtra("package_name", packageName)
                     HexodusApplication.context.sendBroadcast(resultIntent)
@@ -41,7 +41,7 @@ object OverlayActivationService {
             ACTION_DEACTIVATE_OVERLAY -> {
                 val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 if (!packageName.isNullOrEmpty()) {
-                    val success = OverlayManager.deactivateOverlay(this, packageName)
+                    val success = OverlayManager.deactivateOverlay(HexodusApplication.context, packageName)
                     val resultIntent = Intent(if (success) "OVERLAY_DEACTIVATION_SUCCESS" else "OVERLAY_DEACTIVATION_FAILURE")
                     resultIntent.putExtra("package_name", packageName)
                     HexodusApplication.context.sendBroadcast(resultIntent)
@@ -57,6 +57,6 @@ object OverlayActivationService {
 
     // Still providing this for legacy/direct callers, though they should use OverlayManager directly
     fun applyTheme(themeData: ByteArray, themeName: String) {
-        OverlayManager.applyTheme(this, themeData, themeName)
+        OverlayManager.applyTheme(HexodusApplication.context, themeData, themeName)
     }
 }
