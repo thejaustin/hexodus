@@ -29,17 +29,15 @@ object SystemTunerService {
     
 
     
-    companion object {
-        private const val TAG = "SystemTunerService"
-        private const val ACTION_MODIFY_SETTING = "com.hexodus.MODIFY_SETTING"
-        private const val ACTION_GET_SETTING = "com.hexodus.GET_SETTING"
-        private const val ACTION_TOGGLE_IMMERSIVE = "com.hexodus.TOGGLE_IMMERSIVE"
-        
-        // Intent extras
-        const val EXTRA_SETTING_KEY = "setting_key"
-        const val EXTRA_SETTING_VALUE = "setting_value"
-        const val EXTRA_SETTING_TYPE = "setting_type"
-    }
+    private const val TAG = "SystemTunerService"
+    private const val ACTION_MODIFY_SETTING = "com.hexodus.MODIFY_SETTING"
+    private const val ACTION_GET_SETTING = "com.hexodus.GET_SETTING"
+    private const val ACTION_TOGGLE_IMMERSIVE = "com.hexodus.TOGGLE_IMMERSIVE"
+    
+    // Intent extras
+    const val EXTRA_SETTING_KEY = "setting_key"
+    const val EXTRA_SETTING_VALUE = "setting_value"
+    const val EXTRA_SETTING_TYPE = "setting_type"
     
     private val prefsManager by lazy { PrefsManager.getInstance(HexodusApplication.context) }
     private val scope = CoroutineScope(Dispatchers.IO)

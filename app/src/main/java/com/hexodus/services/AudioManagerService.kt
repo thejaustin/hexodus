@@ -23,20 +23,18 @@ object AudioManagerService {
     
 
     
-    companion object {
-        private const val TAG = "AudioManagerService"
-        private const val ACTION_SET_EQUALIZER = "com.hexodus.SET_EQUALIZER"
-        private const val ACTION_SET_BASS_BOOST = "com.hexodus.SET_BASS_BOOST"
-        private const val ACTION_SET_AUDIO_EFFECT = "com.hexodus.SET_AUDIO_EFFECT"
-        private const val ACTION_GET_AUDIO_SESSIONS = "com.hexodus.GET_AUDIO_SESSIONS"
-        
-        // Intent extras
-        const val EXTRA_EQUALIZER_VALUES = "equalizer_values"
-        const val EXTRA_BASS_BOOST_LEVEL = "bass_boost_level"
-        const val EXTRA_EFFECT_TYPE = "effect_type"
-        const val EXTRA_EFFECT_VALUE = "effect_value"
-        const val EXTRA_SESSION_ID = "session_id"
-    }
+    private const val TAG = "AudioManagerService"
+    private const val ACTION_SET_EQUALIZER = "com.hexodus.SET_EQUALIZER"
+    private const val ACTION_SET_BASS_BOOST = "com.hexodus.SET_BASS_BOOST"
+    private const val ACTION_SET_AUDIO_EFFECT = "com.hexodus.SET_AUDIO_EFFECT"
+    private const val ACTION_GET_AUDIO_SESSIONS = "com.hexodus.GET_AUDIO_SESSIONS"
+    
+    // Intent extras
+    const val EXTRA_EQUALIZER_VALUES = "equalizer_values"
+    const val EXTRA_BASS_BOOST_LEVEL = "bass_boost_level"
+    const val EXTRA_EFFECT_TYPE = "effect_type"
+    const val EXTRA_EFFECT_VALUE = "effect_value"
+    const val EXTRA_SESSION_ID = "session_id"
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action

@@ -26,18 +26,16 @@ object DynamicColorService {
     
 
     
-    companion object {
-        private const val TAG = "DynamicColorService"
-        private const val ACTION_GENERATE_DYNAMIC_COLORS = "com.hexodus.GENERATE_DYNAMIC_COLORS"
-        private const val ACTION_APPLY_DYNAMIC_COLORS = "com.hexodus.APPLY_DYNAMIC_COLORS"
-        private const val ACTION_UPDATE_WALLPAPER_COLORS = "com.hexodus.UPDATE_WALLPAPER_COLORS"
-        
-        // Intent extras
-        const val EXTRA_BASE_COLOR = "base_color"
-        const val EXTRA_COLOR_SOURCE = "color_source" // wallpaper, user_input, app_brand
-        const val EXTRA_THEME_COMPONENTS = "theme_components"
-        const val EXTRA_COLOR_INTENSITY = "color_intensity"
-    }
+    private const val TAG = "DynamicColorService"
+    private const val ACTION_GENERATE_DYNAMIC_COLORS = "com.hexodus.GENERATE_DYNAMIC_COLORS"
+    private const val ACTION_APPLY_DYNAMIC_COLORS = "com.hexodus.APPLY_DYNAMIC_COLORS"
+    private const val ACTION_UPDATE_WALLPAPER_COLORS = "com.hexodus.UPDATE_WALLPAPER_COLORS"
+    
+    // Intent extras
+    const val EXTRA_BASE_COLOR = "base_color"
+    const val EXTRA_COLOR_SOURCE = "color_source" // wallpaper, user_input, app_brand
+    const val EXTRA_THEME_COMPONENTS = "theme_components"
+    const val EXTRA_COLOR_INTENSITY = "color_intensity"
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action

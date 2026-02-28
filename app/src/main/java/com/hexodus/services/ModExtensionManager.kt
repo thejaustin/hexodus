@@ -12,12 +12,10 @@ import com.hexodus.utils.SecurityUtils
  */
 class ModExtensionManager(private val context: Context) {
 
-    companion object {
-        private const val TAG = "ModExtensionManager"
-        const val ACTION_MOD_EXTENSION = "com.hexodus.intent.action.MOD_EXTENSION"
-        const val META_DATA_MOD_VERSION = "com.hexodus.mod.VERSION"
-        const val META_DATA_MOD_AUTHOR = "com.hexodus.mod.AUTHOR"
-    }
+    private const val TAG = "ModExtensionManager"
+    const val ACTION_MOD_EXTENSION = "com.hexodus.intent.action.MOD_EXTENSION"
+    const val META_DATA_MOD_VERSION = "com.hexodus.mod.VERSION"
+    const val META_DATA_MOD_AUTHOR = "com.hexodus.mod.AUTHOR"
 
     data class ModExtension(
         val packageName: String,

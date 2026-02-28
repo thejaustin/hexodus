@@ -31,27 +31,25 @@ import java.util.zip.ZipOutputStream
  */
 class AdvancedThemingService : LifecycleService() {
     
-    companion object {
-        private const val TAG = "AdvancedThemingService"
-        private const val ACTION_CREATE_GRADIENT_THEME = "com.hexodus.CREATE_GRADIENT_THEME"
-        private const val ACTION_CREATE_ANIMATED_THEME = "com.hexodus.CREATE_ANIMATED_THEME"
-        private const val ACTION_CREATE_TEXTURE_THEME = "com.hexodus.CREATE_TEXTURE_THEME"
-        private const val ACTION_GET_THEME_PRESETS = "com.hexodus.GET_THEME_PRESETS"
-        private const val ACTION_APPLY_THEME_TRANSITION = "com.hexodus.APPLY_THEME_TRANSITION"
-        private const val ACTION_CREATE_THEME_ANIMATION = "com.hexodus.CREATE_THEME_ANIMATION"
-        
-        // Intent extras
-        const val EXTRA_GRADIENT_COLORS = "gradient_colors" // List of hex colors
-        const val EXTRA_ANIMATION_TYPE = "animation_type" // fade, slide, zoom
-        const val EXTRA_TEXTURE_PATH = "texture_path"
-        const val EXTRA_THEME_TRANSITION_SPEED = "transition_speed"
-        const val EXTRA_ANIMATION_DURATION = "animation_duration"
-        const val EXTRA_THEME_PRESET_NAME = "preset_name"
-        const val EXTRA_COMPONENT_NAME = "component_name"
-        const val EXTRA_HEX_COLOR = "hex_color"
-        const val EXTRA_FROM_THEME = "from_theme"
-        const val EXTRA_TO_THEME = "to_theme"
-    }
+    private const val TAG = "AdvancedThemingService"
+    private const val ACTION_CREATE_GRADIENT_THEME = "com.hexodus.CREATE_GRADIENT_THEME"
+    private const val ACTION_CREATE_ANIMATED_THEME = "com.hexodus.CREATE_ANIMATED_THEME"
+    private const val ACTION_CREATE_TEXTURE_THEME = "com.hexodus.CREATE_TEXTURE_THEME"
+    private const val ACTION_GET_THEME_PRESETS = "com.hexodus.GET_THEME_PRESETS"
+    private const val ACTION_APPLY_THEME_TRANSITION = "com.hexodus.APPLY_THEME_TRANSITION"
+    private const val ACTION_CREATE_THEME_ANIMATION = "com.hexodus.CREATE_THEME_ANIMATION"
+    
+    // Intent extras
+    const val EXTRA_GRADIENT_COLORS = "gradient_colors" // List of hex colors
+    const val EXTRA_ANIMATION_TYPE = "animation_type" // fade, slide, zoom
+    const val EXTRA_TEXTURE_PATH = "texture_path"
+    const val EXTRA_THEME_TRANSITION_SPEED = "transition_speed"
+    const val EXTRA_ANIMATION_DURATION = "animation_duration"
+    const val EXTRA_THEME_PRESET_NAME = "preset_name"
+    const val EXTRA_COMPONENT_NAME = "component_name"
+    const val EXTRA_HEX_COLOR = "hex_color"
+    const val EXTRA_FROM_THEME = "from_theme"
+    const val EXTRA_TO_THEME = "to_theme"
     
     private val themeCompiler = com.hexodus.core.ThemeCompiler()
     

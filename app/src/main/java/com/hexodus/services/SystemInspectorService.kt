@@ -23,7 +23,21 @@ object SystemInspectorService {
     private val packageManager: android.content.pm.PackageManager get() = context.packageManager
     private val applicationContext: android.content.Context get() = context
 
-     }
+    private const val TAG = "SystemInspectorService"
+    private const val ACTION_GET_APP_LIBRARIES = "com.hexodus.GET_APP_LIBRARIES"
+    private const val ACTION_GET_SYSTEM_PROPERTIES = "com.hexodus.GET_SYSTEM_PROPERTIES"
+    private const val ACTION_GET_APP_RESOURCES = "com.hexodus.GET_APP_RESOURCES"
+    private const val ACTION_GET_INSTALLATION_SOURCE = "com.hexodus.GET_INSTALLATION_SOURCE"
+    private const val ACTION_GET_APP_ABI = "com.hexodus.GET_APP_ABI"
+    private const val ACTION_GET_SYSTEM_HEALTH = "com.hexodus.GET_SYSTEM_HEALTH"
+    
+    // Intent extras
+    const val EXTRA_PACKAGE_NAME = "package_name"
+    const val EXTRA_PROPERTY_NAME = "property_name"
+    const val EXTRA_RESOURCE_TYPE = "resource_type" // drawable, string, color, layout
+    const val EXTRA_INSPECTION_SCOPE = "inspection_scope" // full, libraries, permissions
+    
+    private val pm: PackageManager by lazy { context.packageManager }
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action

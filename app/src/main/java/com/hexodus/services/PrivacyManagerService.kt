@@ -27,21 +27,19 @@ object PrivacyManagerService {
     
 
     
-    companion object {
-        private const val TAG = "PrivacyManagerService"
-        private const val ACTION_GET_APP_PERMISSIONS = "com.hexodus.GET_APP_PERMISSIONS"
-        private const val ACTION_SET_APP_PERMISSION = "com.hexodus.SET_APP_PERMISSION"
-        private const val ACTION_GET_USAGE_STATS = "com.hexodus.GET_USAGE_STATS"
-        private const val ACTION_MANAGE_APP_TRACKING = "com.hexodus.MANAGE_APP_TRACKING"
-        private const val ACTION_GET_PRIVACY_SCORE = "com.hexodus.GET_PRIVACY_SCORE"
-        
-        // Intent extras
-        const val EXTRA_PACKAGE_NAME = "package_name"
-        const val EXTRA_PERMISSION_NAME = "permission_name"
-        const val EXTRA_PERMISSION_GRANTED = "permission_granted"
-        const val EXTRA_TIME_RANGE = "time_range"
-        const val EXTRA_TRACKING_LEVEL = "tracking_level"
-    }
+    private const val TAG = "PrivacyManagerService"
+    private const val ACTION_GET_APP_PERMISSIONS = "com.hexodus.GET_APP_PERMISSIONS"
+    private const val ACTION_SET_APP_PERMISSION = "com.hexodus.SET_APP_PERMISSION"
+    private const val ACTION_GET_USAGE_STATS = "com.hexodus.GET_USAGE_STATS"
+    private const val ACTION_MANAGE_APP_TRACKING = "com.hexodus.MANAGE_APP_TRACKING"
+    private const val ACTION_GET_PRIVACY_SCORE = "com.hexodus.GET_PRIVACY_SCORE"
+    
+    // Intent extras
+    const val EXTRA_PACKAGE_NAME = "package_name"
+    const val EXTRA_PERMISSION_NAME = "permission_name"
+    const val EXTRA_PERMISSION_GRANTED = "permission_granted"
+    const val EXTRA_TIME_RANGE = "time_range"
+    const val EXTRA_TRACKING_LEVEL = "tracking_level"
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action

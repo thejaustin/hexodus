@@ -23,23 +23,21 @@ object PowerManagerService {
     
 
     
-    companion object {
-        private const val TAG = "PowerManagerService"
-        private const val ACTION_GET_BATTERY_STATS = "com.hexodus.GET_BATTERY_STATS"
-        private const val ACTION_ENFORCE_DOZE = "com.hexodus.ENFORCE_DOZE"
-        private const val ACTION_DISABLE_DOZE = "com.hexodus.DISABLE_DOZE"
-        private const val ACTION_SET_POWER_PROFILE = "com.hexodus.SET_POWER_PROFILE"
-        private const val ACTION_OPTIMIZE_APP_BATTERY = "com.hexodus.OPTIMIZE_APP_BATTERY"
-        private const val ACTION_GET_POWER_USAGE = "com.hexodus.GET_POWER_USAGE"
-        private const val ACTION_SCHEDULE_POWER_OPTIMIZATION = "com.hexodus.SCHEDULE_POWER_OPTIMIZATION"
-        
-        // Intent extras
-        const val EXTRA_POWER_PROFILE = "power_profile"
-        const val EXTRA_PACKAGE_NAME = "package_name"
-        const val EXTRA_OPTIMIZATION_LEVEL = "optimization_level"
-        const val EXTRA_SCHEDULE_TIME = "schedule_time"
-        const val EXTRA_BATTERY_THRESHOLD = "battery_threshold"
-    }
+    private const val TAG = "PowerManagerService"
+    private const val ACTION_GET_BATTERY_STATS = "com.hexodus.GET_BATTERY_STATS"
+    private const val ACTION_ENFORCE_DOZE = "com.hexodus.ENFORCE_DOZE"
+    private const val ACTION_DISABLE_DOZE = "com.hexodus.DISABLE_DOZE"
+    private const val ACTION_SET_POWER_PROFILE = "com.hexodus.SET_POWER_PROFILE"
+    private const val ACTION_OPTIMIZE_APP_BATTERY = "com.hexodus.OPTIMIZE_APP_BATTERY"
+    private const val ACTION_GET_POWER_USAGE = "com.hexodus.GET_POWER_USAGE"
+    private const val ACTION_SCHEDULE_POWER_OPTIMIZATION = "com.hexodus.SCHEDULE_POWER_OPTIMIZATION"
+    
+    // Intent extras
+    const val EXTRA_POWER_PROFILE = "power_profile"
+    const val EXTRA_PACKAGE_NAME = "package_name"
+    const val EXTRA_OPTIMIZATION_LEVEL = "optimization_level"
+    const val EXTRA_SCHEDULE_TIME = "schedule_time"
+    const val EXTRA_BATTERY_THRESHOLD = "battery_threshold"
     
     private var isDozeEnforced = false
     

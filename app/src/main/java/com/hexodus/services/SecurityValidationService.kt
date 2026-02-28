@@ -23,21 +23,19 @@ object SecurityValidationService {
     
 
     
-    companion object {
-        private const val TAG = "SecurityValidationService"
-        private const val ACTION_VALIDATE_INPUT = "com.hexodus.VALIDATE_INPUT"
-        private const val ACTION_VALIDATE_FILE_PATH = "com.hexodus.VALIDATE_FILE_PATH"
-        private const val ACTION_VALIDATE_COMMAND = "com.hexodus.VALIDATE_COMMAND"
-        private const val ACTION_VALIDATE_PACKAGE_NAME = "com.hexodus.VALIDATE_PACKAGE_NAME"
-        private const val ACTION_SANITIZE_INPUT = "com.hexodus.SANITIZE_INPUT"
-        
-        // Intent extras
-        const val EXTRA_INPUT_STRING = "input_string"
-        const val EXTRA_FILE_PATH = "file_path"
-        const val EXTRA_ALLOWED_DIRECTORIES = "allowed_directories"
-        const val EXTRA_COMMAND = "command"
-        const val EXTRA_PACKAGE_NAME = "package_name"
-    }
+    private const val TAG = "SecurityValidationService"
+    private const val ACTION_VALIDATE_INPUT = "com.hexodus.VALIDATE_INPUT"
+    private const val ACTION_VALIDATE_FILE_PATH = "com.hexodus.VALIDATE_FILE_PATH"
+    private const val ACTION_VALIDATE_COMMAND = "com.hexodus.VALIDATE_COMMAND"
+    private const val ACTION_VALIDATE_PACKAGE_NAME = "com.hexodus.VALIDATE_PACKAGE_NAME"
+    private const val ACTION_SANITIZE_INPUT = "com.hexodus.SANITIZE_INPUT"
+    
+    // Intent extras
+    const val EXTRA_INPUT_STRING = "input_string"
+    const val EXTRA_FILE_PATH = "file_path"
+    const val EXTRA_ALLOWED_DIRECTORIES = "allowed_directories"
+    const val EXTRA_COMMAND = "command"
+    const val EXTRA_PACKAGE_NAME = "package_name"
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action

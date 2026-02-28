@@ -34,25 +34,23 @@ object BackupRestoreService {
     
 
     
-    companion object {
-        private const val TAG = "BackupRestoreService"
-        private const val ACTION_CREATE_BACKUP = "com.hexodus.CREATE_BACKUP"
-        private const val ACTION_RESTORE_BACKUP = "com.hexodus.RESTORE_BACKUP"
-        private const val ACTION_LIST_BACKUPS = "com.hexodus.LIST_BACKUPS"
-        private const val ACTION_DELETE_BACKUP = "com.hexodus.DELETE_BACKUP"
-        private const val ACTION_EXPORT_THEME = "com.hexodus.EXPORT_THEME"
-        private const val ACTION_IMPORT_THEME = "com.hexodus.IMPORT_THEME"
-        
-        // Intent extras
-        const val EXTRA_BACKUP_NAME = "backup_name"
-        const val EXTRA_BACKUP_PATH = "backup_path"
-        const val EXTRA_BACKUP_TYPE = "backup_type" // full, themes_only, settings_only
-        const val EXTRA_THEME_NAME = "theme_name"
-        const val EXTRA_THEME_PATH = "theme_path"
-        const val EXTRA_INCLUDE_COMPONENTS = "include_components"
-        const val EXTRA_INCLUDE_APP_SETTINGS = "include_app_settings"
-        const val EXTRA_INCLUDE_SYSTEM_SETTINGS = "include_system_settings"
-    }
+    private const val TAG = "BackupRestoreService"
+    private const val ACTION_CREATE_BACKUP = "com.hexodus.CREATE_BACKUP"
+    private const val ACTION_RESTORE_BACKUP = "com.hexodus.RESTORE_BACKUP"
+    private const val ACTION_LIST_BACKUPS = "com.hexodus.LIST_BACKUPS"
+    private const val ACTION_DELETE_BACKUP = "com.hexodus.DELETE_BACKUP"
+    private const val ACTION_EXPORT_THEME = "com.hexodus.EXPORT_THEME"
+    private const val ACTION_IMPORT_THEME = "com.hexodus.IMPORT_THEME"
+    
+    // Intent extras
+    const val EXTRA_BACKUP_NAME = "backup_name"
+    const val EXTRA_BACKUP_PATH = "backup_path"
+    const val EXTRA_BACKUP_TYPE = "backup_type" // full, themes_only, settings_only
+    const val EXTRA_THEME_NAME = "theme_name"
+    const val EXTRA_THEME_PATH = "theme_path"
+    const val EXTRA_INCLUDE_COMPONENTS = "include_components"
+    const val EXTRA_INCLUDE_APP_SETTINGS = "include_app_settings"
+    const val EXTRA_INCLUDE_SYSTEM_SETTINGS = "include_system_settings"
     
     private val backupDir = File(getExternalFilesDir(null), "backups")
     

@@ -31,27 +31,25 @@ object NetworkFirewallService {
     private val applicationContext: android.content.Context get() = context
 
     
-    companion object {
-        private const val TAG = "NetworkFirewallService"
-        private const val ACTION_BLOCK_APP_NETWORK = "com.hexodus.BLOCK_APP_NETWORK"
-        private const val ACTION_ALLOW_APP_NETWORK = "com.hexodus.ALLOW_APP_NETWORK"
-        private const val ACTION_GET_APP_NETWORK_ACCESS = "com.hexodus.GET_APP_NETWORK_ACCESS"
-        private const val ACTION_GET_NETWORK_ACTIVITY = "com.hexodus.GET_NETWORK_ACTIVITY"
-        private const val ACTION_MANAGE_FIREWALL_RULES = "com.hexodus.MANAGE_FIREWALL_RULES"
-        private const val ACTION_GET_FIREWALL_STATUS = "com.hexodus.GET_FIREWALL_STATUS"
-        
-        // Intent extras
-        const val EXTRA_PACKAGE_NAME = "package_name"
-        const val EXTRA_NETWORK_TYPE = "network_type" // wifi, mobile, all
-        const val EXTRA_FIREWALL_RULE = "firewall_rule"
-        const val EXTRA_RULE_ACTION = "rule_action" // block, allow
-        const val EXTRA_RULE_PROTOCOL = "rule_protocol" // tcp, udp, icmp
-        const val EXTRA_RULE_PORT = "rule_port"
-        const val EXTRA_RULE_IP = "rule_ip"
-        
-        private const val NOTIFICATION_CHANNEL_ID = "network_monitoring_channel"
-        private const val NOTIFICATION_ID = 1001
-    }
+    private const val TAG = "NetworkFirewallService"
+    private const val ACTION_BLOCK_APP_NETWORK = "com.hexodus.BLOCK_APP_NETWORK"
+    private const val ACTION_ALLOW_APP_NETWORK = "com.hexodus.ALLOW_APP_NETWORK"
+    private const val ACTION_GET_APP_NETWORK_ACCESS = "com.hexodus.GET_APP_NETWORK_ACCESS"
+    private const val ACTION_GET_NETWORK_ACTIVITY = "com.hexodus.GET_NETWORK_ACTIVITY"
+    private const val ACTION_MANAGE_FIREWALL_RULES = "com.hexodus.MANAGE_FIREWALL_RULES"
+    private const val ACTION_GET_FIREWALL_STATUS = "com.hexodus.GET_FIREWALL_STATUS"
+    
+    // Intent extras
+    const val EXTRA_PACKAGE_NAME = "package_name"
+    const val EXTRA_NETWORK_TYPE = "network_type" // wifi, mobile, all
+    const val EXTRA_FIREWALL_RULE = "firewall_rule"
+    const val EXTRA_RULE_ACTION = "rule_action" // block, allow
+    const val EXTRA_RULE_PROTOCOL = "rule_protocol" // tcp, udp, icmp
+    const val EXTRA_RULE_PORT = "rule_port"
+    const val EXTRA_RULE_IP = "rule_ip"
+    
+    private const val NOTIFICATION_CHANNEL_ID = "network_monitoring_channel"
+    private const val NOTIFICATION_ID = 1001
     
     private val connectivityManager by lazy { context.getSystemService(android.content.Context.CONNECTIVITY_SERVICE) as android.net.ConnectivityManager }
     private var isMonitoring = false

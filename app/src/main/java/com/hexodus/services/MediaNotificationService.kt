@@ -23,21 +23,19 @@ object MediaNotificationService {
     
 
     
-    companion object {
-        private const val TAG = "MediaNotificationService"
-        private const val ACTION_UPDATE_NOW_PLAYING = "com.hexodus.UPDATE_NOW_PLAYING"
-        private const val ACTION_HIDE_NOTIFICATION = "com.hexodus.HIDE_NOTIFICATION"
-        private const val ACTION_SHOW_NOTIFICATION = "com.hexodus.SHOW_NOTIFICATION"
-        private const val ACTION_CUSTOMIZE_NOTIFICATION = "com.hexodus.CUSTOMIZE_NOTIFICATION"
-        
-        // Intent extras
-        const val EXTRA_TRACK_TITLE = "track_title"
-        const val EXTRA_TRACK_ARTIST = "track_artist"
-        const val EXTRA_ALBUM_ART = "album_art"
-        const val EXTRA_PACKAGE_NAME = "package_name"
-        const val EXTRA_NOTIFICATION_ID = "notification_id"
-        const val EXTRA_CUSTOMIZATION_CONFIG = "customization_config"
-    }
+    private const val TAG = "MediaNotificationService"
+    private const val ACTION_UPDATE_NOW_PLAYING = "com.hexodus.UPDATE_NOW_PLAYING"
+    private const val ACTION_HIDE_NOTIFICATION = "com.hexodus.HIDE_NOTIFICATION"
+    private const val ACTION_SHOW_NOTIFICATION = "com.hexodus.SHOW_NOTIFICATION"
+    private const val ACTION_CUSTOMIZE_NOTIFICATION = "com.hexodus.CUSTOMIZE_NOTIFICATION"
+    
+    // Intent extras
+    const val EXTRA_TRACK_TITLE = "track_title"
+    const val EXTRA_TRACK_ARTIST = "track_artist"
+    const val EXTRA_ALBUM_ART = "album_art"
+    const val EXTRA_PACKAGE_NAME = "package_name"
+    const val EXTRA_NOTIFICATION_ID = "notification_id"
+    const val EXTRA_CUSTOMIZATION_CONFIG = "customization_config"
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action

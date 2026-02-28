@@ -29,20 +29,18 @@ object WallpaperThemerService {
     
 
     
-    companion object {
-        private const val TAG = "WallpaperThemerService"
-        private const val ACTION_EXTRACT_COLORS = "com.hexodus.EXTRACT_COLORS"
-        private const val ACTION_APPLY_WALLPAPER_THEME = "com.hexodus.APPLY_WALLPAPER_THEME"
-        private const val ACTION_GET_CURRENT_WALLPAPER_COLORS = "com.hexodus.GET_CURRENT_WALLPAPER_COLORS"
-        private const val ACTION_SET_WALLPAPER_FROM_THEME = "com.hexodus.SET_WALLPAPER_FROM_THEME"
-        private const val ACTION_GENERATE_PALETTE = "com.hexodus.GENERATE_PALETTE"
-        
-        // Intent extras
-        const val EXTRA_IMAGE_PATH = "image_path"
-        const val EXTRA_COLOR_COUNT = "color_count"
-        const val EXTRA_THEME_NAME = "theme_name"
-        const val EXTRA_PALETTE_TYPE = "palette_type" // vibrant, muted, dominant, all
-    }
+    private const val TAG = "WallpaperThemerService"
+    private const val ACTION_EXTRACT_COLORS = "com.hexodus.EXTRACT_COLORS"
+    private const val ACTION_APPLY_WALLPAPER_THEME = "com.hexodus.APPLY_WALLPAPER_THEME"
+    private const val ACTION_GET_CURRENT_WALLPAPER_COLORS = "com.hexodus.GET_CURRENT_WALLPAPER_COLORS"
+    private const val ACTION_SET_WALLPAPER_FROM_THEME = "com.hexodus.SET_WALLPAPER_FROM_THEME"
+    private const val ACTION_GENERATE_PALETTE = "com.hexodus.GENERATE_PALETTE"
+    
+    // Intent extras
+    const val EXTRA_IMAGE_PATH = "image_path"
+    const val EXTRA_COLOR_COUNT = "color_count"
+    const val EXTRA_THEME_NAME = "theme_name"
+    const val EXTRA_PALETTE_TYPE = "palette_type" // vibrant, muted, dominant, all
     
     private val wallpaperManager by lazy { android.app.WallpaperManager.getInstance(HexodusApplication.context) }
     

@@ -27,15 +27,13 @@ object MonetOverrideService {
     
 
     
-    companion object {
-        private const val TAG = "MonetOverrideService"
-        private const val ACTION_START_OVERRIDE = "com.hexodus.START_MONET_OVERRIDE"
-        private const val ACTION_STOP_OVERRIDE = "com.hexodus.STOP_MONET_OVERRIDE"
-        
-        // Intent extras
-        const val EXTRA_CUSTOM_COLOR = "custom_monet_color"
-        const val EXTRA_COMPONENT_SELECTION = "component_selection"
-    }
+    private const val TAG = "MonetOverrideService"
+    private const val ACTION_START_OVERRIDE = "com.hexodus.START_MONET_OVERRIDE"
+    private const val ACTION_STOP_OVERRIDE = "com.hexodus.STOP_MONET_OVERRIDE"
+    
+    // Intent extras
+    const val EXTRA_CUSTOM_COLOR = "custom_monet_color"
+    const val EXTRA_COMPONENT_SELECTION = "component_selection"
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action

@@ -32,15 +32,13 @@ object FoldableDisplayService {
     
 
 
-    companion object {
-        private const val TAG = "FoldableDisplayService"
-        private const val ACTION_START_MONITORING = "com.hexodus.START_FOLDABLE_MONITORING"
-        private const val ACTION_STOP_MONITORING = "com.hexodus.STOP_FOLDABLE_MONITORING"
+    private const val TAG = "FoldableDisplayService"
+    private const val ACTION_START_MONITORING = "com.hexodus.START_FOLDABLE_MONITORING"
+    private const val ACTION_STOP_MONITORING = "com.hexodus.STOP_FOLDABLE_MONITORING"
 
-        // Intent extras
-        const val EXTRA_COVER_SCREEN_LAYOUT = "cover_screen_layout"
-        const val EXTRA_MAIN_SCREEN_LAYOUT = "main_screen_layout"
-    }
+    // Intent extras
+    const val EXTRA_COVER_SCREEN_LAYOUT = "cover_screen_layout"
+    const val EXTRA_MAIN_SCREEN_LAYOUT = "main_screen_layout"
 
     private val windowInfoTracker by lazy { androidx.window.layout.WindowInfoTracker.getOrCreate(HexodusApplication.context) }
     private var isCoverScreen = false

@@ -34,20 +34,18 @@ object DeviceSpecificService {
     
 
     
-    companion object {
-        private const val TAG = "DeviceSpecificService"
-        private const val ACTION_GET_DEVICE_INFO = "com.hexodus.GET_DEVICE_INFO"
-        private const val ACTION_OPTIMIZE_FOR_FOLDABLE = "com.hexodus.OPTIMIZE_FOR_FOLDABLE"
-        private const val ACTION_GET_DISPLAY_FEATURES = "com.hexodus.GET_DISPLAY_FEATURES"
-        private const val ACTION_MANAGE_DEX_MODE = "com.hexodus.MANAGE_DEX_MODE"
-        private const val ACTION_GET_BIXBY_CAPABILITIES = "com.hexodus.GET_BIXBY_CAPABILITIES"
-        private const val ACTION_MANAGE_ONE_UI_FEATURES = "com.hexodus.MANAGE_ONE_UI_FEATURES"
-        
-        // Intent extras
-        const val EXTRA_DEX_MODE = "dex_mode" // desktop, phone, auto
-        const val EXTRA_FEATURE_NAME = "feature_name"
-        const val EXTRA_FEATURE_ENABLED = "feature_enabled"
-    }
+    private const val TAG = "DeviceSpecificService"
+    private const val ACTION_GET_DEVICE_INFO = "com.hexodus.GET_DEVICE_INFO"
+    private const val ACTION_OPTIMIZE_FOR_FOLDABLE = "com.hexodus.OPTIMIZE_FOR_FOLDABLE"
+    private const val ACTION_GET_DISPLAY_FEATURES = "com.hexodus.GET_DISPLAY_FEATURES"
+    private const val ACTION_MANAGE_DEX_MODE = "com.hexodus.MANAGE_DEX_MODE"
+    private const val ACTION_GET_BIXBY_CAPABILITIES = "com.hexodus.GET_BIXBY_CAPABILITIES"
+    private const val ACTION_MANAGE_ONE_UI_FEATURES = "com.hexodus.MANAGE_ONE_UI_FEATURES"
+    
+    // Intent extras
+    const val EXTRA_DEX_MODE = "dex_mode" // desktop, phone, auto
+    const val EXTRA_FEATURE_NAME = "feature_name"
+    const val EXTRA_FEATURE_ENABLED = "feature_enabled"
     
     private val windowInfoTracker by lazy { androidx.window.layout.WindowInfoTracker.getOrCreate(HexodusApplication.context) }
     private var isMonitoringDisplays = false

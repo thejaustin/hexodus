@@ -26,23 +26,21 @@ object AccessibilityCheckerService {
     
 
     
-    companion object {
-        private const val TAG = "AccessibilityCheckerService"
-        private const val ACTION_RUN_ACCESSIBILITY_CHECKS = "com.hexodus.RUN_ACCESSIBILITY_CHECKS"
-        private const val ACTION_VALIDATE_COMPONENT = "com.hexodus.VALIDATE_COMPONENT"
-        private const val ACTION_GET_ACCESSIBILITY_STATUS = "com.hexodus.GET_ACCESSIBILITY_STATUS"
-        
-        // Intent extras
-        const val EXTRA_COMPONENT_TYPE = "component_type"  // button, text_field, icon, etc.
-        const val EXTRA_FOREGROUND_COLOR = "foreground_color"
-        const val EXTRA_BACKGROUND_COLOR = "background_color"
-        const val EXTRA_TEXT_SIZE = "text_size"
-        const val EXTRA_WIDTH_DP = "width_dp"
-        const val EXTRA_HEIGHT_DP = "height_dp"
-        const val EXTRA_LABEL = "label"
-        const val EXTRA_HINT = "hint"
-        const val EXTRA_CONTENT_DESCRIPTION = "content_description"
-    }
+    private const val TAG = "AccessibilityCheckerService"
+    private const val ACTION_RUN_ACCESSIBILITY_CHECKS = "com.hexodus.RUN_ACCESSIBILITY_CHECKS"
+    private const val ACTION_VALIDATE_COMPONENT = "com.hexodus.VALIDATE_COMPONENT"
+    private const val ACTION_GET_ACCESSIBILITY_STATUS = "com.hexodus.GET_ACCESSIBILITY_STATUS"
+    
+    // Intent extras
+    const val EXTRA_COMPONENT_TYPE = "component_type"  // button, text_field, icon, etc.
+    const val EXTRA_FOREGROUND_COLOR = "foreground_color"
+    const val EXTRA_BACKGROUND_COLOR = "background_color"
+    const val EXTRA_TEXT_SIZE = "text_size"
+    const val EXTRA_WIDTH_DP = "width_dp"
+    const val EXTRA_HEIGHT_DP = "height_dp"
+    const val EXTRA_LABEL = "label"
+    const val EXTRA_HINT = "hint"
+    const val EXTRA_CONTENT_DESCRIPTION = "content_description"
     
     private val accessibilityManager by lazy { context.getSystemService(android.content.Context.ACCESSIBILITY_SERVICE) as android.view.accessibility.AccessibilityManager }
     

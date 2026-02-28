@@ -1,5 +1,6 @@
 package com.hexodus.ui
 
+import androidx.navigation.NavController
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
@@ -34,10 +35,8 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.content.ContextCompat
 import com.hexodus.services.ShizukuBridge
-
 import kotlinx.coroutines.launch
 import com.hexodus.services.ThemeManager
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainActivityScreen(navController: NavController? = null) {
@@ -52,13 +51,11 @@ fun MainActivityScreen(navController: NavController? = null) {
     var isLauncherThemed by remember { mutableStateOf(true) }
     var isPreviewVisible by remember { mutableStateOf(false) }
     var shizukuConnected by remember { mutableStateOf(false) }
-
     // Check Shizuku connection status
     LaunchedEffect(Unit) {
         // In a real implementation, we would check the actual Shizuku status
         shizukuConnected = true // Placeholder
     }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -88,17 +85,11 @@ fun MainActivityScreen(navController: NavController? = null) {
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
-
                 Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
                     text = "Create custom themes using hex colors",
                     style = MaterialTheme.typography.bodyLarge, // Larger body text for accessibility
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
-                )
-
                 Spacer(modifier = Modifier.height(12.dp))
-
                 // Shizuku status indicator
                 Row(
                     verticalAlignment = Alignment.CenterVertically
@@ -114,40 +105,20 @@ fun MainActivityScreen(navController: NavController? = null) {
                         text = if (shizukuConnected) "Shizuku Connected" else "Shizuku Disconnected",
                         style = MaterialTheme.typography.bodyMedium, // Larger text for accessibility
                         color = if (shizukuConnected) Color.Green else Color.Red
-                    )
                 }
             }
         }
         
         // Hex Color Input - M3E compliant
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min), // Ensures minimum touch target size
-            colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant
-            ),
             shape = RoundedCornerShape(20.dp) // M3E shape standard
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
                     .padding(20.dp) // Increased padding for accessibility
-            ) {
-                Text(
                     text = "Theme Color",
                     style = MaterialTheme.typography.headlineSmall, // M3E typography standard
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
                     // Color preview box
                     Box(
                         modifier = Modifier
@@ -166,9 +137,7 @@ fun MainActivityScreen(navController: NavController? = null) {
                                 )
                         )
                     }
-
                     Spacer(modifier = Modifier.width(20.dp)) // Increased spacing
-
                     // Hex input field
                     TextField(
                         value = hexColor,
@@ -179,7 +148,6 @@ fun MainActivityScreen(navController: NavController? = null) {
                         },
                         label = { Text("Hex Color") },
                         placeholder = { Text("#FF6200EE") },
-                        modifier = Modifier
                             .weight(1f)
                             .height(IntrinsicSize.Min), // Ensures minimum touch target size
                         singleLine = true,
@@ -187,42 +155,13 @@ fun MainActivityScreen(navController: NavController? = null) {
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                             disabledIndicatorColor = Color.Transparent
-                        )
-                    )
-                }
-            }
-        }
-        
         // Theme Name Input - M3E compliant
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min), // Ensures minimum touch target size
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
-            ),
-            shape = RoundedCornerShape(20.dp) // M3E shape standard
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp) // Increased padding for accessibility
-            ) {
-                Text(
                     text = "Theme Name",
-                    style = MaterialTheme.typography.headlineSmall, // M3E typography standard
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
                 TextField(
                     value = themeName,
                     onValueChange = { themeName = it },
                     label = { Text("Theme Name") },
                     placeholder = { Text("My Custom Theme") },
-                    modifier = Modifier
                         .fillMaxWidth()
                         .height(IntrinsicSize.Min), // Ensures minimum touch target size
                     singleLine = true,
@@ -230,114 +169,57 @@ fun MainActivityScreen(navController: NavController? = null) {
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                         disabledIndicatorColor = Color.Transparent
-                    )
-                )
-            }
-        }
-        
         // Components to Theme Section - M3E compliant
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min), // Ensures minimum touch target size
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
-            ),
-            shape = RoundedCornerShape(20.dp) // M3E shape standard
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
                     .padding(20.dp), // Increased padding for accessibility
                 verticalArrangement = Arrangement.spacedBy(16.dp) // Increased spacing for better readability
-            ) {
-                Text(
                     text = "Select Components to Theme",
-                    style = MaterialTheme.typography.headlineSmall, // M3E typography standard
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
                 // Component Selection Cards
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp) // Increased spacing for better readability
-                ) {
                     // Status Bar
                     ComponentSelectionItem(
                         name = "Status Bar",
                         isSelected = isStatusBarThemed,
                         onSelectedChange = { isStatusBarThemed = it }
-                    )
-
                     // Navigation Bar
-                    ComponentSelectionItem(
                         name = "Navigation Bar",
                         isSelected = isNavigationBarThemed,
                         onSelectedChange = { isNavigationBarThemed = it }
-                    )
-
                     // System UI
-                    ComponentSelectionItem(
                         name = "System UI",
                         isSelected = isSystemUIThemed,
                         onSelectedChange = { isSystemUIThemed = it }
-                    )
-
                     // Settings App
-                    ComponentSelectionItem(
                         name = "Settings App",
                         isSelected = isSettingsThemed,
                         onSelectedChange = { isSettingsThemed = it }
-                    )
-
                     // Launcher
-                    ComponentSelectionItem(
                         name = "Launcher",
                         isSelected = isLauncherThemed,
                         onSelectedChange = { isLauncherThemed = it }
-                    )
-                }
-            }
-        }
-        
         // Action Buttons - M3E compliant
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp) // Increased spacing for better readability
-        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp) // Increased spacing
-            ) {
                 OutlinedButton(
                     onClick = {
                         // Navigate to preview screen
                         navController?.navigate("preview/$hexColor/$themeName")
                     },
-                    modifier = Modifier
                         .weight(1f)
-                        .height(IntrinsicSize.Min), // Ensures minimum touch target size
                     colors = ButtonDefaults.outlinedButtonColors(
                         contentColor = MaterialTheme.colorScheme.primary // M3E color standard
                     ),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-                ) {
-                    Icon(
                         Icons.Default.Visibility,
                         contentDescription = "Preview theme", // Accessibility description
                         modifier = Modifier.size(20.dp) // Proper icon size
-                    )
                     Spacer(modifier = Modifier.width(12.dp))
-                    Text(
                         "Preview",
                         style = MaterialTheme.typography.labelLarge // M3E typography standard
-                    )
-                }
-
-                OutlinedButton(
-                    onClick = {
                         // Save theme
                         val themedComponents = hashMapOf(
                             "status_bar" to isStatusBarThemed,
@@ -345,35 +227,13 @@ fun MainActivityScreen(navController: NavController? = null) {
                             "system_ui" to isSystemUIThemed,
                             "settings" to isSettingsThemed,
                             "launcher" to isLauncherThemed
-                        )
-
                         scope.launch {
                             ThemeManager.createTheme(hexColor, themeName, themedComponents)
                         }
-
                         Toast.makeText(context, "Theme saved!", Toast.LENGTH_SHORT).show()
-                    },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(IntrinsicSize.Min), // Ensures minimum touch target size
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.primary // M3E color standard
-                    ),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-                ) {
-                    Icon(
                         Icons.Default.Save,
                         contentDescription = "Save theme", // Accessibility description
-                        modifier = Modifier.size(20.dp) // Proper icon size
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(
                         "Save",
-                        style = MaterialTheme.typography.labelLarge // M3E typography standard
-                    )
-                }
-            }
-
             Button(
                 onClick = {
                     // Apply theme
@@ -383,70 +243,40 @@ fun MainActivityScreen(navController: NavController? = null) {
                         "system_ui" to isSystemUIThemed,
                         "settings" to isSettingsThemed,
                         "launcher" to isLauncherThemed
-                    )
-
                     scope.launch {
                         ThemeManager.createTheme(hexColor, themeName, themedComponents)
                         val themeFile = java.io.File(context.filesDir, "${themeName}_${System.currentTimeMillis()}.apk").absolutePath
                         ThemeManager.applyTheme(themeFile)
-                    }
-
                     Toast.makeText(context, "Applying theme...", Toast.LENGTH_SHORT).show()
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
                     .height(IntrinsicSize.Min), // Ensures minimum touch target size
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary, // M3E color standard
                     contentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            ) {
                 Icon(
                     Icons.Default.ColorLens,
                     contentDescription = "Apply theme", // Accessibility description
                     modifier = Modifier.size(20.dp) // Proper icon size
-                )
                 Spacer(modifier = Modifier.width(12.dp))
-                Text(
                     "Apply Theme",
                     style = MaterialTheme.typography.labelLarge // M3E typography standard
-                )
-            }
-        }
-        
         // Preview section if visible - M3E compliant
         if (isPreviewVisible) {
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min), // Ensures minimum touch target size
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer
                 ),
                 shape = RoundedCornerShape(20.dp) // M3E shape standard
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
                         .padding(20.dp) // Increased padding for accessibility
-                ) {
-                    Text(
                         text = "Theme Preview",
                         style = MaterialTheme.typography.headlineSmall, // M3E typography standard
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface
-                    )
-
                     Spacer(modifier = Modifier.height(12.dp))
-
                     // Preview elements
                     Row(
-                        modifier = Modifier
                             .fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Box(
-                            modifier = Modifier
                                 .size(72.dp) // Larger preview for better visibility
                                 .clip(RoundedCornerShape(12.dp)), // M3E shape standard
                             contentAlignment = Alignment.Center
@@ -461,79 +291,20 @@ fun MainActivityScreen(navController: NavController? = null) {
                                         ))
                                     )
                             )
-                        }
-
-                        Box(
-                            modifier = Modifier
-                                .size(72.dp) // Larger preview for better visibility
-                                .clip(RoundedCornerShape(12.dp)), // M3E shape standard
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(60.dp)
-                                    .clip(RoundedCornerShape(8.dp))
                                     .background(MaterialTheme.colorScheme.surface)
-                            )
-                        }
-
-                        Box(
-                            modifier = Modifier
-                                .size(72.dp) // Larger preview for better visibility
-                                .clip(RoundedCornerShape(12.dp)), // M3E shape standard
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(60.dp)
-                                    .clip(RoundedCornerShape(8.dp))
                                     .background(MaterialTheme.colorScheme.primary)
-                            )
-                        }
-                    }
-                }
-            }
-        }
-        
         // Info Card - M3E compliant
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min), // Ensures minimum touch target size
-            colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer
-            ),
-            shape = RoundedCornerShape(20.dp) // M3E shape standard
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp) // Increased padding for accessibility
-            ) {
-                Text(
                     text = "Info",
-                    style = MaterialTheme.typography.headlineSmall, // M3E typography standard
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
                     text = "This app uses Shizuku for system-level theming without root access. Make sure Shizuku is installed and properly configured.",
                     style = MaterialTheme.typography.bodyMedium // Larger text for accessibility
-                )
-            }
-        }
-    }
 }
-
-@Composable
 fun ComponentSelectionItem(
     name: String,
     isSelected: Boolean,
     onSelectedChange: (Boolean) -> Unit
 ) {
     Card(
-        modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min), // Ensures minimum touch target size
         colors = CardDefaults.cardColors(
@@ -541,14 +312,10 @@ fun ComponentSelectionItem(
         ),
         shape = RoundedCornerShape(16.dp), // M3E shape standard
         onClick = { onSelectedChange(!isSelected) }
-    ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
                 .padding(16.dp), // Increased padding for accessibility
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
-        ) {
             Text(
                 text = name,
                 style = MaterialTheme.typography.titleMedium, // Larger text for accessibility
@@ -558,7 +325,3 @@ fun ComponentSelectionItem(
                 checked = isSelected,
                 onCheckedChange = onSelectedChange,
                 modifier = Modifier.size(48.dp) // Larger touch target for accessibility
-            )
-        }
-    }
-}

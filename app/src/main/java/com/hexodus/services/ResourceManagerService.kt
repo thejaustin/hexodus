@@ -31,23 +31,21 @@ object ResourceManagerService {
     
 
     
-    companion object {
-        private const val TAG = "ResourceManagerService"
-        private const val ACTION_CREATE_OVERLAY = "com.hexodus.CREATE_OVERLAY"
-        private const val ACTION_UPDATE_OVERLAY = "com.hexodus.UPDATE_OVERLAY"
-        private const val ACTION_DELETE_OVERLAY = "com.hexodus.DELETE_OVERLAY"
-        private const val ACTION_LIST_OVERLAYS = "com.hexodus.LIST_OVERLAYS"
-        private const val ACTION_EXPORT_OVERLAY = "com.hexodus.EXPORT_OVERLAY"
-        private const val ACTION_IMPORT_OVERLAY = "com.hexodus.IMPORT_OVERLAY"
-        
-        // Intent extras
-        const val EXTRA_OVERLAY_NAME = "overlay_name"
-        const val EXTRA_OVERLAY_PACKAGE = "overlay_package"
-        const val EXTRA_OVERLAY_RESOURCES = "overlay_resources"
-        const val EXTRA_OVERLAY_PATH = "overlay_path"
-        const val EXTRA_TARGET_PACKAGES = "target_packages"
-        const val EXTRA_OVERLAY_PRIORITY = "overlay_priority"
-    }
+    private const val TAG = "ResourceManagerService"
+    private const val ACTION_CREATE_OVERLAY = "com.hexodus.CREATE_OVERLAY"
+    private const val ACTION_UPDATE_OVERLAY = "com.hexodus.UPDATE_OVERLAY"
+    private const val ACTION_DELETE_OVERLAY = "com.hexodus.DELETE_OVERLAY"
+    private const val ACTION_LIST_OVERLAYS = "com.hexodus.LIST_OVERLAYS"
+    private const val ACTION_EXPORT_OVERLAY = "com.hexodus.EXPORT_OVERLAY"
+    private const val ACTION_IMPORT_OVERLAY = "com.hexodus.IMPORT_OVERLAY"
+    
+    // Intent extras
+    const val EXTRA_OVERLAY_NAME = "overlay_name"
+    const val EXTRA_OVERLAY_PACKAGE = "overlay_package"
+    const val EXTRA_OVERLAY_RESOURCES = "overlay_resources"
+    const val EXTRA_OVERLAY_PATH = "overlay_path"
+    const val EXTRA_TARGET_PACKAGES = "target_packages"
+    const val EXTRA_OVERLAY_PRIORITY = "overlay_priority"
     
     private val themeCompiler = com.hexodus.core.ThemeCompiler()
     

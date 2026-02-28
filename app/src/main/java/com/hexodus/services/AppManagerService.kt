@@ -23,22 +23,20 @@ object AppManagerService {
     
 
     
-    companion object {
-        private const val TAG = "AppManagerService"
-        private const val ACTION_FREEZE_APP = "com.hexodus.FREEZE_APP"
-        private const val ACTION_UNFREEZE_APP = "com.hexodus.UNFREEZE_APP"
-        private const val ACTION_HIDE_APP = "com.hexodus.HIDE_APP"
-        private const val ACTION_UNHIDE_APP = "com.hexodus.UNHIDE_APP"
-        private const val ACTION_FORCE_STOP_APP = "com.hexodus.FORCE_STOP_APP"
-        private const val ACTION_BATCH_OPERATION = "com.hexodus.BATCH_OPERATION"
-        private const val ACTION_GET_APP_INFO = "com.hexodus.GET_APP_INFO"
-        
-        // Intent extras
-        const val EXTRA_PACKAGE_NAME = "package_name"
-        const val EXTRA_PACKAGE_NAMES = "package_names"
-        const val EXTRA_OPERATION_TYPE = "operation_type"
-        const val EXTRA_INCLUDE_SYSTEM_APPS = "include_system_apps"
-    }
+    private const val TAG = "AppManagerService"
+    private const val ACTION_FREEZE_APP = "com.hexodus.FREEZE_APP"
+    private const val ACTION_UNFREEZE_APP = "com.hexodus.UNFREEZE_APP"
+    private const val ACTION_HIDE_APP = "com.hexodus.HIDE_APP"
+    private const val ACTION_UNHIDE_APP = "com.hexodus.UNHIDE_APP"
+    private const val ACTION_FORCE_STOP_APP = "com.hexodus.FORCE_STOP_APP"
+    private const val ACTION_BATCH_OPERATION = "com.hexodus.BATCH_OPERATION"
+    private const val ACTION_GET_APP_INFO = "com.hexodus.GET_APP_INFO"
+    
+    // Intent extras
+    const val EXTRA_PACKAGE_NAME = "package_name"
+    const val EXTRA_PACKAGE_NAMES = "package_names"
+    const val EXTRA_OPERATION_TYPE = "operation_type"
+    const val EXTRA_INCLUDE_SYSTEM_APPS = "include_system_apps"
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action

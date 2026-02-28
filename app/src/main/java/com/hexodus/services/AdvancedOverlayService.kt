@@ -25,26 +25,24 @@ object AdvancedOverlayService {
     
 
     
-    companion object {
-        private const val TAG = "AdvancedOverlayService"
-        private const val ACTION_CREATE_ADVANCED_OVERLAY = "com.hexodus.CREATE_ADVANCED_OVERLAY"
-        private const val ACTION_MANAGE_OVERLAY_PRIORITY = "com.hexodus.MANAGE_OVERLAY_PRIORITY"
-        private const val ACTION_GET_ACTIVE_OVERLAYS = "com.hexodus.GET_ACTIVE_OVERLAYS"
-        private const val ACTION_VALIDATE_OVERLAY = "com.hexodus.VALIDATE_OVERLAY"
-        private const val ACTION_BATCH_OPERATE_OVERLAYS = "com.hexodus.BATCH_OPERATE_OVERLAYS"
-        private const val ACTION_GET_OVERLAY_DEPENDENCIES = "com.hexodus.GET_OVERLAY_DEPENDENCIES"
-        
-        // Intent extras
-        const val EXTRA_OVERLAY_NAME = "overlay_name"
-        const val EXTRA_OVERLAY_PACKAGE = "overlay_package"
-        const val EXTRA_OVERLAY_RESOURCES = "overlay_resources"
-        const val EXTRA_TARGET_PACKAGES = "target_packages"
-        const val EXTRA_OVERLAY_PRIORITY = "overlay_priority"
-        const val EXTRA_OVERLAY_OPERATION = "overlay_operation" // enable, disable, remove
-        const val EXTRA_OVERLAY_BATCH = "overlay_batch"
-        const val EXTRA_VALIDATE_SIGNATURE = "validate_signature"
-        const val EXTRA_OVERLAY_PATH = "overlay_path"
-    }
+    private const val TAG = "AdvancedOverlayService"
+    private const val ACTION_CREATE_ADVANCED_OVERLAY = "com.hexodus.CREATE_ADVANCED_OVERLAY"
+    private const val ACTION_MANAGE_OVERLAY_PRIORITY = "com.hexodus.MANAGE_OVERLAY_PRIORITY"
+    private const val ACTION_GET_ACTIVE_OVERLAYS = "com.hexodus.GET_ACTIVE_OVERLAYS"
+    private const val ACTION_VALIDATE_OVERLAY = "com.hexodus.VALIDATE_OVERLAY"
+    private const val ACTION_BATCH_OPERATE_OVERLAYS = "com.hexodus.BATCH_OPERATE_OVERLAYS"
+    private const val ACTION_GET_OVERLAY_DEPENDENCIES = "com.hexodus.GET_OVERLAY_DEPENDENCIES"
+    
+    // Intent extras
+    const val EXTRA_OVERLAY_NAME = "overlay_name"
+    const val EXTRA_OVERLAY_PACKAGE = "overlay_package"
+    const val EXTRA_OVERLAY_RESOURCES = "overlay_resources"
+    const val EXTRA_TARGET_PACKAGES = "target_packages"
+    const val EXTRA_OVERLAY_PRIORITY = "overlay_priority"
+    const val EXTRA_OVERLAY_OPERATION = "overlay_operation" // enable, disable, remove
+    const val EXTRA_OVERLAY_BATCH = "overlay_batch"
+    const val EXTRA_VALIDATE_SIGNATURE = "validate_signature"
+    const val EXTRA_OVERLAY_PATH = "overlay_path"
     
     private val overlayDir = File(getExternalFilesDir(null), "overlays")
     

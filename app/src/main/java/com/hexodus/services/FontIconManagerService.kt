@@ -30,25 +30,23 @@ object FontIconManagerService {
     
 
     
-    companion object {
-        private const val TAG = "FontIconManagerService"
-        private const val ACTION_INSTALL_FONT = "com.hexodus.INSTALL_FONT"
-        private const val ACTION_INSTALL_ICON_PACK = "com.hexodus.INSTALL_ICON_PACK"
-        private const val ACTION_GET_AVAILABLE_FONTS = "com.hexodus.GET_AVAILABLE_FONTS"
-        private const val ACTION_GET_AVAILABLE_ICON_PACKS = "com.hexodus.GET_AVAILABLE_ICON_PACKS"
-        private const val ACTION_APPLY_FONT = "com.hexodus.APPLY_FONT"
-        private const val ACTION_APPLY_ICON_PACK = "com.hexodus.APPLY_ICON_PACK"
-        private const val ACTION_GET_CURRENT_FONT = "com.hexodus.GET_CURRENT_FONT"
-        private const val ACTION_GET_CURRENT_ICON_PACK = "com.hexodus.GET_CURRENT_ICON_PACK"
-        
-        // Intent extras
-        const val EXTRA_FONT_PATH = "font_path"
-        const val EXTRA_FONT_NAME = "font_name"
-        const val EXTRA_ICON_PACK_PATH = "icon_pack_path"
-        const val EXTRA_ICON_PACK_NAME = "icon_pack_name"
-        const val EXTRA_FONT_FAMILY = "font_family"
-        const val EXTRA_ICON_PACK_PACKAGE = "icon_pack_package"
-    }
+    private const val TAG = "FontIconManagerService"
+    private const val ACTION_INSTALL_FONT = "com.hexodus.INSTALL_FONT"
+    private const val ACTION_INSTALL_ICON_PACK = "com.hexodus.INSTALL_ICON_PACK"
+    private const val ACTION_GET_AVAILABLE_FONTS = "com.hexodus.GET_AVAILABLE_FONTS"
+    private const val ACTION_GET_AVAILABLE_ICON_PACKS = "com.hexodus.GET_AVAILABLE_ICON_PACKS"
+    private const val ACTION_APPLY_FONT = "com.hexodus.APPLY_FONT"
+    private const val ACTION_APPLY_ICON_PACK = "com.hexodus.APPLY_ICON_PACK"
+    private const val ACTION_GET_CURRENT_FONT = "com.hexodus.GET_CURRENT_FONT"
+    private const val ACTION_GET_CURRENT_ICON_PACK = "com.hexodus.GET_CURRENT_ICON_PACK"
+    
+    // Intent extras
+    const val EXTRA_FONT_PATH = "font_path"
+    const val EXTRA_FONT_NAME = "font_name"
+    const val EXTRA_ICON_PACK_PATH = "icon_pack_path"
+    const val EXTRA_ICON_PACK_NAME = "icon_pack_name"
+    const val EXTRA_FONT_FAMILY = "font_family"
+    const val EXTRA_ICON_PACK_PACKAGE = "icon_pack_package"
     
     private val fontsDir = File("/system/fonts")
     private val iconPacksDir = File(getExternalFilesDir(null), "icon_packs")

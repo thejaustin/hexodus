@@ -24,24 +24,22 @@ object PrivacySecurityService {
     
 
     
-    companion object {
-        private const val TAG = "PrivacySecurityService"
-        private const val ACTION_LOCK_APP = "com.hexodus.LOCK_APP"
-        private const val ACTION_UNLOCK_APP = "com.hexodus.UNLOCK_APP"
-        private const val ACTION_HIDE_FILE = "com.hexodus.HIDE_FILE"
-        private const val ACTION_UNHIDE_FILE = "com.hexodus.UNHIDE_FILE"
-        private const val ACTION_HIDE_APP = "com.hexodus.HIDE_APP_PRIVACY"
-        private const val ACTION_UNHIDE_APP = "com.hexodus.UNHIDE_APP_PRIVACY"
-        private const val ACTION_MANAGE_PRIVACY = "com.hexodus.MANAGE_PRIVACY"
-        private const val ACTION_SCAN_PRIVACY = "com.hexodus.SCAN_PRIVACY"
-        
-        // Intent extras
-        const val EXTRA_PACKAGE_NAME = "package_name"
-        const val EXTRA_FILE_PATH = "file_path"
-        const val EXTRA_LOCK_METHOD = "lock_method"
-        const val EXTRA_PRIVACY_RULES = "privacy_rules"
-        const val EXTRA_DEVICE_LOCK_STATE = "device_lock_state"
-    }
+    private const val TAG = "PrivacySecurityService"
+    private const val ACTION_LOCK_APP = "com.hexodus.LOCK_APP"
+    private const val ACTION_UNLOCK_APP = "com.hexodus.UNLOCK_APP"
+    private const val ACTION_HIDE_FILE = "com.hexodus.HIDE_FILE"
+    private const val ACTION_UNHIDE_FILE = "com.hexodus.UNHIDE_FILE"
+    private const val ACTION_HIDE_APP = "com.hexodus.HIDE_APP_PRIVACY"
+    private const val ACTION_UNHIDE_APP = "com.hexodus.UNHIDE_APP_PRIVACY"
+    private const val ACTION_MANAGE_PRIVACY = "com.hexodus.MANAGE_PRIVACY"
+    private const val ACTION_SCAN_PRIVACY = "com.hexodus.SCAN_PRIVACY"
+    
+    // Intent extras
+    const val EXTRA_PACKAGE_NAME = "package_name"
+    const val EXTRA_FILE_PATH = "file_path"
+    const val EXTRA_LOCK_METHOD = "lock_method"
+    const val EXTRA_PRIVACY_RULES = "privacy_rules"
+    const val EXTRA_DEVICE_LOCK_STATE = "device_lock_state"
     
     private val hiddenFiles = mutableSetOf<String>()
     private val lockedApps = mutableSetOf<String>()

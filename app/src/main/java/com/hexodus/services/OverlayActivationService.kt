@@ -21,16 +21,14 @@ object OverlayActivationService {
     
 
     
-    companion object {
-        private const val TAG = "OverlayActivationService"
-        const val ACTION_ACTIVATE_OVERLAY = "com.hexodus.ACTIVATE_OVERLAY"
-        const val ACTION_DEACTIVATE_OVERLAY = "com.hexodus.DEACTIVATE_OVERLAY"
-        const val ACTION_REFRESH_OVERLAYS = "com.hexodus.REFRESH_OVERLAYS"
-        
-        const val EXTRA_PACKAGE_NAME = "package_name"
-        const val EXTRA_APK_PATH = "apk_path"
-        const val EXTRA_VALIDATE_SIGNATURE = "validate_signature"
-    }
+    private const val TAG = "OverlayActivationService"
+    const val ACTION_ACTIVATE_OVERLAY = "com.hexodus.ACTIVATE_OVERLAY"
+    const val ACTION_DEACTIVATE_OVERLAY = "com.hexodus.DEACTIVATE_OVERLAY"
+    const val ACTION_REFRESH_OVERLAYS = "com.hexodus.REFRESH_OVERLAYS"
+    
+    const val EXTRA_PACKAGE_NAME = "package_name"
+    const val EXTRA_APK_PATH = "apk_path"
+    const val EXTRA_VALIDATE_SIGNATURE = "validate_signature"
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action

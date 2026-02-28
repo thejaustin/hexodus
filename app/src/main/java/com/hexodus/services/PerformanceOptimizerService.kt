@@ -30,20 +30,18 @@ object PerformanceOptimizerService {
     
 
     
-    companion object {
-        private const val TAG = "PerformanceOptimizerService"
-        private const val ACTION_GET_BATTERY_STATS = "com.hexodus.GET_BATTERY_STATS"
-        private const val ACTION_OPTIMIZE_APP = "com.hexodus.OPTIMIZE_APP"
-        private const val ACTION_MANAGE_POWER_MODE = "com.hexodus.MANAGE_POWER_MODE"
-        private const val ACTION_GET_STORAGE_STATS = "com.hexodus.GET_STORAGE_STATS"
-        private const val ACTION_CLEAN_STORAGE = "com.hexodus.CLEAN_STORAGE"
-        private const val ACTION_GET_MEMORY_INFO = "com.hexodus.GET_MEMORY_INFO"
-        
-        // Intent extras
-        const val EXTRA_PACKAGE_NAME = "package_name"
-        const val EXTRA_POWER_MODE = "power_mode" // performance, balanced, battery_saver
-        const val EXTRA_CLEAN_SCOPE = "clean_scope" // cache, temp, all
-    }
+    private const val TAG = "PerformanceOptimizerService"
+    private const val ACTION_GET_BATTERY_STATS = "com.hexodus.GET_BATTERY_STATS"
+    private const val ACTION_OPTIMIZE_APP = "com.hexodus.OPTIMIZE_APP"
+    private const val ACTION_MANAGE_POWER_MODE = "com.hexodus.MANAGE_POWER_MODE"
+    private const val ACTION_GET_STORAGE_STATS = "com.hexodus.GET_STORAGE_STATS"
+    private const val ACTION_CLEAN_STORAGE = "com.hexodus.CLEAN_STORAGE"
+    private const val ACTION_GET_MEMORY_INFO = "com.hexodus.GET_MEMORY_INFO"
+    
+    // Intent extras
+    const val EXTRA_PACKAGE_NAME = "package_name"
+    const val EXTRA_POWER_MODE = "power_mode" // performance, balanced, battery_saver
+    const val EXTRA_CLEAN_SCOPE = "clean_scope" // cache, temp, all
     
     private val powerManager by lazy { context.getSystemService(android.content.Context.POWER_SERVICE) as android.os.PowerManager }
     

@@ -28,20 +28,18 @@ object HighContrastInjectorService {
     
 
     
-    companion object {
-        private const val TAG = "HCInjectorService"
-        private const val ACTION_INJECT_HC_THEME = "com.hexodus.INJECT_HC_THEME"
-        private const val ACTION_REMOVE_HC_THEME = "com.hexodus.REMOVE_HC_THEME"
-        private const val ACTION_LIST_HC_THEMES = "com.hexodus.LIST_HC_THEMES"
-        
-        // Intent extras
-        const val EXTRA_HEX_COLOR = "hex_color"
-        const val EXTRA_THEME_NAME = "theme_name"
-        const val EXTRA_COMPONENTS = "components"
-        
-        private const val HIGH_CONTRAST_PACKAGE = "com.android.internal.display.cutout.emulation.corner"
-        private const val OVERLAY_ASSETS_DIR = "assets/overlays"
-    }
+    private const val TAG = "HCInjectorService"
+    private const val ACTION_INJECT_HC_THEME = "com.hexodus.INJECT_HC_THEME"
+    private const val ACTION_REMOVE_HC_THEME = "com.hexodus.REMOVE_HC_THEME"
+    private const val ACTION_LIST_HC_THEMES = "com.hexodus.LIST_HC_THEMES"
+    
+    // Intent extras
+    const val EXTRA_HEX_COLOR = "hex_color"
+    const val EXTRA_THEME_NAME = "theme_name"
+    const val EXTRA_COMPONENTS = "components"
+    
+    private const val HIGH_CONTRAST_PACKAGE = "com.android.internal.display.cutout.emulation.corner"
+    private const val OVERLAY_ASSETS_DIR = "assets/overlays"
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action

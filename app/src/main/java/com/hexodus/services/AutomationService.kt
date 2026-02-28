@@ -29,25 +29,23 @@ object AutomationService {
     
 
     
-    companion object {
-        private const val TAG = "AutomationService"
-        private const val ACTION_CREATE_AUTOMATION = "com.hexodus.CREATE_AUTOMATION"
-        private const val ACTION_EXECUTE_AUTOMATION = "com.hexodus.EXECUTE_AUTOMATION"
-        private const val ACTION_GET_AUTOMATIONS = "com.hexodus.GET_AUTOMATIONS"
-        private const val ACTION_DELETE_AUTOMATION = "com.hexodus.DELETE_AUTOMATION"
-        private const val ACTION_ENABLE_AUTOMATION = "com.hexodus.ENABLE_AUTOMATION"
-        private const val ACTION_DISABLE_AUTOMATION = "com.hexodus.DISABLE_AUTOMATION"
-        private const val ACTION_SCHEDULE_AUTOMATION = "com.hexodus.SCHEDULE_AUTOMATION"
-        
-        // Intent extras
-        const val EXTRA_AUTOMATION_NAME = "automation_name"
-        const val EXTRA_AUTOMATION_TRIGGER = "automation_trigger" // app_launch, time, location, battery, etc.
-        const val EXTRA_AUTOMATION_ACTIONS = "automation_actions" // list of actions to perform
-        const val EXTRA_AUTOMATION_CONDITIONS = "automation_conditions" // conditions for execution
-        const val EXTRA_AUTOMATION_ENABLED = "automation_enabled"
-        const val EXTRA_SCHEDULE_TIME = "schedule_time"
-        const val EXTRA_REPEAT_INTERVAL = "repeat_interval"
-    }
+    private const val TAG = "AutomationService"
+    private const val ACTION_CREATE_AUTOMATION = "com.hexodus.CREATE_AUTOMATION"
+    private const val ACTION_EXECUTE_AUTOMATION = "com.hexodus.EXECUTE_AUTOMATION"
+    private const val ACTION_GET_AUTOMATIONS = "com.hexodus.GET_AUTOMATIONS"
+    private const val ACTION_DELETE_AUTOMATION = "com.hexodus.DELETE_AUTOMATION"
+    private const val ACTION_ENABLE_AUTOMATION = "com.hexodus.ENABLE_AUTOMATION"
+    private const val ACTION_DISABLE_AUTOMATION = "com.hexodus.DISABLE_AUTOMATION"
+    private const val ACTION_SCHEDULE_AUTOMATION = "com.hexodus.SCHEDULE_AUTOMATION"
+    
+    // Intent extras
+    const val EXTRA_AUTOMATION_NAME = "automation_name"
+    const val EXTRA_AUTOMATION_TRIGGER = "automation_trigger" // app_launch, time, location, battery, etc.
+    const val EXTRA_AUTOMATION_ACTIONS = "automation_actions" // list of actions to perform
+    const val EXTRA_AUTOMATION_CONDITIONS = "automation_conditions" // conditions for execution
+    const val EXTRA_AUTOMATION_ENABLED = "automation_enabled"
+    const val EXTRA_SCHEDULE_TIME = "schedule_time"
+    const val EXTRA_REPEAT_INTERVAL = "repeat_interval"
     
     private val automationExecutor = Executors.newSingleThreadExecutor()
     private val scheduledTasks = mutableMapOf<String, TimerTask>()

@@ -28,28 +28,26 @@ object FeatureFlagsService {
     
 
 
-    companion object {
-        private const val TAG = "FeatureFlagsService"
-        
-        const val ACTION_TOGGLE_FLAG = "com.hexodus.TOGGLE_FEATURE_FLAG"
-        const val ACTION_ENABLE_NOW_BRIEF = "com.hexodus.ENABLE_NOW_BRIEF"
-        const val ACTION_BYPASS_SCOPED_STORAGE = "com.hexodus.BYPASS_SCOPED_STORAGE"
-        const val ACTION_GET_BATTERY_HEALTH = "com.hexodus.GET_BATTERY_HEALTH"
-        const val ACTION_SET_PERFORMANCE_PROFILE = "com.hexodus.SET_PERFORMANCE_PROFILE"
-        const val ACTION_TOGGLE_ENHANCED_PROCESSING = "com.hexodus.TOGGLE_ENHANCED_PROCESSING"
-        const val ACTION_TOGGLE_VERTICAL_DRAWER = "com.hexodus.TOGGLE_VERTICAL_DRAWER"
-        const val ACTION_TOGGLE_CIRCLE_TO_SEARCH = "com.hexodus.TOGGLE_CIRCLE_TO_SEARCH"
-        const val ACTION_TOGGLE_NOW_BAR = "com.hexodus.TOGGLE_NOW_BAR"
-        const val ACTION_TOGGLE_NOTIFICATION_COOLDOWN = "com.hexodus.TOGGLE_NOTIFICATION_COOLDOWN"
-        const val ACTION_TOGGLE_DESKTOP_MODE = "com.hexodus.TOGGLE_DESKTOP_MODE"
-        const val ACTION_TOGGLE_SCREEN_OFF_FOD = "com.hexodus.TOGGLE_SCREEN_OFF_FOD"
-        const val ACTION_TOGGLE_SENSITIVE_REDACTION = "com.hexodus.TOGGLE_SENSITIVE_REDACTION"
-        const val ACTION_TOGGLE_NEW_QS = "com.hexodus.TOGGLE_NEW_QS"
-        const val ACTION_RESTORE_DEFAULTS = "com.hexodus.RESTORE_DEFAULTS"
+    private const val TAG = "FeatureFlagsService"
+    
+    const val ACTION_TOGGLE_FLAG = "com.hexodus.TOGGLE_FEATURE_FLAG"
+    const val ACTION_ENABLE_NOW_BRIEF = "com.hexodus.ENABLE_NOW_BRIEF"
+    const val ACTION_BYPASS_SCOPED_STORAGE = "com.hexodus.BYPASS_SCOPED_STORAGE"
+    const val ACTION_GET_BATTERY_HEALTH = "com.hexodus.GET_BATTERY_HEALTH"
+    const val ACTION_SET_PERFORMANCE_PROFILE = "com.hexodus.SET_PERFORMANCE_PROFILE"
+    const val ACTION_TOGGLE_ENHANCED_PROCESSING = "com.hexodus.TOGGLE_ENHANCED_PROCESSING"
+    const val ACTION_TOGGLE_VERTICAL_DRAWER = "com.hexodus.TOGGLE_VERTICAL_DRAWER"
+    const val ACTION_TOGGLE_CIRCLE_TO_SEARCH = "com.hexodus.TOGGLE_CIRCLE_TO_SEARCH"
+    const val ACTION_TOGGLE_NOW_BAR = "com.hexodus.TOGGLE_NOW_BAR"
+    const val ACTION_TOGGLE_NOTIFICATION_COOLDOWN = "com.hexodus.TOGGLE_NOTIFICATION_COOLDOWN"
+    const val ACTION_TOGGLE_DESKTOP_MODE = "com.hexodus.TOGGLE_DESKTOP_MODE"
+    const val ACTION_TOGGLE_SCREEN_OFF_FOD = "com.hexodus.TOGGLE_SCREEN_OFF_FOD"
+    const val ACTION_TOGGLE_SENSITIVE_REDACTION = "com.hexodus.TOGGLE_SENSITIVE_REDACTION"
+    const val ACTION_TOGGLE_NEW_QS = "com.hexodus.TOGGLE_NEW_QS"
+    const val ACTION_RESTORE_DEFAULTS = "com.hexodus.RESTORE_DEFAULTS"
 
-        const val EXTRA_FLAG_NAME = "flag_name"
-        const val EXTRA_FLAG_STATE = "flag_state"
-    }
+    const val EXTRA_FLAG_NAME = "flag_name"
+    const val EXTRA_FLAG_STATE = "flag_state"
 
     private val prefsManager by lazy { PrefsManager.getInstance(HexodusApplication.context) }
     private val scope = CoroutineScope(Dispatchers.IO)

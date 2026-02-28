@@ -23,19 +23,17 @@ object GestureManagerService {
     
 
     
-    companion object {
-        private const val TAG = "GestureManagerService"
-        private const val ACTION_REGISTER_GESTURE = "com.hexodus.REGISTER_GESTURE"
-        private const val ACTION_EXECUTE_ACTION = "com.hexodus.EXECUTE_ACTION"
-        private const val ACTION_LIST_GESTURES = "com.hexodus.LIST_GESTURES"
-        
-        // Intent extras
-        const val EXTRA_GESTURE_TYPE = "gesture_type"
-        const val EXTRA_GESTURE_ACTION = "gesture_action"
-        const val EXTRA_GESTURE_PARAMS = "gesture_params"
-        const val EXTRA_ACTION_TYPE = "action_type"
-        const val EXTRA_ACTION_TARGET = "action_target"
-    }
+    private const val TAG = "GestureManagerService"
+    private const val ACTION_REGISTER_GESTURE = "com.hexodus.REGISTER_GESTURE"
+    private const val ACTION_EXECUTE_ACTION = "com.hexodus.EXECUTE_ACTION"
+    private const val ACTION_LIST_GESTURES = "com.hexodus.LIST_GESTURES"
+    
+    // Intent extras
+    const val EXTRA_GESTURE_TYPE = "gesture_type"
+    const val EXTRA_GESTURE_ACTION = "gesture_action"
+    const val EXTRA_GESTURE_PARAMS = "gesture_params"
+    const val EXTRA_ACTION_TYPE = "action_type"
+    const val EXTRA_ACTION_TARGET = "action_target"
     
     private val registeredGestures = mutableMapOf<String, String>() // gesture_type to action mapping
     

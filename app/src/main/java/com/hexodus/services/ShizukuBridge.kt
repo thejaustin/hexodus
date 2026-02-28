@@ -71,7 +71,12 @@ object ShizukuBridge {
         return try {
             // Execute the command using Shizuku's privileged shell access.
             // Using the public API in Shizuku 13+
-            val process = Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
+            
+            // Use reflection because newProcess is private in some versions
+            val newProcessMethod = Shizuku::class.java.getDeclaredMethod("newProcess", Array<String>::class.java, Array<String>::class.java, String::class.java)
+            newProcessMethod.isAccessible = true
+            val process = newProcessMethod.invoke(null, arrayOf("sh", "-c", command), null, null) as rikka.shizuku.ShizukuRemoteProcess
+        
             val output = process.inputStream.bufferedReader().readText()
             val errorOutput = process.errorStream.bufferedReader().readText()
             val exitCode = process.waitFor()

@@ -35,24 +35,22 @@ object AdvancedFeatureService {
     
 
     
-    companion object {
-        private const val TAG = "AdvancedFeatureService"
-        private const val ACTION_APPLY_WALLPAPER_THEME = "com.hexodus.APPLY_WALLPAPER_THEME"
-        private const val ACTION_INSPECT_SYSTEM_RESOURCES = "com.hexodus.INSPECT_SYSTEM_RESOURCES"
-        private const val ACTION_MANAGE_APP_GROUPS = "com.hexodus.MANAGE_APP_GROUPS"
-        private const val ACTION_CUSTOMIZE_QUICK_SETTINGS = "com.hexodus.CUSTOMIZE_QUICK_SETTINGS"
-        private const val ACTION_MODIFY_STATUS_BAR_ICONS = "com.hexodus.MODIFY_STATUS_BAR_ICONS"
-        private const val ACTION_CONTROL_SYSTEM_ANIMATIONS = "com.hexodus.CONTROL_SYSTEM_ANIMATIONS"
-        
-        // Intent extras
-        const val EXTRA_WALLPAPER_PATH = "wallpaper_path"
-        const val EXTRA_RESOURCE_PACKAGE = "resource_package"
-        const val EXTRA_APP_GROUP_NAME = "app_group_name"
-        const val EXTRA_APPS_IN_GROUP = "apps_in_group"
-        const val EXTRA_QS_TILE_CONFIG = "qs_tile_config"
-        const val EXTRA_STATUS_BAR_ICONS = "status_bar_icons"
-        const val EXTRA_ANIMATION_SCALE = "animation_scale"
-    }
+    private const val TAG = "AdvancedFeatureService"
+    private const val ACTION_APPLY_WALLPAPER_THEME = "com.hexodus.APPLY_WALLPAPER_THEME"
+    private const val ACTION_INSPECT_SYSTEM_RESOURCES = "com.hexodus.INSPECT_SYSTEM_RESOURCES"
+    private const val ACTION_MANAGE_APP_GROUPS = "com.hexodus.MANAGE_APP_GROUPS"
+    private const val ACTION_CUSTOMIZE_QUICK_SETTINGS = "com.hexodus.CUSTOMIZE_QUICK_SETTINGS"
+    private const val ACTION_MODIFY_STATUS_BAR_ICONS = "com.hexodus.MODIFY_STATUS_BAR_ICONS"
+    private const val ACTION_CONTROL_SYSTEM_ANIMATIONS = "com.hexodus.CONTROL_SYSTEM_ANIMATIONS"
+    
+    // Intent extras
+    const val EXTRA_WALLPAPER_PATH = "wallpaper_path"
+    const val EXTRA_RESOURCE_PACKAGE = "resource_package"
+    const val EXTRA_APP_GROUP_NAME = "app_group_name"
+    const val EXTRA_APPS_IN_GROUP = "apps_in_group"
+    const val EXTRA_QS_TILE_CONFIG = "qs_tile_config"
+    const val EXTRA_STATUS_BAR_ICONS = "status_bar_icons"
+    const val EXTRA_ANIMATION_SCALE = "animation_scale"
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action

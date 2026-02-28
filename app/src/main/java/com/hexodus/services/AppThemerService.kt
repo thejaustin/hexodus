@@ -23,17 +23,15 @@ object AppThemerService {
     
 
     
-    companion object {
-        private const val TAG = "AppThemerService"
-        private const val ACTION_FORCE_DARK_MODE = "com.hexodus.FORCE_DARK_MODE"
-        private const val ACTION_SET_APP_THEME = "com.hexodus.SET_APP_THEME"
-        private const val ACTION_GET_APP_THEME = "com.hexodus.GET_APP_THEME"
-        
-        // Intent extras
-        const val EXTRA_PACKAGE_NAME = "package_name"
-        const val EXTRA_FORCE_DARK = "force_dark"
-        const val EXTRA_THEME_CONFIG = "theme_config"
-    }
+    private const val TAG = "AppThemerService"
+    private const val ACTION_FORCE_DARK_MODE = "com.hexodus.FORCE_DARK_MODE"
+    private const val ACTION_SET_APP_THEME = "com.hexodus.SET_APP_THEME"
+    private const val ACTION_GET_APP_THEME = "com.hexodus.GET_APP_THEME"
+    
+    // Intent extras
+    const val EXTRA_PACKAGE_NAME = "package_name"
+    const val EXTRA_FORCE_DARK = "force_dark"
+    const val EXTRA_THEME_CONFIG = "theme_config"
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
