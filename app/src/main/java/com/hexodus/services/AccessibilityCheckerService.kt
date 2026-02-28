@@ -1,9 +1,7 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
 import android.os.Build
-import android.os.IBinder
 import android.util.Log
 import android.view.accessibility.AccessibilityManager
 import android.content.Context
@@ -13,7 +11,7 @@ import com.hexodus.utils.AccessibilityUtils
  * AccessibilityCheckerService - Service for verifying accessibility compliance
  * Performs checks to ensure the app meets Android 16 accessibility standards
  */
-class AccessibilityCheckerService : Service() {
+object AccessibilityCheckerService {
     
     companion object {
         private const val TAG = "AccessibilityCheckerService"
@@ -35,15 +33,7 @@ class AccessibilityCheckerService : Service() {
     
     private lateinit var accessibilityManager: AccessibilityManager
     
-    override fun onCreate() {
-        super.onCreate()
-        accessibilityManager = getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-        Log.d(TAG, "AccessibilityCheckerService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -259,10 +249,5 @@ class AccessibilityCheckerService : Service() {
         } catch (e: Exception) {
             false
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "AccessibilityCheckerService destroyed")
     }
 }

@@ -1,11 +1,9 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.hardware.display.DisplayManager
 import android.os.Build
-import android.os.IBinder
 import android.provider.Settings
 import android.util.Log
 import android.view.Display
@@ -21,7 +19,7 @@ import kotlinx.coroutines.launch
  * DeviceSpecificService - Service for device-specific features and optimizations
  * Includes Samsung Z Flip 5 specific optimizations and foldable display support
  */
-class DeviceSpecificService : Service() {
+object DeviceSpecificService {
     
     companion object {
         private const val TAG = "DeviceSpecificService"
@@ -38,20 +36,10 @@ class DeviceSpecificService : Service() {
         const val EXTRA_FEATURE_ENABLED = "feature_enabled"
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
     private lateinit var windowInfoTracker: WindowInfoTracker
     private var isMonitoringDisplays = false
     
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        windowInfoTracker = WindowInfoTracker.getOrCreate(this)
-        Log.d(TAG, "DeviceSpecificService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -184,7 +172,7 @@ class DeviceSpecificService : Service() {
      */
     private fun manageDeXMode(mode: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -273,7 +261,7 @@ class DeviceSpecificService : Service() {
      */
     private fun manageOneUIFeature(featureName: String, enabled: Boolean) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -529,12 +517,6 @@ class DeviceSpecificService : Service() {
             else -> "8.0" // Default for future/mock
         }
     }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        if (isMonitoringDisplays) {
-            stopDisplayMonitoring()
-        }
         Log.d(TAG, "DeviceSpecificService destroyed")
     }
 }

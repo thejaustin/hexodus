@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 import android.content.Context
@@ -17,7 +15,7 @@ import java.io.OutputStream
  * FontIconManagerService - Service for font and icon management
  * Inspired by font and icon customization projects from awesome-shizuku
  */
-class FontIconManagerService : Service() {
+object FontIconManagerService {
     
     companion object {
         private const val TAG = "FontIconManagerService"
@@ -39,20 +37,10 @@ class FontIconManagerService : Service() {
         const val EXTRA_ICON_PACK_PACKAGE = "icon_pack_package"
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
     private val fontsDir = File("/system/fonts")
     private val iconPacksDir = File(getExternalFilesDir(null), "icon_packs")
     
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        iconPacksDir.mkdirs()
-        Log.d(TAG, "FontIconManagerService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -108,7 +96,7 @@ class FontIconManagerService : Service() {
      */
     private fun installFont(fontPath: String, fontName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -155,7 +143,7 @@ class FontIconManagerService : Service() {
      */
     private fun installIconPack(iconPackPath: String, iconPackName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -302,7 +290,7 @@ class FontIconManagerService : Service() {
      */
     private fun applyFont(fontFamily: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -336,7 +324,7 @@ class FontIconManagerService : Service() {
      */
     private fun applyIconPack(iconPackPackage: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -428,7 +416,7 @@ class FontIconManagerService : Service() {
      */
     private fun copyFontToSystem(fontFile: File, destinationName: String): Boolean {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return false
             }
@@ -490,7 +478,7 @@ class FontIconManagerService : Service() {
      */
     fun getAllSystemFonts(): List<String> {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return emptyList()
             }
@@ -515,7 +503,7 @@ class FontIconManagerService : Service() {
      */
     fun getAllIconPacks(): List<Map<String, String>> {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return emptyList()
             }
@@ -538,10 +526,5 @@ class FontIconManagerService : Service() {
             Log.e(TAG, "Error getting icon packs: ${e.message}", e)
             return emptyList()
         }
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "FontIconManagerService destroyed")
     }
 }

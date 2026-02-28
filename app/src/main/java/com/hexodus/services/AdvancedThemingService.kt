@@ -52,12 +52,10 @@ class AdvancedThemingService : LifecycleService() {
         const val EXTRA_TO_THEME = "to_theme"
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
     private lateinit var themeCompiler: ThemeCompiler
     
     override fun onCreate() {
         super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
         themeCompiler = ThemeCompiler()
         Log.d(TAG, "AdvancedThemingService created")
     }
@@ -118,7 +116,7 @@ class AdvancedThemingService : LifecycleService() {
     private fun createGradientTheme(colors: List<String>, componentName: String) {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                if (!shizukuBridgeService.isReady()) {
+                if (!ShizukuBridge.isReady()) {
                     Log.e(TAG, "Shizuku is not ready")
                     return@launch
                 }
@@ -167,11 +165,11 @@ class AdvancedThemingService : LifecycleService() {
                 FileOutputStream(tempFile).use { it.write(themeData) }
                 
                 // Install the overlay using Shizuku
-                val installSuccess = shizukuBridgeService.installApk(tempFile.absolutePath)
+                val installSuccess = ShizukuBridge.installApk(tempFile.absolutePath)
                 
                 if (installSuccess) {
                     // Enable the overlay
-                    val enableSuccess = shizukuBridgeService.executeOverlayCommand(packageName, "enable")
+                    val enableSuccess = ShizukuBridge.executeOverlayCommand(packageName, "enable")
                     
                     if (enableSuccess) {
                         Log.d(TAG, "Successfully created and enabled gradient theme: $packageName")
@@ -222,7 +220,7 @@ class AdvancedThemingService : LifecycleService() {
      */
     private fun createAnimatedTheme(animationType: String, hexColor: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -259,11 +257,11 @@ class AdvancedThemingService : LifecycleService() {
             FileOutputStream(tempFile).use { it.write(themeData) }
             
             // Install the overlay using Shizuku
-            val installSuccess = shizukuBridgeService.installApk(tempFile.absolutePath)
+            val installSuccess = ShizukuBridge.installApk(tempFile.absolutePath)
             
             if (installSuccess) {
                 // Enable the overlay
-                val enableSuccess = shizukuBridgeService.executeOverlayCommand(packageName, "enable")
+                val enableSuccess = ShizukuBridge.executeOverlayCommand(packageName, "enable")
                 
                 if (enableSuccess) {
                     Log.d(TAG, "Successfully created and enabled animated theme: $packageName")
@@ -313,7 +311,7 @@ class AdvancedThemingService : LifecycleService() {
      */
     private fun createTextureTheme(texturePath: String, hexColor: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -355,11 +353,11 @@ class AdvancedThemingService : LifecycleService() {
             FileOutputStream(tempFile).use { it.write(themeData) }
             
             // Install the overlay using Shizuku
-            val installSuccess = shizukuBridgeService.installApk(tempFile.absolutePath)
+            val installSuccess = ShizukuBridge.installApk(tempFile.absolutePath)
             
             if (installSuccess) {
                 // Enable the overlay
-                val enableSuccess = shizukuBridgeService.executeOverlayCommand(packageName, "enable")
+                val enableSuccess = ShizukuBridge.executeOverlayCommand(packageName, "enable")
                 
                 if (enableSuccess) {
                     Log.d(TAG, "Successfully created and enabled texture theme: $packageName")
@@ -460,7 +458,7 @@ class AdvancedThemingService : LifecycleService() {
      */
     private fun applyThemeTransition(speed: Int, fromTheme: String, toTheme: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -511,7 +509,7 @@ class AdvancedThemingService : LifecycleService() {
      */
     private fun createThemeAnimation(duration: Int, animationType: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -548,11 +546,11 @@ class AdvancedThemingService : LifecycleService() {
             FileOutputStream(tempFile).use { it.write(themeData) }
             
             // Install the overlay using Shizuku
-            val installSuccess = shizukuBridgeService.installApk(tempFile.absolutePath)
+            val installSuccess = ShizukuBridge.installApk(tempFile.absolutePath)
             
             if (installSuccess) {
                 // Enable the overlay
-                val enableSuccess = shizukuBridgeService.executeOverlayCommand(packageName, "enable")
+                val enableSuccess = ShizukuBridge.executeOverlayCommand(packageName, "enable")
                 
                 if (enableSuccess) {
                     Log.d(TAG, "Successfully created and enabled animated theme: $packageName")
@@ -602,7 +600,7 @@ class AdvancedThemingService : LifecycleService() {
      */
     fun generatePaletteFromImage(imagePath: String): Map<String, Int>? {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return null
             }
@@ -668,7 +666,7 @@ class AdvancedThemingService : LifecycleService() {
      */
     fun createThemeFromImage(imagePath: String, componentName: String = "status_bar"): Boolean {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return false
             }

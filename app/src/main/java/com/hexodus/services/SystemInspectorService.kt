@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 import android.content.pm.PackageManager
@@ -13,7 +11,7 @@ import java.io.File
  * SystemInspectorService - Service for system resource inspection and management
  * Inspired by LibChecker and other system inspection projects from awesome-shizuku
  */
-class SystemInspectorService : Service() {
+object SystemInspectorService {
     
     companion object {
         private const val TAG = "SystemInspectorService"
@@ -31,18 +29,9 @@ class SystemInspectorService : Service() {
         const val EXTRA_INSPECTION_SCOPE = "inspection_scope" // full, libraries, permissions
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
     private val pm: PackageManager by lazy { applicationContext.packageManager }
     
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        Log.d(TAG, "SystemInspectorService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -97,7 +86,7 @@ class SystemInspectorService : Service() {
      */
     private fun getAppLibraries(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -159,7 +148,7 @@ class SystemInspectorService : Service() {
      */
     private fun getSystemProperty(propertyName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -171,7 +160,7 @@ class SystemInspectorService : Service() {
             }
             
             val command = "getprop $propertyName"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "Retrieved system property: $propertyName = $result")
@@ -205,13 +194,13 @@ class SystemInspectorService : Service() {
      */
     private fun getAllSystemProperties() {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
             
             val command = "getprop"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 // Parse properties
@@ -257,7 +246,7 @@ class SystemInspectorService : Service() {
      */
     private fun getAppResources(packageName: String, resourceType: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -319,7 +308,7 @@ class SystemInspectorService : Service() {
      */
     private fun getInstallationSource(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -331,7 +320,7 @@ class SystemInspectorService : Service() {
             }
             
             val command = "pm dump $sanitizedPackageName | grep -i install"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             val source = if (result != null) {
                 when {
@@ -367,7 +356,7 @@ class SystemInspectorService : Service() {
      */
     private fun getAppAbi(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -408,7 +397,7 @@ class SystemInspectorService : Service() {
      */
     private fun getSystemHealth() {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -447,7 +436,7 @@ class SystemInspectorService : Service() {
      */
     fun getAppDetails(packageName: String): Map<String, Any>? {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return null
             }
@@ -494,7 +483,7 @@ class SystemInspectorService : Service() {
      */
     private fun getAppSizeInfo(packageName: String): Map<String, Long> {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return emptyMap()
             }
@@ -518,7 +507,7 @@ class SystemInspectorService : Service() {
      */
     fun getAllInstalledApps(): List<Map<String, Any>> {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return emptyList()
             }
@@ -552,10 +541,5 @@ class SystemInspectorService : Service() {
             Log.e(TAG, "Error getting installed apps: ${e.message}", e)
             return emptyList()
         }
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "SystemInspectorService destroyed")
     }
 }

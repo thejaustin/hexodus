@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 
@@ -10,7 +8,7 @@ import com.hexodus.utils.SecurityUtils
  * SecurityValidationService - Service for performing security validations
  * Ensures all operations comply with security best practices
  */
-class SecurityValidationService : Service() {
+object SecurityValidationService {
     
     companion object {
         private const val TAG = "SecurityValidationService"
@@ -28,9 +26,7 @@ class SecurityValidationService : Service() {
         const val EXTRA_PACKAGE_NAME = "package_name"
     }
     
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -296,10 +292,5 @@ class SecurityValidationService : Service() {
      */
     fun sanitizePackageName(packageName: String): String {
         return SecurityUtils.sanitizePackageName(packageName)
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "SecurityValidationService destroyed")
     }
 }

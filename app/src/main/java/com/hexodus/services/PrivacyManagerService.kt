@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 import android.content.pm.PackageManager
@@ -14,7 +12,7 @@ import android.Manifest
  * PrivacyManagerService - Service for privacy and permission management
  * Inspired by privacy-focused projects from awesome-shizuku
  */
-class PrivacyManagerService : Service() {
+object PrivacyManagerService {
     
     companion object {
         private const val TAG = "PrivacyManagerService"
@@ -32,17 +30,7 @@ class PrivacyManagerService : Service() {
         const val EXTRA_TRACKING_LEVEL = "tracking_level"
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
-    
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        Log.d(TAG, "PrivacyManagerService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -94,7 +82,7 @@ class PrivacyManagerService : Service() {
      */
     private fun getAppPermissions(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -152,7 +140,7 @@ class PrivacyManagerService : Service() {
      */
     private fun setAppPermission(packageName: String, permissionName: String, granted: Boolean) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -225,7 +213,7 @@ class PrivacyManagerService : Service() {
      */
     private fun manageAppTracking(packageName: String, trackingLevel: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -303,7 +291,7 @@ class PrivacyManagerService : Service() {
      */
     fun getAppsUsingDangerousPermissions(): List<Map<String, Any>> {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return emptyList()
             }
@@ -341,7 +329,7 @@ class PrivacyManagerService : Service() {
      */
     fun revokeDangerousPermissions(packageName: String): Boolean {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return false
             }
@@ -360,10 +348,5 @@ class PrivacyManagerService : Service() {
             Log.e(TAG, "Error revoking permissions: ${e.message}", e)
             return false
         }
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "PrivacyManagerService destroyed")
     }
 }

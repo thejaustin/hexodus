@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 
@@ -10,7 +8,7 @@ import com.hexodus.utils.SecurityUtils
  * AppManagerService - Service for advanced app management
  * Inspired by Hail, Ice Box, and Inure App Manager projects from awesome-shizuku
  */
-class AppManagerService : Service() {
+object AppManagerService {
     
     companion object {
         private const val TAG = "AppManagerService"
@@ -29,17 +27,7 @@ class AppManagerService : Service() {
         const val EXTRA_INCLUDE_SYSTEM_APPS = "include_system_apps"
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
-    
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        Log.d(TAG, "AppManagerService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -97,7 +85,7 @@ class AppManagerService : Service() {
      */
     private fun freezeApp(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -109,7 +97,7 @@ class AppManagerService : Service() {
             }
             
             val command = "pm disable-user --user 0 $sanitizedPackageName"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "App frozen: $sanitizedPackageName")
@@ -142,7 +130,7 @@ class AppManagerService : Service() {
      */
     private fun unfreezeApp(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -154,7 +142,7 @@ class AppManagerService : Service() {
             }
             
             val command = "pm enable $sanitizedPackageName"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "App unfrozen: $sanitizedPackageName")
@@ -187,7 +175,7 @@ class AppManagerService : Service() {
      */
     private fun hideApp(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -199,7 +187,7 @@ class AppManagerService : Service() {
             }
             
             val command = "pm hide $sanitizedPackageName"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "App hidden: $sanitizedPackageName")
@@ -232,7 +220,7 @@ class AppManagerService : Service() {
      */
     private fun unhideApp(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -244,7 +232,7 @@ class AppManagerService : Service() {
             }
             
             val command = "pm unhide $sanitizedPackageName"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "App unhidden: $sanitizedPackageName")
@@ -277,7 +265,7 @@ class AppManagerService : Service() {
      */
     private fun forceStopApp(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -289,7 +277,7 @@ class AppManagerService : Service() {
             }
             
             val command = "am force-stop $sanitizedPackageName"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "App force stopped: $sanitizedPackageName")
@@ -322,7 +310,7 @@ class AppManagerService : Service() {
      */
     private fun performBatchOperation(operationType: String, packageNames: ArrayList<String>) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -352,7 +340,7 @@ class AppManagerService : Service() {
                     }
                 }
                 
-                val result = shizukuBridgeService.executeShellCommand(command)
+                val result = ShizukuBridge.executeShellCommand(command)
                 
                 if (result != null) {
                     successCount++
@@ -385,7 +373,7 @@ class AppManagerService : Service() {
      */
     private fun getAppInfo(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -397,7 +385,7 @@ class AppManagerService : Service() {
             }
             
             val command = "dumpsys package $sanitizedPackageName"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "App info retrieved for: $sanitizedPackageName")
@@ -457,7 +445,7 @@ class AppManagerService : Service() {
      */
     fun getInstalledApps(includeSystemApps: Boolean = false): List<Map<String, String>> {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return emptyList()
             }
@@ -468,7 +456,7 @@ class AppManagerService : Service() {
                 "pm list packages -3 -f"  // Only third-party apps
             }
             
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (!result.isNullOrEmpty()) {
                 return result.lines()
@@ -491,10 +479,5 @@ class AppManagerService : Service() {
         }
         
         return emptyList()
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "AppManagerService destroyed")
     }
 }

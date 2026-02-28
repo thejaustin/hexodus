@@ -98,11 +98,14 @@ class MainActivity : ComponentActivity() {
 
     private fun startCoreServices() {
         try {
-            if (!ShizukuBridgeService.isRunning) {
-                startService(Intent(this, ShizukuBridgeService::class.java))
+            // ShizukuBridge is now a singleton object and doesn't need to be started as a service.
+            // Check if we need to request Shizuku permissions
+            if (!ShizukuBridge.isReady()) {
+                Log.d(TAG, "Shizuku not ready, requesting permission...")
+                ShizukuBridge.requestPermission()
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to start ShizukuBridgeService", e)
+            Log.e(TAG, "Failed to initialize ShizukuBridge", e)
         }
     }
 

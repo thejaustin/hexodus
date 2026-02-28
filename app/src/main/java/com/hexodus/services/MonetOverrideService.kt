@@ -1,11 +1,9 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.os.IBinder
 import android.util.Log
 import androidx.palette.graphics.Palette
 import com.hexodus.utils.ColorUtils
@@ -14,7 +12,7 @@ import com.hexodus.utils.ColorUtils
  * MonetOverrideService - Enhanced override for Material You color generation
  * Based on techniques from awesome-shizuku projects for system-level theming
  */
-class MonetOverrideService : Service() {
+object MonetOverrideService {
     
     companion object {
         private const val TAG = "MonetOverrideService"
@@ -26,9 +24,7 @@ class MonetOverrideService : Service() {
         const val EXTRA_COMPONENT_SELECTION = "component_selection"
     }
     
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {

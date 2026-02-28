@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 import android.content.Context
@@ -17,7 +15,7 @@ import androidx.annotation.RequiresApi
  * PerformanceOptimizerService - Service for system performance and optimization
  * Inspired by power management projects from awesome-shizuku
  */
-class PerformanceOptimizerService : Service() {
+object PerformanceOptimizerService {
     
     companion object {
         private const val TAG = "PerformanceOptimizerService"
@@ -34,19 +32,9 @@ class PerformanceOptimizerService : Service() {
         const val EXTRA_CLEAN_SCOPE = "clean_scope" // cache, temp, all
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
     private lateinit var powerManager: PowerManager
     
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
-        Log.d(TAG, "PerformanceOptimizerService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -85,7 +73,7 @@ class PerformanceOptimizerService : Service() {
      */
     private fun getBatteryStats() {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -126,7 +114,7 @@ class PerformanceOptimizerService : Service() {
      */
     private fun optimizeApp(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -160,7 +148,7 @@ class PerformanceOptimizerService : Service() {
      */
     private fun managePowerMode(mode: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -195,7 +183,7 @@ class PerformanceOptimizerService : Service() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getStorageStats() {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -237,7 +225,7 @@ class PerformanceOptimizerService : Service() {
      */
     private fun cleanStorage(scope: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -313,7 +301,7 @@ class PerformanceOptimizerService : Service() {
      */
     fun getAppPerformanceStats(packageName: String): Map<String, Any>? {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return null
             }
@@ -344,7 +332,7 @@ class PerformanceOptimizerService : Service() {
      */
     fun forceAppOptimization(packageName: String): Boolean {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return false
             }
@@ -363,10 +351,5 @@ class PerformanceOptimizerService : Service() {
             Log.e(TAG, "Error forcing app optimization: ${e.message}", e)
             return false
         }
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "PerformanceOptimizerService destroyed")
     }
 }

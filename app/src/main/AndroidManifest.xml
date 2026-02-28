@@ -53,45 +53,16 @@
             </intent-filter>
         </activity>
         
-        <!-- Shizuku Service Binding -->
-        <service
-            android:name=".services.ShizukuBridgeService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="specialUse"
-            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
-            
         <!-- Overlay Activation Service -->
-        <service
-            android:name=".services.OverlayActivationService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="specialUse" />
-            
+
         <!-- Material You Override Service -->
-        <service
-            android:name=".services.MonetOverrideService"
-            android:enabled="true"
-            android:exported="false" />
-            
+
         <!-- Foldable Display Listener Service -->
-        <service
-            android:name=".services.FoldableDisplayService"
-            android:enabled="true"
-            android:exported="false" />
-            
+
         <!-- High Contrast Injector Service -->
-        <service
-            android:name=".services.HighContrastInjectorService"
-            android:enabled="true"
-            android:exported="false" />
-            
+
         <!-- Theme Manager Service -->
-        <service
-            android:name=".services.ThemeManagerService"
-            android:enabled="true"
-            android:exported="false" />
-            
+
         <!-- Shizuku Provider -->
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
@@ -106,160 +77,56 @@
         </provider>
 
         <!-- System Tuner Service -->
-        <service
-            android:name=".services.SystemTunerService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- App Themer Service -->
-        <service
-            android:name=".services.AppThemerService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Gesture Manager Service -->
-        <service
-            android:name=".services.GestureManagerService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Media Notification Service -->
-        <service
-            android:name=".services.MediaNotificationService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Audio Manager Service -->
-        <service
-            android:name=".services.AudioManagerService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- App Manager Service -->
-        <service
-            android:name=".services.AppManagerService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Privacy Security Service -->
-        <service
-            android:name=".services.PrivacySecurityService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Network Firewall Service -->
-        <service
-            android:name=".services.NetworkFirewallService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="specialUse" />
 
         <!-- Power Manager Service -->
-        <service
-            android:name=".services.PowerManagerService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Device Specific Service -->
-        <service
-            android:name=".services.DeviceSpecificService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Advanced Feature Service -->
-        <service
-            android:name=".services.AdvancedFeatureService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Advanced Overlay Service -->
-        <service
-            android:name=".services.AdvancedOverlayService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Advanced Theming Service -->
-        <service
-            android:name=".services.AdvancedThemingService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Automation Service -->
-        <service
-            android:name=".services.AutomationService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Backup Restore Service -->
-        <service
-            android:name=".services.BackupRestoreService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Font Icon Manager Service -->
-        <service
-            android:name=".services.FontIconManagerService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Performance Optimizer Service -->
-        <service
-            android:name=".services.PerformanceOptimizerService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Privacy Manager Service -->
-        <service
-            android:name=".services.PrivacyManagerService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Resource Manager Service -->
-        <service
-            android:name=".services.ResourceManagerService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- System Inspector Service -->
-        <service
-            android:name=".services.SystemInspectorService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Wallpaper Themer Service -->
-        <service
-            android:name=".services.WallpaperThemerService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Dynamic Color Service -->
-        <service
-            android:name=".services.DynamicColorService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Accessibility Checker Service -->
-        <service
-            android:name=".services.AccessibilityCheckerService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Security Validation Service -->
-        <service
-            android:name=".services.SecurityValidationService"
-            android:enabled="true"
-            android:exported="false" />
+        
         <!-- Feature Flags Service -->
-        <service
-            android:name=".services.FeatureFlagsService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Shizuku Installer Service -->
-        <service
-            android:name=".services.ShizukuInstallerService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- File Provider for APK Installation -->
         <provider

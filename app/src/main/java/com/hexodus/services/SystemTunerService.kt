@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.core.ThemeCompiler
 import com.hexodus.utils.SecurityUtils
@@ -16,7 +14,7 @@ import kotlinx.coroutines.launch
  * SystemTunerService - Service for accessing and modifying hidden system settings
  * Inspired by System UI Tuner project from awesome-shizuku
  */
-class SystemTunerService : Service() {
+object SystemTunerService {
     
     companion object {
         private const val TAG = "SystemTunerService"
@@ -30,24 +28,14 @@ class SystemTunerService : Service() {
         const val EXTRA_SETTING_TYPE = "setting_type"
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
     private lateinit var prefsManager: PrefsManager
     private val scope = CoroutineScope(Dispatchers.IO)
-    
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        prefsManager = PrefsManager.getInstance(this)
-        Log.d(TAG, "SystemTunerService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
 
     private fun useEnhancedApi(): Boolean {
         return prefsManager.preferShizukuPlus && ShizukuPlusAPI.isEnhancedApiSupported()
     }
     
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -80,7 +68,7 @@ class SystemTunerService : Service() {
     private fun modifySystemSetting(key: String, value: String, type: String) {
         scope.launch {
             try {
-                if (!shizukuBridgeService.isReady()) {
+                if (!ShizukuBridge.isReady()) {
                     Log.e(TAG, "Shizuku is not ready")
                     return@launch
                 }
@@ -101,7 +89,7 @@ class SystemTunerService : Service() {
                         "LONG" -> "settings put system $key $value"
                         else -> "settings put system $key \"$value\""
                     }
-                    shizukuBridgeService.executeShellCommand(command)
+                    ShizukuBridge.executeShellCommand(command)
                 }
 
                 syncSystemState()
@@ -129,7 +117,7 @@ class SystemTunerService : Service() {
     private fun getSystemSetting(key: String) {
         scope.launch {
             try {
-                if (!shizukuBridgeService.isReady()) {
+                if (!ShizukuBridge.isReady()) {
                     Log.e(TAG, "Shizuku is not ready")
                     return@launch
                 }
@@ -144,7 +132,7 @@ class SystemTunerService : Service() {
                     ShizukuPlusAPI.Settings.getSystem(key)
                 } else {
                     val command = "settings get system $key"
-                    shizukuBridgeService.executeShellCommand(command)
+                    ShizukuBridge.executeShellCommand(command)
                 }
                 
                 if (result != null) {
@@ -168,7 +156,7 @@ class SystemTunerService : Service() {
     private fun toggleImmersiveMode() {
         scope.launch {
             try {
-                if (!shizukuBridgeService.isReady()) {
+                if (!ShizukuBridge.isReady()) {
                     Log.e(TAG, "Shizuku is not ready")
                     return@launch
                 }
@@ -177,7 +165,7 @@ class SystemTunerService : Service() {
                 val currentValue = if (useEnhancedApi()) {
                     ShizukuPlusAPI.Settings.getSystem("immersive_mode")
                 } else {
-                    shizukuBridgeService.executeShellCommand("settings get system immersive_mode")
+                    ShizukuBridge.executeShellCommand("settings get system immersive_mode")
                 }
                 
                 // Toggle immersive mode
@@ -186,7 +174,7 @@ class SystemTunerService : Service() {
                 if (useEnhancedApi()) {
                     ShizukuPlusAPI.Settings.putSystem("immersive_mode", newValue)
                 } else {
-                    shizukuBridgeService.executeShellCommand("settings put system immersive_mode $newValue")
+                    ShizukuBridge.executeShellCommand("settings put system immersive_mode $newValue")
                 }
                 
                 syncSystemState()
@@ -198,7 +186,7 @@ class SystemTunerService : Service() {
                 sendBroadcast(successIntent)
                 
                 // Refresh system UI to apply changes
-                val overlayService = OverlayActivationService()
+                 // Use OverlayManager instead
                 overlayService.refreshSystemUI()
             } catch (e: Exception) {
                 Log.e(TAG, "Error toggling immersive mode: ${e.message}", e)
@@ -210,12 +198,7 @@ class SystemTunerService : Service() {
         if (useEnhancedApi()) {
             ShizukuPlusAPI.Shell.executeCommand("am broadcast -a android.intent.action.CONFIGURATION_CHANGED")
         } else {
-            shizukuBridgeService.executeShellCommand("am broadcast -a android.intent.action.CONFIGURATION_CHANGED")
+            ShizukuBridge.executeShellCommand("am broadcast -a android.intent.action.CONFIGURATION_CHANGED")
         }
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "SystemTunerService destroyed")
     }
 }

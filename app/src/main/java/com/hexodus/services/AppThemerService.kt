@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 
@@ -10,7 +8,7 @@ import com.hexodus.utils.SecurityUtils
  * AppThemerService - Service for per-app theming features
  * Inspired by DarQ project from awesome-shizuku for per-app dark mode
  */
-class AppThemerService : Service() {
+object AppThemerService {
     
     companion object {
         private const val TAG = "AppThemerService"
@@ -24,17 +22,7 @@ class AppThemerService : Service() {
         const val EXTRA_THEME_CONFIG = "theme_config"
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
-    
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        Log.d(TAG, "AppThemerService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -71,7 +59,7 @@ class AppThemerService : Service() {
      */
     private fun setAppDarkMode(packageName: String, forceDark: Boolean) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -89,7 +77,7 @@ class AppThemerService : Service() {
                 "cmd overlay disable --package $sanitizedPackageName --category android.theme.customization.force_dark"
             }
             
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "Force dark mode ${if(forceDark) "enabled" else "disabled"} for: $sanitizedPackageName")
@@ -123,7 +111,7 @@ class AppThemerService : Service() {
      */
     private fun setAppTheme(packageName: String, themeConfig: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -158,7 +146,7 @@ class AppThemerService : Service() {
      */
     private fun getAppTheme(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -195,14 +183,14 @@ class AppThemerService : Service() {
      */
     fun getAppsForcedDark(): List<String> {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return emptyList()
             }
             
             // Query system for apps with force dark enabled
             val command = "cmd overlay list | grep force_dark"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (!result.isNullOrEmpty()) {
                 return result.lines()
@@ -217,10 +205,5 @@ class AppThemerService : Service() {
         }
         
         return emptyList()
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "AppThemerService destroyed")
     }
 }

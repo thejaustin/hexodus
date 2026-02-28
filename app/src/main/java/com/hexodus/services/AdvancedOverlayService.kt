@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 import android.content.pm.PackageManager
@@ -12,7 +10,7 @@ import java.io.File
  * AdvancedOverlayService - Advanced overlay management service
  * Inspired by overlay management projects from awesome-shizuku
  */
-class AdvancedOverlayService : Service() {
+object AdvancedOverlayService {
     
     companion object {
         private const val TAG = "AdvancedOverlayService"
@@ -35,19 +33,9 @@ class AdvancedOverlayService : Service() {
         const val EXTRA_OVERLAY_PATH = "overlay_path"
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
     private val overlayDir = File(getExternalFilesDir(null), "overlays")
     
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        overlayDir.mkdirs()
-        Log.d(TAG, "AdvancedOverlayService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -112,7 +100,7 @@ class AdvancedOverlayService : Service() {
         priority: Int
     ) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -165,7 +153,7 @@ class AdvancedOverlayService : Service() {
      */
     private fun manageOverlayPriority(packageName: String, priority: Int) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -205,7 +193,7 @@ class AdvancedOverlayService : Service() {
      */
     private fun getActiveOverlays() {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -260,7 +248,7 @@ class AdvancedOverlayService : Service() {
      */
     private fun validateOverlay(overlayPath: String, validateSignature: Boolean) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -314,7 +302,7 @@ class AdvancedOverlayService : Service() {
      */
     private fun batchOperateOverlays(overlayPackages: List<String>, operation: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -355,7 +343,7 @@ class AdvancedOverlayService : Service() {
      */
     private fun getOverlayDependencies(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -397,7 +385,7 @@ class AdvancedOverlayService : Service() {
      */
     fun getOverlayInfo(packageName: String): Map<String, Any>? {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return null
             }
@@ -432,7 +420,7 @@ class AdvancedOverlayService : Service() {
      */
     fun isOverlayEnabled(packageName: String): Boolean {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return false
             }
@@ -457,7 +445,7 @@ class AdvancedOverlayService : Service() {
      */
     fun getAllOverlays(): List<Map<String, Any>> {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return emptyList()
             }
@@ -488,10 +476,5 @@ class AdvancedOverlayService : Service() {
             Log.e(TAG, "Error getting all overlays: ${e.message}", e)
             return emptyList()
         }
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "AdvancedOverlayService destroyed")
     }
 }

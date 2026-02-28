@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 
@@ -10,7 +8,7 @@ import com.hexodus.utils.SecurityUtils
  * AudioManagerService - Service for audio system management
  * Inspired by RootlessJamesDSP project from awesome-shizuku for audio enhancement
  */
-class AudioManagerService : Service() {
+object AudioManagerService {
     
     companion object {
         private const val TAG = "AudioManagerService"
@@ -27,17 +25,7 @@ class AudioManagerService : Service() {
         const val EXTRA_SESSION_ID = "session_id"
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
-    
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        Log.d(TAG, "AudioManagerService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -76,7 +64,7 @@ class AudioManagerService : Service() {
      */
     private fun setEqualizer(sessionId: Int, eqValues: ArrayList<String>) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -111,7 +99,7 @@ class AudioManagerService : Service() {
      */
     private fun setBassBoost(sessionId: Int, level: Int) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -140,7 +128,7 @@ class AudioManagerService : Service() {
      */
     private fun setAudioEffect(effectType: String, effectValue: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -175,7 +163,7 @@ class AudioManagerService : Service() {
      */
     private fun getAudioSessions() {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -209,7 +197,7 @@ class AudioManagerService : Service() {
      */
     fun getCurrentAudioSession(): Map<String, Any> {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return emptyMap()
             }
@@ -227,10 +215,5 @@ class AudioManagerService : Service() {
             Log.e(TAG, "Error getting current audio session: ${e.message}", e)
             return emptyMap()
         }
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "AudioManagerService destroyed")
     }
 }

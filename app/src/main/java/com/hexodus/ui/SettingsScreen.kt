@@ -150,9 +150,7 @@ fun SettingsScreen(navController: NavController) {
                     Button(
                         onClick = {
                             isRestoring = true
-                            val intent = Intent("com.hexodus.RESTORE_DEFAULTS")
-                            intent.component = ComponentName(context, "com.hexodus.services.FeatureFlagsService")
-                            context.startService(intent)
+                            com.hexodus.services.FeatureFlagsService.restoreSystemDefaults()
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                         modifier = Modifier.align(Alignment.End),

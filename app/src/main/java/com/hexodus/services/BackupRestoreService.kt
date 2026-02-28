@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 import java.io.File
@@ -21,7 +19,7 @@ import com.hexodus.core.ThemeCompiler
  * BackupRestoreService - Service for theme backup and restore functionality
  * Inspired by backup features from various awesome-shizuku projects
  */
-class BackupRestoreService : Service() {
+object BackupRestoreService {
     
     companion object {
         private const val TAG = "BackupRestoreService"
@@ -43,7 +41,6 @@ class BackupRestoreService : Service() {
         const val EXTRA_INCLUDE_SYSTEM_SETTINGS = "include_system_settings"
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
     private val backupDir = File(getExternalFilesDir(null), "backups")
     
     data class BackupMetadata(
@@ -58,16 +55,7 @@ class BackupRestoreService : Service() {
         val overlayPackages: List<String>
     )
     
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        backupDir.mkdirs()
-        Log.d(TAG, "BackupRestoreService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -128,7 +116,7 @@ class BackupRestoreService : Service() {
         includeSystemSettings: Boolean
     ) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -270,7 +258,7 @@ class BackupRestoreService : Service() {
      */
     private fun restoreBackup(backupPath: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -309,10 +297,10 @@ class BackupRestoreService : Service() {
                 val tempFile = File(cacheDir, "${theme.name.replace(" ", "_")}.apk")
                 FileOutputStream(tempFile).use { it.write(themeData) }
                 
-                val installSuccess = shizukuBridgeService.installApk(tempFile.absolutePath)
+                val installSuccess = ShizukuBridge.installApk(tempFile.absolutePath)
                 if (installSuccess) {
                     // Enable the overlay
-                    shizukuBridgeService.executeOverlayCommand(tempFile.nameWithoutExtension, "enable")
+                    ShizukuBridge.executeOverlayCommand(tempFile.nameWithoutExtension, "enable")
                 }
                 
                 // Clean up temp file
@@ -439,7 +427,7 @@ class BackupRestoreService : Service() {
      */
     private fun exportTheme(themeName: String, exportPath: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -509,7 +497,7 @@ class BackupRestoreService : Service() {
      */
     private fun importTheme(themePath: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -726,7 +714,7 @@ class BackupRestoreService : Service() {
      */
     private fun applySystemSettings(settings: Map<String, Any>) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -750,7 +738,7 @@ class BackupRestoreService : Service() {
                     else -> continue
                 }
                 
-                shizukuBridgeService.executeShellCommand(command)
+                ShizukuBridge.executeShellCommand(command)
             }
             
             Log.d(TAG, "Applied ${settings.size} system settings from backup")
@@ -839,11 +827,6 @@ class BackupRestoreService : Service() {
             Log.e(TAG, "Error getting all backups: ${e.message}", e)
             return emptyList()
         }
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "BackupRestoreService destroyed")
     }
     
     // Data classes for backup functionality

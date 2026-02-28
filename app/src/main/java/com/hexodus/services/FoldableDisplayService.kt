@@ -1,10 +1,8 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.os.IBinder
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.WindowManager
@@ -20,7 +18,7 @@ import kotlinx.coroutines.launch
  * FoldableDisplayService - Enhanced handler for foldable display contexts
  * Optimized for Samsung Z Flip 5 and other foldable devices based on awesome-shizuku insights
  */
-class FoldableDisplayService : Service() {
+object FoldableDisplayService {
 
     companion object {
         private const val TAG = "FoldableDisplayService"
@@ -38,15 +36,7 @@ class FoldableDisplayService : Service() {
     private var isTabletopMode = false
     private var isFlatMode = false
 
-    override fun onCreate() {
-        super.onCreate()
-        windowInfoTracker = WindowInfoTracker.getOrCreate(this)
-        Log.d(TAG, "FoldableDisplayService created")
-    }
-
-    override fun onBind(intent: Intent?): IBinder? = null
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_START_MONITORING -> {
                 startMonitoringDisplays()
@@ -218,10 +208,5 @@ class FoldableDisplayService : Service() {
      */
     fun getCurrentDisplayMetrics(): DisplayMetrics {
         return resources.displayMetrics
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "FoldableDisplayService destroyed")
     }
 }

@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -13,7 +11,7 @@ import com.hexodus.utils.ColorUtils
  * DynamicColorService - Service for managing dynamic color schemes
  * Implements dynamic color generation and application based on user preferences
  */
-class DynamicColorService : Service() {
+object DynamicColorService {
     
     companion object {
         private const val TAG = "DynamicColorService"
@@ -28,9 +26,7 @@ class DynamicColorService : Service() {
         const val EXTRA_COLOR_INTENSITY = "color_intensity"
     }
     
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -249,10 +245,5 @@ class DynamicColorService : Service() {
             "surface" to Color(0xFFFFFFFF).toArgb(),
             "background" to Color(0xFFFFFFFF).toArgb()
         )
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "DynamicColorService destroyed")
     }
 }

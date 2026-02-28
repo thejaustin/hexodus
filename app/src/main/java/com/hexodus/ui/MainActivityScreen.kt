@@ -34,14 +34,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.content.ContextCompat
-import com.hexodus.services.ShizukuBridgeService
+import com.hexodus.services.ShizukuBridge
 
-import androidx.navigation.NavController
+import kotlinx.coroutines.launch
+import com.hexodus.services.ThemeManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainActivityScreen(navController: NavController? = null) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var hexColor by remember { mutableStateOf("#FF6200EE") }
     var themeName by remember { mutableStateOf("My Theme") }
     var isStatusBarThemed by remember { mutableStateOf(true) }
@@ -346,13 +348,9 @@ fun MainActivityScreen(navController: NavController? = null) {
                             "launcher" to isLauncherThemed
                         )
 
-                        val intent = Intent(context, ThemeManagerService::class.java).apply {
-                            action = "com.hexodus.CREATE_THEME"
-                            putExtra("hex_color", hexColor)
-                            putExtra("theme_name", themeName)
-                            putExtra("themed_components", themedComponents)
+                        scope.launch {
+                            ThemeManager.createTheme(hexColor, themeName, themedComponents)
                         }
-                        context.startService(intent)
 
                         Toast.makeText(context, "Theme saved!", Toast.LENGTH_SHORT).show()
                     },
@@ -388,13 +386,11 @@ fun MainActivityScreen(navController: NavController? = null) {
                         "launcher" to isLauncherThemed
                     )
 
-                    val intent = Intent(context, ThemeManagerService::class.java).apply {
-                        action = "com.hexodus.APPLY_THEME"
-                        putExtra("hex_color", hexColor)
-                        putExtra("theme_name", themeName)
-                        putExtra("themed_components", themedComponents)
+                    scope.launch {
+                        ThemeManager.createTheme(hexColor, themeName, themedComponents)
+                        val themeFile = java.io.File(context.filesDir, "${themeName}_${System.currentTimeMillis()}.apk").absolutePath
+                        ThemeManager.applyTheme(themeFile)
                     }
-                    context.startService(intent)
 
                     Toast.makeText(context, "Applying theme...", Toast.LENGTH_SHORT).show()
                 },

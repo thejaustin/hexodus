@@ -1,11 +1,9 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.AssetManager
 import android.os.Build
-import android.os.IBinder
 import android.util.Log
 import java.io.File
 import java.io.FileOutputStream
@@ -15,7 +13,7 @@ import java.security.MessageDigest
  * HighContrastInjectorService - Enhanced injection using Samsung's High Contrast vulnerability
  * Based on techniques from awesome-shizuku projects for system-level theming
  */
-class HighContrastInjectorService : Service() {
+object HighContrastInjectorService {
     
     companion object {
         private const val TAG = "HCInjectorService"
@@ -32,9 +30,7 @@ class HighContrastInjectorService : Service() {
         private const val OVERLAY_ASSETS_DIR = "assets/overlays"
     }
     
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -80,18 +76,18 @@ class HighContrastInjectorService : Service() {
             
             if (fakePackageName != null) {
                 // Install the fake package using Shizuku
-                val shizukuService = ShizukuBridgeService()
-                val installSuccess = shizukuService.installApk(fakePackageName)
+                 // Use ShizukuBridge instead
+                val installSuccess = ShizukuBridge.installApk(fakePackageName)
                 
                 if (installSuccess) {
                     // Enable the overlay
-                    val enableSuccess = shizukuService.executeOverlayCommand(fakePackageName, "enable")
+                    val enableSuccess = ShizukuBridge.executeOverlayCommand(fakePackageName, "enable")
                     
                     if (enableSuccess) {
                         Log.d(TAG, "Successfully injected high contrast theme: $fakePackageName")
                         
                         // Refresh system UI to apply changes
-                        val overlayService = OverlayActivationService()
+                         // Use OverlayManager instead
                         overlayService.refreshSystemUI()
                         
                         // Broadcast success

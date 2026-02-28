@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 import java.io.File
@@ -11,7 +9,7 @@ import java.io.File
  * PrivacySecurityService - Service for privacy and security features
  * Inspired by AppLock, Amarok-Hider, and PrivacyFlip projects from awesome-shizuku
  */
-class PrivacySecurityService : Service() {
+object PrivacySecurityService {
     
     companion object {
         private const val TAG = "PrivacySecurityService"
@@ -32,19 +30,10 @@ class PrivacySecurityService : Service() {
         const val EXTRA_DEVICE_LOCK_STATE = "device_lock_state"
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
     private val hiddenFiles = mutableSetOf<String>()
     private val lockedApps = mutableSetOf<String>()
     
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        Log.d(TAG, "PrivacySecurityService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -291,7 +280,7 @@ class PrivacySecurityService : Service() {
      */
     private fun hideApp(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -304,7 +293,7 @@ class PrivacySecurityService : Service() {
             
             // Use pm to hide the app
             val command = "pm hide $sanitizedPackageName"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "App hidden from launcher: $sanitizedPackageName")
@@ -337,7 +326,7 @@ class PrivacySecurityService : Service() {
      */
     private fun unhideApp(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -350,7 +339,7 @@ class PrivacySecurityService : Service() {
             
             // Use pm to unhide the app
             val command = "pm unhide $sanitizedPackageName"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "App unhidden from launcher: $sanitizedPackageName")
@@ -383,7 +372,7 @@ class PrivacySecurityService : Service() {
      */
     private fun managePrivacy(rules: String?, deviceLocked: Boolean) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -419,7 +408,7 @@ class PrivacySecurityService : Service() {
      */
     private fun scanForPrivacyIssues() {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -462,10 +451,5 @@ class PrivacySecurityService : Service() {
     fun getHiddenFiles(): Set<String> {
         val prefs = getSharedPreferences("hidden_files", 0)
         return prefs.getStringSet("hidden_files", mutableSetOf()) ?: mutableSetOf()
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "PrivacySecurityService destroyed")
     }
 }

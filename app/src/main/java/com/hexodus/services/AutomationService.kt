@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 import android.content.Context
@@ -16,7 +14,7 @@ import java.util.TimerTask
  * AutomationService - Service for system-level automation features
  * Inspired by automation projects from awesome-shizuku like MacroDroid, Tasker, and AutoJs6
  */
-class AutomationService : Service() {
+object AutomationService {
     
     companion object {
         private const val TAG = "AutomationService"
@@ -38,7 +36,6 @@ class AutomationService : Service() {
         const val EXTRA_REPEAT_INTERVAL = "repeat_interval"
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
     private val automationExecutor = Executors.newSingleThreadExecutor()
     private val scheduledTasks = mutableMapOf<String, TimerTask>()
     private val activeAutomations = mutableMapOf<String, AutomationConfig>()
@@ -53,15 +50,7 @@ class AutomationService : Service() {
         val repeatInterval: Long? = null
     )
     
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        Log.d(TAG, "AutomationService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -132,7 +121,7 @@ class AutomationService : Service() {
         enabled: Boolean
     ) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -206,7 +195,7 @@ class AutomationService : Service() {
      */
     private fun executeAutomation(automationName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -419,7 +408,7 @@ class AutomationService : Service() {
      */
     private fun launchApp(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -431,7 +420,7 @@ class AutomationService : Service() {
             }
             
             val command = "monkey -p $sanitizedPackageName -c android.intent.category.LAUNCHER 1"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "Launched app: $sanitizedPackageName")
@@ -448,7 +437,7 @@ class AutomationService : Service() {
      */
     private fun setBrightness(level: Int) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -457,7 +446,7 @@ class AutomationService : Service() {
             val clampedLevel = level.coerceIn(0, 255)
             
             val command = "settings put system screen_brightness $clampedLevel"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "Set brightness to: $clampedLevel")
@@ -474,7 +463,7 @@ class AutomationService : Service() {
      */
     private fun setVolume(streamType: String, level: Int) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -494,7 +483,7 @@ class AutomationService : Service() {
             val clampedLevel = level.coerceIn(0, 15)
             
             val command = "media volume --show --stream $streamIndex --set $clampedLevel"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "Set $streamType volume to: $clampedLevel")
@@ -511,13 +500,13 @@ class AutomationService : Service() {
      */
     private fun toggleWifi(enable: Boolean) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
             
             val command = if (enable) "svc wifi enable" else "svc wifi disable"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "WiFi ${if(enable) "enabled" else "disabled"}")
@@ -534,13 +523,13 @@ class AutomationService : Service() {
      */
     private fun toggleBluetooth(enable: Boolean) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
             
             val command = if (enable) "svc bluetooth enable" else "svc bluetooth disable"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "Bluetooth ${if(enable) "enabled" else "disabled"}")
@@ -557,13 +546,13 @@ class AutomationService : Service() {
      */
     private fun lockScreen() {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
             
             val command = "input keyevent KEYCODE_POWER"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "Screen locked")
@@ -580,14 +569,14 @@ class AutomationService : Service() {
      */
     private fun takeScreenshot() {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
             
             val timestamp = System.currentTimeMillis()
             val command = "screencap -p /sdcard/Pictures/Screenshots/screenshot_$timestamp.png"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "Screenshot taken")
@@ -648,12 +637,6 @@ class AutomationService : Service() {
         
         return removed
     }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        
-        // Cancel all scheduled tasks
-        scheduledTasks.values.forEach { it.cancel() }
         scheduledTasks.clear()
         
         // Shutdown executor

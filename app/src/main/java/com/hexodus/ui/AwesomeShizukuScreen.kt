@@ -189,14 +189,15 @@ fun AwesomeShizukuScreen(navController: NavController) {
                             Spacer(modifier = Modifier.height(8.dp))
                             LazyRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                 items(app.tags) { tag ->
+                                    val isShizukuPlus = tag == "Shizuku+"
                                     Surface(
-                                        color = if (isCompatible) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.outlineVariant,
+                                        color = if (isShizukuPlus) MaterialTheme.colorScheme.primary else if (isCompatible) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.outlineVariant,
                                         shape = MaterialTheme.shapes.small
                                     ) {
                                         Text(
                                             text = tag,
                                             style = MaterialTheme.typography.labelSmall,
-                                            color = if (isCompatible) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurface,
+                                            color = if (isShizukuPlus) MaterialTheme.colorScheme.onPrimary else if (isCompatible) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurface,
                                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                         )
                                     }
@@ -259,13 +260,15 @@ fun AwesomeShizukuScreen(navController: NavController) {
                             
                             LazyRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                 items(app.tags) { tag ->
+                                    val isShizukuPlus = tag == "Shizuku+"
                                     Surface(
-                                        color = MaterialTheme.colorScheme.surfaceVariant,
+                                        color = if (isShizukuPlus) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
                                         shape = MaterialTheme.shapes.small
                                     ) {
                                         Text(
                                             text = tag,
                                             style = MaterialTheme.typography.labelSmall,
+                                            color = if (isShizukuPlus) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                         )
                                     }

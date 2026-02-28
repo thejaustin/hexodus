@@ -1,50 +1,25 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
-import com.hexodus.utils.SecurityUtils
-import com.hexodus.utils.PrefsManager
-import moe.shizuku.plus.ShizukuPlusAPI
 
 /**
- * OverlayActivationService - Enhanced service for overlay management
- * Manages the activation and deactivation of theme overlays with additional security
+ * OverlayActivationService - Service that wraps OverlayManager to handle Intents
  */
-class OverlayActivationService : Service() {
+object OverlayActivationService {
     
     companion object {
         private const val TAG = "OverlayActivationService"
-        private const val ACTION_ACTIVATE_OVERLAY = "com.hexodus.ACTIVATE_OVERLAY"
-        private const val ACTION_DEACTIVATE_OVERLAY = "com.hexodus.DEACTIVATE_OVERLAY"
-        private const val ACTION_REFRESH_OVERLAYS = "com.hexodus.REFRESH_OVERLAYS"
+        const val ACTION_ACTIVATE_OVERLAY = "com.hexodus.ACTIVATE_OVERLAY"
+        const val ACTION_DEACTIVATE_OVERLAY = "com.hexodus.DEACTIVATE_OVERLAY"
+        const val ACTION_REFRESH_OVERLAYS = "com.hexodus.REFRESH_OVERLAYS"
         
-        // Intent extras
         const val EXTRA_PACKAGE_NAME = "package_name"
         const val EXTRA_APK_PATH = "apk_path"
         const val EXTRA_VALIDATE_SIGNATURE = "validate_signature"
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
-    private lateinit var prefsManager: PrefsManager
-    
-    override fun onCreate() {
-        super.onCreate()
-        Log.d(TAG, "OverlayActivationService created")
-        
-        // Initialize dependencies
-        shizukuBridgeService = ShizukuBridgeService()
-        prefsManager = PrefsManager.getInstance(this)
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-
-    private fun useEnhancedApi(): Boolean {
-        return prefsManager.preferShizukuPlus && ShizukuPlusAPI.isEnhancedApiSupported()
-    }
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -54,205 +29,31 @@ class OverlayActivationService : Service() {
                 val validateSignature = intent.getBooleanExtra(EXTRA_VALIDATE_SIGNATURE, true)
                 
                 if (!packageName.isNullOrEmpty() && !apkPath.isNullOrEmpty()) {
-                    activateOverlay(packageName, apkPath, validateSignature)
+                    val success = OverlayManager.activateOverlay(this, packageName, apkPath, validateSignature)
+                    val resultIntent = Intent(if (success) "OVERLAY_ACTIVATION_SUCCESS" else "OVERLAY_ACTIVATION_FAILURE")
+                    resultIntent.putExtra("package_name", packageName)
+                    sendBroadcast(resultIntent)
                 }
             }
             ACTION_DEACTIVATE_OVERLAY -> {
                 val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
-                
                 if (!packageName.isNullOrEmpty()) {
-                    deactivateOverlay(packageName)
+                    val success = OverlayManager.deactivateOverlay(this, packageName)
+                    val resultIntent = Intent(if (success) "OVERLAY_DEACTIVATION_SUCCESS" else "OVERLAY_DEACTIVATION_FAILURE")
+                    resultIntent.putExtra("package_name", packageName)
+                    sendBroadcast(resultIntent)
                 }
             }
             ACTION_REFRESH_OVERLAYS -> {
-                refreshSystemUI()
+                OverlayManager.refreshSystemUI(this)
             }
         }
         
         return START_STICKY
     }
-    
-    /**
-     * Activates an overlay using Shizuku with security validation
-     */
-    private fun activateOverlay(packageName: String, apkPath: String, validateSignature: Boolean = true) {
-        try {
-            // Validate the APK if required
-            if (validateSignature) {
-                if (!SecurityUtils.validateApkSignature(apkPath)) {
-                    Log.e(TAG, "APK signature validation failed: $apkPath")
-                    return
-                }
-            }
-            
-            // First install the APK if needed
-            val installSuccess = if (useEnhancedApi()) {
-                try { ShizukuPlusAPI.PackageManager.installPackage(apkPath); true } catch (e: Exception) { false }
-            } else {
-                shizukuBridgeService.installApk(apkPath)
-            }
-            
-            if (!installSuccess) {
-                Log.e(TAG, "Failed to install overlay APK: $apkPath")
-                return
-            }
-            
-            // Then enable the overlay
-            val enableSuccess = if (useEnhancedApi()) {
-                try { ShizukuPlusAPI.OverlayManager.enableOverlay(packageName); true } catch (e: Exception) { false }
-            } else {
-                shizukuBridgeService.executeOverlayCommand(packageName, "enable")
-            }
-            
-            if (enableSuccess) {
-                Log.d(TAG, "Successfully activated overlay: $packageName")
-                
-                // Set priority for the overlay
-                if (useEnhancedApi()) {
-                    ShizukuPlusAPI.Shell.executeCommand("cmd overlay set-priority $packageName 100")
-                } else {
-                    shizukuBridgeService.executeOverlayCommand(packageName, "set-priority")
-                }
-                
-                // Refresh system UI to apply changes
-                refreshSystemUI()
-                
-                // Broadcast success
-                val successIntent = Intent("OVERLAY_ACTIVATION_SUCCESS")
-                successIntent.putExtra("package_name", packageName)
-                sendBroadcast(successIntent)
-            } else {
-                Log.e(TAG, "Failed to enable overlay: $packageName")
-                
-                // Broadcast failure
-                val failureIntent = Intent("OVERLAY_ACTIVATION_FAILURE")
-                failureIntent.putExtra("package_name", packageName)
-                failureIntent.putExtra("error", "Failed to enable overlay")
-                sendBroadcast(failureIntent)
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error activating overlay: ${e.message}", e)
-            
-            // Broadcast error
-            val errorIntent = Intent("OVERLAY_ACTIVATION_ERROR")
-            errorIntent.putExtra("package_name", packageName)
-            errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
-        }
-    }
-    
-    /**
-     * Deactivates an overlay using Shizuku
-     */
-    private fun deactivateOverlay(packageName: String) {
-        try {
-            val success = if (useEnhancedApi()) {
-                try { ShizukuPlusAPI.OverlayManager.disableOverlay(packageName); true } catch (e: Exception) { false }
-            } else {
-                shizukuBridgeService.executeOverlayCommand(packageName, "disable")
-            }
-            
-            if (success) {
-                Log.d(TAG, "Successfully deactivated overlay: $packageName")
-                
-                // Refresh system UI to apply changes
-                refreshSystemUI()
-                
-                // Broadcast success
-                val successIntent = Intent("OVERLAY_DEACTIVATION_SUCCESS")
-                successIntent.putExtra("package_name", packageName)
-                sendBroadcast(successIntent)
-            } else {
-                Log.e(TAG, "Failed to disable overlay: $packageName")
-                
-                // Broadcast failure
-                val failureIntent = Intent("OVERLAY_DEACTIVATION_FAILURE")
-                failureIntent.putExtra("package_name", packageName)
-                failureIntent.putExtra("error", "Failed to disable overlay")
-                sendBroadcast(failureIntent)
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error deactivating overlay: ${e.message}", e)
-            
-            // Broadcast error
-            val errorIntent = Intent("OVERLAY_DEACTIVATION_ERROR")
-            errorIntent.putExtra("package_name", packageName)
-            errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
-        }
-    }
-    
-    /**
-     * Refreshes the system UI to apply theme changes
-     */
-    fun refreshSystemUI() {
-        try {
-            if (useEnhancedApi()) {
-                ShizukuPlusAPI.Shell.executeCommand("am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS")
-                ShizukuPlusAPI.Shell.executeCommand("killall com.android.systemui")
-            } else {
-                // Use Shizuku to execute system commands
-                shizukuBridgeService.executeShellCommand("am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS")
-                shizukuBridgeService.executeShellCommand("killall com.android.systemui")
-            }
-            
-            Log.d(TAG, "System UI refreshed")
-            
-            // Broadcast refresh
-            val refreshIntent = Intent("SYSTEM_UI_REFRESHED")
-            sendBroadcast(refreshIntent)
-        } catch (e: Exception) {
-            Log.e(TAG, "Error refreshing system UI: ${e.message}", e)
-        }
-    }
-    
-    /**
-     * Gets list of currently active overlays
-     */
-    fun getActiveOverlays(): List<String> {
-        return if (useEnhancedApi()) {
-            val result = ShizukuPlusAPI.Shell.executeCommand("cmd overlay list | grep ENABLED")
-            result.output.lines()
-                .filter { it.contains(":") }
-                .map { it.substringAfterLast(":").trim() }
-                .filter { it.isNotEmpty() }
-        } else {
-            shizukuBridgeService.getOverlayPackages()
-        }
-    }
-    
-    /**
-     * Uninstalls an overlay package
-     */
-    fun uninstallOverlay(packageName: String): Boolean {
-        return if (useEnhancedApi()) {
-            try { ShizukuPlusAPI.PackageManager.uninstallPackage(packageName); true } catch (e: Exception) { false }
-        } else {
-            shizukuBridgeService.uninstallPackage(packageName)
-        }
-    }
 
-    /**
-     * Applies a compiled theme
-     */
+    // Still providing this for legacy/direct callers, though they should use OverlayManager directly
     fun applyTheme(themeData: ByteArray, themeName: String) {
-        try {
-            Log.d(TAG, "Applying theme: $themeName")
-
-            // Write theme data to a temp file and install it
-            val tempFile = java.io.File(cacheDir, "$themeName.apk")
-            tempFile.writeBytes(themeData)
-
-            activateOverlay("com.hexodus.theme.$themeName", tempFile.absolutePath, false)
-
-            Log.d(TAG, "Theme applied successfully: $themeName")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error applying theme: ${e.message}", e)
-        }
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "OverlayActivationService destroyed")
+        OverlayManager.applyTheme(this, themeData, themeName)
     }
 }

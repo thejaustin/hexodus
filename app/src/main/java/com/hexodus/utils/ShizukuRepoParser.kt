@@ -123,6 +123,7 @@ object ShizukuRepoParser {
         val tags = mutableSetOf<String>()
         val searchString = "$name $desc $category".lowercase()
 
+        if (searchString.contains("shizuku+") || searchString.contains("shizuku plus")) tags.add("Shizuku+")
         if (searchString.contains("shizuku") || category.contains("Shizuku")) tags.add("Shizuku")
         if (searchString.contains("dhizuku") || searchString.contains("device owner")) tags.add("Dhizuku")
         if (searchString.contains("lspatch") || searchString.contains("xposed")) tags.add("LSPatch")

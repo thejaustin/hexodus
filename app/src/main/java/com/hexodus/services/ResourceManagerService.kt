@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 import com.hexodus.core.ThemeCompiler
@@ -18,7 +16,7 @@ import java.util.zip.ZipOutputStream
  * ResourceManagerService - Service for managing system resources and overlays
  * Inspired by various awesome-shizuku projects for system-level resource management
  */
-class ResourceManagerService : Service() {
+object ResourceManagerService {
     
     companion object {
         private const val TAG = "ResourceManagerService"
@@ -38,19 +36,9 @@ class ResourceManagerService : Service() {
         const val EXTRA_OVERLAY_PRIORITY = "overlay_priority"
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
     private lateinit var themeCompiler: ThemeCompiler
     
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        themeCompiler = ThemeCompiler()
-        Log.d(TAG, "ResourceManagerService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -114,7 +102,7 @@ class ResourceManagerService : Service() {
         priority: Int
     ) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -149,11 +137,11 @@ class ResourceManagerService : Service() {
             FileOutputStream(tempFile).use { it.write(overlayData) }
             
             // Install the overlay using Shizuku
-            val installSuccess = shizukuBridgeService.installApk(tempFile.absolutePath)
+            val installSuccess = ShizukuBridge.installApk(tempFile.absolutePath)
             
             if (installSuccess) {
                 // Enable the overlay
-                val enableSuccess = shizukuBridgeService.executeOverlayCommand(sanitizedPackageName, "enable")
+                val enableSuccess = ShizukuBridge.executeOverlayCommand(sanitizedPackageName, "enable")
                 
                 if (enableSuccess) {
                     Log.d(TAG, "Successfully created and enabled overlay: $sanitizedPackageName")
@@ -203,7 +191,7 @@ class ResourceManagerService : Service() {
      */
     private fun updateOverlay(packageName: String, resources: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -220,7 +208,7 @@ class ResourceManagerService : Service() {
             }
             
             // First disable the existing overlay
-            val disableSuccess = shizukuBridgeService.executeOverlayCommand(sanitizedPackageName, "disable")
+            val disableSuccess = ShizukuBridge.executeOverlayCommand(sanitizedPackageName, "disable")
             
             if (!disableSuccess) {
                 Log.e(TAG, "Failed to disable overlay for update: $sanitizedPackageName")
@@ -239,7 +227,7 @@ class ResourceManagerService : Service() {
             Log.d(TAG, "Updated overlay: $sanitizedPackageName")
             
             // Re-enable the overlay
-            val enableSuccess = shizukuBridgeService.executeOverlayCommand(sanitizedPackageName, "enable")
+            val enableSuccess = ShizukuBridge.executeOverlayCommand(sanitizedPackageName, "enable")
             
             if (enableSuccess) {
                 Log.d(TAG, "Successfully updated and re-enabled overlay: $sanitizedPackageName")
@@ -272,7 +260,7 @@ class ResourceManagerService : Service() {
      */
     private fun deleteOverlay(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -284,7 +272,7 @@ class ResourceManagerService : Service() {
             }
             
             // Disable the overlay first
-            val disableSuccess = shizukuBridgeService.executeOverlayCommand(sanitizedPackageName, "disable")
+            val disableSuccess = ShizukuBridge.executeOverlayCommand(sanitizedPackageName, "disable")
             
             if (!disableSuccess) {
                 Log.e(TAG, "Failed to disable overlay before deletion: $sanitizedPackageName")
@@ -298,7 +286,7 @@ class ResourceManagerService : Service() {
             }
             
             // Uninstall the overlay package
-            val uninstallSuccess = shizukuBridgeService.uninstallPackage(sanitizedPackageName)
+            val uninstallSuccess = ShizukuBridge.uninstallPackage(sanitizedPackageName)
             
             if (uninstallSuccess) {
                 Log.d(TAG, "Successfully deleted overlay: $sanitizedPackageName")
@@ -331,7 +319,7 @@ class ResourceManagerService : Service() {
      */
     private fun listOverlays() {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -380,7 +368,7 @@ class ResourceManagerService : Service() {
      */
     private fun exportOverlay(packageName: String, exportPath: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -420,7 +408,7 @@ class ResourceManagerService : Service() {
      */
     private fun importOverlay(importPath: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -445,7 +433,7 @@ class ResourceManagerService : Service() {
             }
             
             // Install the overlay using Shizuku
-            val installSuccess = shizukuBridgeService.installApk(importPath)
+            val installSuccess = ShizukuBridge.installApk(importPath)
             
             if (installSuccess) {
                 Log.d(TAG, "Successfully imported overlay from: $importPath")
@@ -478,7 +466,7 @@ class ResourceManagerService : Service() {
      */
     fun getOverlayInfo(packageName: String): Map<String, Any>? {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return null
             }
@@ -510,7 +498,7 @@ class ResourceManagerService : Service() {
      */
     fun isOverlayEnabled(packageName: String): Boolean {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return false
             }
@@ -528,10 +516,5 @@ class ResourceManagerService : Service() {
             Log.e(TAG, "Error checking overlay status: ${e.message}", e)
             return false
         }
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "ResourceManagerService destroyed")
     }
 }

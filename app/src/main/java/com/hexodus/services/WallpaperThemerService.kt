@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 import android.app.WallpaperManager
@@ -16,7 +14,7 @@ import java.io.IOException
  * WallpaperThemerService - Service for wallpaper-based theming
  * Inspired by wallpaper-based theming projects from awesome-shizuku
  */
-class WallpaperThemerService : Service() {
+object WallpaperThemerService {
     
     companion object {
         private const val TAG = "WallpaperThemerService"
@@ -33,19 +31,9 @@ class WallpaperThemerService : Service() {
         const val EXTRA_PALETTE_TYPE = "palette_type" // vibrant, muted, dominant, all
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
     private lateinit var wallpaperManager: WallpaperManager
     
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        wallpaperManager = WallpaperManager.getInstance(this)
-        Log.d(TAG, "WallpaperThemerService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -92,7 +80,7 @@ class WallpaperThemerService : Service() {
      */
     private fun extractColorsFromImage(imagePath: String, colorCount: Int) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -163,7 +151,7 @@ class WallpaperThemerService : Service() {
      */
     private fun applyWallpaperTheme(themeName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -258,7 +246,7 @@ class WallpaperThemerService : Service() {
      */
     private fun setWallpaperFromTheme(imagePath: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -298,7 +286,7 @@ class WallpaperThemerService : Service() {
      */
     private fun generatePalette(imagePath: String, paletteType: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -476,10 +464,5 @@ class WallpaperThemerService : Service() {
     private fun isColorLight(color: Int): Boolean {
         val darkness = 1 - (0.299 * android.graphics.Color.red(color) + 0.587 * android.graphics.Color.green(color) + 0.114 * android.graphics.Color.blue(color)) / 255
         return darkness < 0.5
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "WallpaperThemerService destroyed")
     }
 }

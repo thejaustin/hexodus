@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 import android.net.ConnectivityManager
@@ -20,7 +18,7 @@ import com.hexodus.MainActivity
  * NetworkFirewallService - Service for network management and firewall features
  * Inspired by firewall projects from awesome-shizuku
  */
-class NetworkFirewallService : Service() {
+object NetworkFirewallService {
     
     companion object {
         private const val TAG = "NetworkFirewallService"
@@ -44,21 +42,10 @@ class NetworkFirewallService : Service() {
         private const val NOTIFICATION_ID = 1001
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
     private lateinit var connectivityManager: ConnectivityManager
     private var isMonitoring = false
     
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        createNotificationChannel()
-        Log.d(TAG, "NetworkFirewallService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -109,7 +96,7 @@ class NetworkFirewallService : Service() {
      */
     private fun blockAppNetwork(packageName: String, networkType: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -150,7 +137,7 @@ class NetworkFirewallService : Service() {
      */
     private fun allowAppNetwork(packageName: String, networkType: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -191,7 +178,7 @@ class NetworkFirewallService : Service() {
      */
     private fun getAppNetworkAccess(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -233,7 +220,7 @@ class NetworkFirewallService : Service() {
      */
     private fun getNetworkActivity() {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -273,7 +260,7 @@ class NetworkFirewallService : Service() {
      */
     private fun manageFirewallRule(rule: String, action: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -314,7 +301,7 @@ class NetworkFirewallService : Service() {
      */
     private fun getFirewallStatus() {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -409,7 +396,7 @@ class NetworkFirewallService : Service() {
      */
     fun getActiveNetworkInfo(): Map<String, Any>? {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return null
             }
@@ -434,12 +421,6 @@ class NetworkFirewallService : Service() {
             return null
         }
     }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        if (isMonitoring) {
-            stopNetworkMonitoring()
-        }
         Log.d(TAG, "NetworkFirewallService destroyed")
     }
 }

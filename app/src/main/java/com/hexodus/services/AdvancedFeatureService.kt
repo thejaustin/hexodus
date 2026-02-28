@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 import com.hexodus.utils.AccessibilityUtils
@@ -22,7 +20,7 @@ import kotlinx.coroutines.flow.collect
  * AdvancedFeatureService - Service for advanced features inspired by awesome-shizuku projects
  * Includes wallpaper-based theming, system resource inspection, and more
  */
-class AdvancedFeatureService : Service() {
+object AdvancedFeatureService {
     
     companion object {
         private const val TAG = "AdvancedFeatureService"
@@ -43,17 +41,7 @@ class AdvancedFeatureService : Service() {
         const val EXTRA_ANIMATION_SCALE = "animation_scale"
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
-    
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        Log.d(TAG, "AdvancedFeatureService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -99,7 +87,7 @@ class AdvancedFeatureService : Service() {
      */
     private fun applyWallpaperBasedTheme(wallpaperPath: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -137,8 +125,8 @@ class AdvancedFeatureService : Service() {
                 )
                 
                 // Apply the generated theme
-                val overlayService = OverlayActivationService()
-                overlayService.applyTheme(themeData, "wallpaper_based_theme")
+                 // Use OverlayManager instead
+                OverlayManager.applyTheme(this, themeData, "wallpaper_based_theme")
                 
                 // Broadcast success
                 val successIntent = Intent("WALLPAPER_THEME_APPLIED")
@@ -168,7 +156,7 @@ class AdvancedFeatureService : Service() {
      */
     private fun inspectSystemResources(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -210,7 +198,7 @@ class AdvancedFeatureService : Service() {
      */
     private fun manageAppGroup(groupName: String, apps: List<String>) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -252,7 +240,7 @@ class AdvancedFeatureService : Service() {
      */
     private fun customizeQuickSettings(config: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -286,7 +274,7 @@ class AdvancedFeatureService : Service() {
      */
     private fun modifyStatusBarIcons(icons: List<String>) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -322,7 +310,7 @@ class AdvancedFeatureService : Service() {
      */
     private fun controlSystemAnimations(scale: Float) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -358,10 +346,5 @@ class AdvancedFeatureService : Service() {
         // In a real implementation, this would use Palette API
         // For this example, we'll return a simulated dominant color
         return -0x9efff2 // Simulated dominant color
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "AdvancedFeatureService destroyed")
     }
 }

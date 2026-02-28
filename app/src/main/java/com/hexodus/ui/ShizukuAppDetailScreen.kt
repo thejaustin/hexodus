@@ -197,14 +197,16 @@ fun ShizukuAppDetailScreen(navController: NavController, appName: String) {
                 
                 Row(modifier = Modifier.fillMaxWidth()) {
                     app!!.tags.forEach { tag ->
+                        val isShizukuPlus = tag == "Shizuku+"
                         Surface(
                             modifier = Modifier.padding(end = 4.dp),
-                            color = MaterialTheme.colorScheme.secondaryContainer,
+                            color = if (isShizukuPlus) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondaryContainer,
                             shape = MaterialTheme.shapes.small
                         ) {
                             Text(
                                 text = tag,
                                 style = MaterialTheme.typography.labelSmall,
+                                color = if (isShizukuPlus) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondaryContainer,
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                             )
                         }
@@ -261,7 +263,7 @@ fun ShizukuAppDetailScreen(navController: NavController, appName: String) {
                             isInstalling = true
                             installProgress = 0
                             installStatus = "Downloading..."
-                            installApp(context, app!!)
+                            installApp(coroutineScope, context, app!!)
                         },
                         enabled = isCompatible,
                         modifier = Modifier.fillMaxWidth(),
@@ -346,17 +348,14 @@ fun ShizukuAppDetailScreen(navController: NavController, appName: String) {
     }
 }
 
-private fun installApp(context: Context, app: ShizukuRepoParser.ShizukuApp) {
+private fun installApp(scope: kotlinx.coroutines.CoroutineScope, context: Context, app: ShizukuRepoParser.ShizukuApp) {
     val downloadUrl = if (app.downloadUrl.endsWith("/releases/latest")) {
         app.downloadUrl
     } else {
         app.downloadUrl
     }
 
-    val intent = Intent(context, ShizukuInstallerService::class.java).apply {
-        action = ShizukuInstallerService.ACTION_INSTALL_APK
-        putExtra(ShizukuInstallerService.EXTRA_APK_URL, downloadUrl)
-        putExtra(ShizukuInstallerService.EXTRA_APP_NAME, app.name)
+    scope.launch {
+        com.hexodus.services.ShizukuInstaller.downloadAndInstall(downloadUrl, app.name)
     }
-    context.startService(intent)
 }

@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 import com.hexodus.utils.PrefsManager
@@ -15,7 +13,7 @@ import moe.shizuku.plus.ShizukuPlusAPI
  * FeatureFlagsService - Manages discovering and toggling system/Samsung feature flags
  * using Shizuku. Enables workarounds for specific devices (e.g., S22 Ultra).
  */
-class FeatureFlagsService : Service() {
+object FeatureFlagsService {
 
     companion object {
         private const val TAG = "FeatureFlagsService"
@@ -40,20 +38,10 @@ class FeatureFlagsService : Service() {
         const val EXTRA_FLAG_STATE = "flag_state"
     }
 
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
     private lateinit var prefsManager: PrefsManager
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        prefsManager = PrefsManager.getInstance(this)
-        Log.d(TAG, "FeatureFlagsService created")
-    }
-
-    override fun onBind(intent: Intent?): IBinder? = null
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
 
         when (action) {
@@ -129,7 +117,7 @@ class FeatureFlagsService : Service() {
     }
 
     private fun toggleFlag(flagName: String, state: Boolean) {
-        if (!shizukuBridgeService.isReady()) return
+        if (!ShizukuBridge.isReady()) return
         if (SecurityUtils.containsDangerousChars(flagName)) return
 
         scope.launch {
@@ -137,46 +125,46 @@ class FeatureFlagsService : Service() {
             if (useEnhancedApi()) {
                 ShizukuPlusAPI.Settings.putGlobal(flagName, value)
             } else {
-                shizukuBridgeService.executeShellCommand("settings put global $flagName $value")
+                ShizukuBridge.executeShellCommand("settings put global $flagName $value")
             }
             sendBroadcast(Intent("FEATURE_FLAG_TOGGLED").putExtra(EXTRA_FLAG_NAME, flagName).putExtra("success", true))
         }
     }
 
     private fun enableNowBrief() {
-        if (!shizukuBridgeService.isReady()) return
+        if (!ShizukuBridge.isReady()) return
         scope.launch {
             val command = "am start -n com.samsung.android.smartsuggestions/.settings.about.developermode.DeveloperModeActivity"
             if (useEnhancedApi()) {
                 ShizukuPlusAPI.Shell.executeCommand(command)
             } else {
-                shizukuBridgeService.executeShellCommand(command)
+                ShizukuBridge.executeShellCommand(command)
             }
             sendBroadcast(Intent("NOW_BRIEF_ENABLED").putExtra("success", true))
         }
     }
 
     private fun bypassScopedStorage(targetPackage: String) {
-        if (!shizukuBridgeService.isReady() || !SecurityUtils.isValidPackageName(targetPackage)) return
+        if (!ShizukuBridge.isReady() || !SecurityUtils.isValidPackageName(targetPackage)) return
         scope.launch {
             val command = "appops set $targetPackage MANAGE_EXTERNAL_STORAGE allow"
             if (useEnhancedApi()) {
                 ShizukuPlusAPI.Shell.executeCommand(command)
             } else {
-                shizukuBridgeService.executeShellCommand(command)
+                ShizukuBridge.executeShellCommand(command)
             }
             sendBroadcast(Intent("SCOPED_STORAGE_BYPASSED").putExtra("target_package", targetPackage).putExtra("success", true))
         }
     }
 
     private fun getAdvancedBatteryHealth() {
-        if (!shizukuBridgeService.isReady()) return
+        if (!ShizukuBridge.isReady()) return
         scope.launch {
             val command = "dumpsys battery"
             val result = if (useEnhancedApi()) {
                 ShizukuPlusAPI.Shell.executeCommand(command).output
             } else {
-                shizukuBridgeService.executeShellCommand(command) ?: ""
+                ShizukuBridge.executeShellCommand(command) ?: ""
             }
             
             var cycleCount = -1
@@ -196,7 +184,7 @@ class FeatureFlagsService : Service() {
     }
 
     private fun toggleVerticalDrawer(enabled: Boolean) {
-        if (!shizukuBridgeService.isReady()) return
+        if (!ShizukuBridge.isReady()) return
         scope.launch {
             val value = if (enabled) "1" else "0"
             if (useEnhancedApi()) {
@@ -204,22 +192,22 @@ class FeatureFlagsService : Service() {
                 ShizukuPlusAPI.Settings.putSystem("accelerator_app_list_sort_type", value)
                 ShizukuPlusAPI.Shell.executeCommand("am force-stop com.sec.android.app.launcher")
             } else {
-                shizukuBridgeService.executeShellCommand("settings put system home_up_vertical_app_drawer $value")
-                shizukuBridgeService.executeShellCommand("settings put system accelerator_app_list_sort_type $value")
-                shizukuBridgeService.executeShellCommand("am force-stop com.sec.android.app.launcher")
+                ShizukuBridge.executeShellCommand("settings put system home_up_vertical_app_drawer $value")
+                ShizukuBridge.executeShellCommand("settings put system accelerator_app_list_sort_type $value")
+                ShizukuBridge.executeShellCommand("am force-stop com.sec.android.app.launcher")
             }
             sendBroadcast(Intent("VERTICAL_DRAWER_TOGGLED").putExtra("enabled", enabled))
         }
     }
 
     private fun toggleGlobalSetting(key: String, enabled: Boolean) {
-        if (!shizukuBridgeService.isReady()) return
+        if (!ShizukuBridge.isReady()) return
         scope.launch {
             val value = if (enabled) "1" else "0"
             if (useEnhancedApi()) {
                 ShizukuPlusAPI.Settings.putGlobal(key, value)
             } else {
-                shizukuBridgeService.executeShellCommand("settings put global $key $value")
+                ShizukuBridge.executeShellCommand("settings put global $key $value")
             }
             syncSystemState()
             sendBroadcast(Intent("GLOBAL_SETTING_TOGGLED").putExtra(EXTRA_FLAG_NAME, key).putExtra("enabled", enabled))
@@ -227,13 +215,13 @@ class FeatureFlagsService : Service() {
     }
 
     private fun toggleSecureSetting(key: String, enabled: Boolean) {
-        if (!shizukuBridgeService.isReady()) return
+        if (!ShizukuBridge.isReady()) return
         scope.launch {
             val value = if (enabled) "1" else "0"
             if (useEnhancedApi()) {
                 ShizukuPlusAPI.Settings.putSecure(key, value)
             } else {
-                shizukuBridgeService.executeShellCommand("settings put secure $key $value")
+                ShizukuBridge.executeShellCommand("settings put secure $key $value")
             }
             syncSystemState()
             sendBroadcast(Intent("SECURE_SETTING_TOGGLED").putExtra(EXTRA_FLAG_NAME, key).putExtra("enabled", enabled))
@@ -241,13 +229,13 @@ class FeatureFlagsService : Service() {
     }
 
     private fun toggleSystemSetting(key: String, enabled: Boolean) {
-        if (!shizukuBridgeService.isReady()) return
+        if (!ShizukuBridge.isReady()) return
         scope.launch {
             val value = if (enabled) "1" else "0"
             if (useEnhancedApi()) {
                 ShizukuPlusAPI.Settings.putSystem(key, value)
             } else {
-                shizukuBridgeService.executeShellCommand("settings put system $key $value")
+                ShizukuBridge.executeShellCommand("settings put system $key $value")
             }
             syncSystemState()
             sendBroadcast(Intent("SYSTEM_SETTING_TOGGLED").putExtra(EXTRA_FLAG_NAME, key).putExtra("enabled", enabled))
@@ -265,25 +253,25 @@ class FeatureFlagsService : Service() {
             // Poke the Samsung Display service which often caches these values
             ShizukuPlusAPI.Shell.executeCommand("dumpsys display | grep -q 'state'") 
         } else {
-            shizukuBridgeService.executeShellCommand("am broadcast -a android.intent.action.CONFIGURATION_CHANGED")
+            ShizukuBridge.executeShellCommand("am broadcast -a android.intent.action.CONFIGURATION_CHANGED")
         }
     }
 
     private fun setPerformanceProfile(profile: String) {
-        if (!shizukuBridgeService.isReady()) return
+        if (!ShizukuBridge.isReady()) return
         scope.launch {
             val value = if (profile.lowercase() == "light") "1" else "0"
             if (useEnhancedApi()) {
                 ShizukuPlusAPI.Settings.putGlobal("sem_low_power_mode_v2", value)
             } else {
-                shizukuBridgeService.executeShellCommand("settings put global sem_low_power_mode_v2 $value")
+                ShizukuBridge.executeShellCommand("settings put global sem_low_power_mode_v2 $value")
             }
             sendBroadcast(Intent("PERFORMANCE_PROFILE_SET").putExtra("profile", profile).putExtra("success", true))
         }
     }
 
-    private fun restoreSystemDefaults() {
-        if (!shizukuBridgeService.isReady()) return
+    fun restoreSystemDefaults() {
+        if (!ShizukuBridge.isReady()) return
         scope.launch {
             try {
                 Log.d(TAG, "Restoring system defaults to recover from crash loops...")
@@ -306,19 +294,19 @@ class FeatureFlagsService : Service() {
                     ShizukuPlusAPI.Shell.executeCommand("am force-stop com.sec.android.app.launcher")
                     ShizukuPlusAPI.Shell.executeCommand("killall com.android.systemui")
                 } else {
-                    globalKeys.forEach { shizukuBridgeService.executeShellCommand("settings delete global $it") }
-                    secureKeys.forEach { shizukuBridgeService.executeShellCommand("settings delete secure $it") }
-                    systemKeys.forEach { shizukuBridgeService.executeShellCommand("settings delete system $it") }
+                    globalKeys.forEach { ShizukuBridge.executeShellCommand("settings delete global $it") }
+                    secureKeys.forEach { ShizukuBridge.executeShellCommand("settings delete secure $it") }
+                    systemKeys.forEach { ShizukuBridge.executeShellCommand("settings delete system $it") }
                     
                     // Disable all Hexodus overlays (legacy method)
-                    val output = shizukuBridgeService.executeShellCommand("cmd overlay list | grep com.hexodus.theme") ?: ""
+                    val output = ShizukuBridge.executeShellCommand("cmd overlay list | grep com.hexodus.theme") ?: ""
                     output.lines().filter { it.contains(":") }.map { it.substringAfterLast(":").trim() }.forEach {
-                        if (it.isNotEmpty()) shizukuBridgeService.executeShellCommand("cmd overlay disable $it")
+                        if (it.isNotEmpty()) ShizukuBridge.executeShellCommand("cmd overlay disable $it")
                     }
 
                     // Force restart UI processes
-                    shizukuBridgeService.executeShellCommand("am force-stop com.sec.android.app.launcher")
-                    shizukuBridgeService.executeShellCommand("killall com.android.systemui")
+                    ShizukuBridge.executeShellCommand("am force-stop com.sec.android.app.launcher")
+                    ShizukuBridge.executeShellCommand("killall com.android.systemui")
                 }
 
                 sendBroadcast(Intent("SYSTEM_DEFAULTS_RESTORED").putExtra("success", true))

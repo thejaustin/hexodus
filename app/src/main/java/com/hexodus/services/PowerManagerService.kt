@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 
@@ -10,7 +8,7 @@ import com.hexodus.utils.SecurityUtils
  * PowerManagerService - Service for power management and battery optimization
  * Inspired by BatStats and EnforceDoze projects from awesome-shizuku
  */
-class PowerManagerService : Service() {
+object PowerManagerService {
     
     companion object {
         private const val TAG = "PowerManagerService"
@@ -30,18 +28,9 @@ class PowerManagerService : Service() {
         const val EXTRA_BATTERY_THRESHOLD = "battery_threshold"
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
     private var isDozeEnforced = false
     
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        Log.d(TAG, "PowerManagerService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -91,13 +80,13 @@ class PowerManagerService : Service() {
      */
     private fun getBatteryStats() {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
             
             val command = "dumpsys batterystats"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "Battery stats retrieved")
@@ -132,14 +121,14 @@ class PowerManagerService : Service() {
      */
     private fun enforceDozeMode() {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
             
             // Enable doze mode immediately
             val command = "dumpsys deviceidle force-idle"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 isDozeEnforced = true
@@ -171,14 +160,14 @@ class PowerManagerService : Service() {
      */
     private fun disableDozeMode() {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
             
             // Exit doze mode
             val command = "dumpsys deviceidle unforce"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 isDozeEnforced = false
@@ -210,7 +199,7 @@ class PowerManagerService : Service() {
      */
     private fun setPowerProfile(profile: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -232,7 +221,7 @@ class PowerManagerService : Service() {
                 }
             }
             
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "Power profile set to: $profile")
@@ -265,7 +254,7 @@ class PowerManagerService : Service() {
      */
     private fun optimizeAppBattery(packageName: String, level: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -284,7 +273,7 @@ class PowerManagerService : Service() {
                 else -> "cmd appops set $sanitizedPackageName RUN_IN_BACKGROUND default"
             }
             
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "Battery optimization applied to $sanitizedPackageName with level: $level")
@@ -318,7 +307,7 @@ class PowerManagerService : Service() {
      */
     private fun getPowerUsage(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -330,7 +319,7 @@ class PowerManagerService : Service() {
             }
             
             val command = "dumpsys batterystats $sanitizedPackageName"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "Power usage retrieved for: $sanitizedPackageName")
@@ -451,10 +440,5 @@ class PowerManagerService : Service() {
      */
     fun isDozeEnforced(): Boolean {
         return isDozeEnforced
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "PowerManagerService destroyed")
     }
 }

@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 
@@ -10,7 +8,7 @@ import com.hexodus.utils.SecurityUtils
  * GestureManagerService - Service for gesture and interaction customization
  * Inspired by TapTap project from awesome-shizuku for back gesture features
  */
-class GestureManagerService : Service() {
+object GestureManagerService {
     
     companion object {
         private const val TAG = "GestureManagerService"
@@ -26,18 +24,9 @@ class GestureManagerService : Service() {
         const val EXTRA_ACTION_TARGET = "action_target"
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
     private val registeredGestures = mutableMapOf<String, String>() // gesture_type to action mapping
     
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        Log.d(TAG, "GestureManagerService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -151,7 +140,7 @@ class GestureManagerService : Service() {
      */
     private fun launchApp(packageName: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -163,7 +152,7 @@ class GestureManagerService : Service() {
             }
             
             val command = "monkey -p $sanitizedPackageName -c android.intent.category.LAUNCHER 1"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "App launched: $sanitizedPackageName")
@@ -191,7 +180,7 @@ class GestureManagerService : Service() {
      */
     private fun toggleFlashlight() {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -213,13 +202,13 @@ class GestureManagerService : Service() {
      */
     private fun takeScreenshot() {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
             
             val command = "screencap -p /sdcard/Pictures/Screenshots/screenshot_$(date +%s).png"
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "Screenshot taken")
@@ -245,7 +234,7 @@ class GestureManagerService : Service() {
      */
     private fun mediaControl(action: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -261,7 +250,7 @@ class GestureManagerService : Service() {
                 }
             }
             
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "Media control executed: $action")
@@ -289,7 +278,7 @@ class GestureManagerService : Service() {
      */
     private fun volumeControl(action: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -304,7 +293,7 @@ class GestureManagerService : Service() {
                 }
             }
             
-            val result = shizukuBridgeService.executeShellCommand(command)
+            val result = ShizukuBridge.executeShellCommand(command)
             
             if (result != null) {
                 Log.d(TAG, "Volume control executed: $action")
@@ -361,10 +350,5 @@ class GestureManagerService : Service() {
                 executeAction(parts[0], parts.getOrNull(1))
             }
         }
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "GestureManagerService destroyed")
     }
 }

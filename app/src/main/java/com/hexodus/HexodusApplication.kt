@@ -9,6 +9,8 @@ import com.hexodus.utils.CrashHandler
 class HexodusApplication : Application() {
     companion object {
         private const val TAG = "HexodusApplication"
+        lateinit var context: android.content.Context
+            private set
 
         // Safe initialization to avoid crashes if Shizuku provider is not yet ready
         var IS_SHIZUKU_SUPPORTED: Boolean = false
@@ -17,6 +19,7 @@ class HexodusApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        context = applicationContext
         CrashHandler.setup(this)
         checkShizukuSupport()
         initShizuku()

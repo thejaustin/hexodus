@@ -1,8 +1,6 @@
 package com.hexodus.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
 
@@ -10,7 +8,7 @@ import com.hexodus.utils.SecurityUtils
  * MediaNotificationService - Service for media and notification customization
  * Inspired by AmbientMusicMod project from awesome-shizuku for media features
  */
-class MediaNotificationService : Service() {
+object MediaNotificationService {
     
     companion object {
         private const val TAG = "MediaNotificationService"
@@ -28,17 +26,7 @@ class MediaNotificationService : Service() {
         const val EXTRA_CUSTOMIZATION_CONFIG = "customization_config"
     }
     
-    private lateinit var shizukuBridgeService: ShizukuBridgeService
-    
-    override fun onCreate() {
-        super.onCreate()
-        shizukuBridgeService = ShizukuBridgeService()
-        Log.d(TAG, "MediaNotificationService created")
-    }
-    
-    override fun onBind(intent: Intent?): IBinder? = null
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -83,7 +71,7 @@ class MediaNotificationService : Service() {
      */
     private fun updateNowPlaying(title: String?, artist: String?, albumArt: String?) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -123,7 +111,7 @@ class MediaNotificationService : Service() {
      */
     private fun hideNotification(packageName: String, notificationId: Int) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -158,7 +146,7 @@ class MediaNotificationService : Service() {
      */
     private fun showNotification(packageName: String, notificationId: Int) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -193,7 +181,7 @@ class MediaNotificationService : Service() {
      */
     private fun customizeNotification(packageName: String, config: String) {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
@@ -233,7 +221,7 @@ class MediaNotificationService : Service() {
      */
     fun getCurrentMediaSession(): Map<String, String> {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return emptyMap()
             }
@@ -257,7 +245,7 @@ class MediaNotificationService : Service() {
      */
     fun getActiveNotifications(): List<Map<String, Any>> {
         try {
-            if (!shizukuBridgeService.isReady()) {
+            if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return emptyList()
             }
@@ -282,10 +270,5 @@ class MediaNotificationService : Service() {
             Log.e(TAG, "Error getting active notifications: ${e.message}", e)
             return emptyList()
         }
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "MediaNotificationService destroyed")
     }
 }
