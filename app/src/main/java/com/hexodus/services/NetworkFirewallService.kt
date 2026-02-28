@@ -22,7 +22,7 @@ import com.hexodus.MainActivity
  * Inspired by firewall projects from awesome-shizuku
  */
 object NetworkFirewallService {
-    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -141,8 +141,8 @@ object NetworkFirewallService {
                 return
             }
             
-            // In a real implementation, context would use iptables or similar to block network access
-            // For context example, we'll simulate the process
+            // In a real implementation, appContext would use iptables or similar to block network access
+            // For appContext example, we'll simulate the process
             Log.d(TAG, "Blocked $networkType network access for: $sanitizedPackageName")
             
             // Broadcast success
@@ -182,8 +182,8 @@ object NetworkFirewallService {
                 return
             }
             
-            // In a real implementation, context would allow network access
-            // For context example, we'll simulate the process
+            // In a real implementation, appContext would allow network access
+            // For appContext example, we'll simulate the process
             Log.d(TAG, "Allowed $networkType network access for: $sanitizedPackageName")
             
             // Broadcast success
@@ -217,8 +217,8 @@ object NetworkFirewallService {
                 Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, context would query network access status
-            // For context example, we'll simulate the process
+            // In a real implementation, appContext would query network access status
+            // For appContext example, we'll simulate the process
             val networkAccess = mapOf(
                 "wifi_blocked" to false,
                 "mobile_blocked" to true,
@@ -253,8 +253,8 @@ object NetworkFirewallService {
                 return
             }
             
-            // In a real implementation, context would query network activity
-            // For context example, we'll simulate the process
+            // In a real implementation, appContext would query network activity
+            // For appContext example, we'll simulate the process
             val networkActivity = mapOf(
                 "active_connections" to 12,
                 "total_data_sent" to 5_000_000L, // 5MB
@@ -305,8 +305,8 @@ object NetworkFirewallService {
                 return
             }
             
-            // In a real implementation, context would manage firewall rules
-            // For context example, we'll simulate the process
+            // In a real implementation, appContext would manage firewall rules
+            // For appContext example, we'll simulate the process
             Log.d(TAG, "Managed firewall rule: $rule with action: $action")
             
             // Broadcast success
@@ -334,8 +334,8 @@ object NetworkFirewallService {
                 return
             }
             
-            // In a real implementation, context would query firewall status
-            // For context example, we'll simulate the process
+            // In a real implementation, appContext would query firewall status
+            // For appContext example, we'll simulate the process
             val firewallStatus = mapOf(
                 "enabled" to true,
                 "active_rules" to 15,
@@ -369,8 +369,8 @@ object NetworkFirewallService {
         isMonitoring = true
         Log.d(TAG, "Started network monitoring")
         
-        // In a real implementation, context would start monitoring network activity
-        // For context example, we'll create a foreground service notification
+        // In a real implementation, appContext would start monitoring network activity
+        // For appContext example, we'll create a foreground service notification
         // appContext.startForeground not supported in object
     }
     
@@ -390,10 +390,10 @@ object NetworkFirewallService {
      * Creates a notification for the foreground service
      */
     private fun createNotification(): android.app.Notification {
-        val notificationIntent = Intent(context, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
+        val notificationIntent = Intent(appContext, MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(appContext, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
         
-        return NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+        return NotificationCompat.Builder(appContext, NOTIFICATION_CHANNEL_ID)
             .setContentTitle("Network Firewall Active")
             .setContentText("Protecting your network privacy")
             .setSmallIcon(android.R.drawable.stat_notify_sync) // Use system icon

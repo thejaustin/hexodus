@@ -21,7 +21,7 @@ import com.hexodus.utils.PrefsManager
  * or silently using Shizuku. Refactored from Service to Singleton.
  */
 object ShizukuInstaller {
-    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext get() = com.hexodus.HexodusApplication.context
     private const val TAG = "ShizukuInstaller"
 
     suspend fun downloadAndInstall(apkUrl: String, appName: String) = withContext(Dispatchers.IO) {

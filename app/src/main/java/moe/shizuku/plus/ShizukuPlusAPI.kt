@@ -1,6 +1,5 @@
 package moe.shizuku.plus
 
-import rikka.shizuku.ShizukuPlusAPI as RealAPI
 import android.os.IBinder
 
 /**
@@ -15,7 +14,7 @@ object ShizukuPlusAPI {
      */
     fun isEnhancedApiSupported(): Boolean {
         return try {
-            RealAPI.isEnhancedApiSupported()
+            rikka.shizuku.ShizukuPlusAPI.isEnhancedApiSupported()
         } catch (e: Exception) {
             false
         }
@@ -31,7 +30,7 @@ object ShizukuPlusAPI {
          */
         fun executeCommand(command: String): Result {
             return try {
-                val res = RealAPI.Shell.executeCommand(command)
+                val res = rikka.shizuku.ShizukuPlusAPI.Shell.executeCommand(command)
                 Result(res.output, res.exitCode)
             } catch (e: Exception) {
                 val output = com.hexodus.services.ShizukuBridge.executeShellCommand(command) ?: ""
@@ -43,7 +42,7 @@ object ShizukuPlusAPI {
     object OverlayManager {
         fun enableOverlay(packageName: String): Boolean {
             return try {
-                RealAPI.OverlayManager.enableOverlay(packageName)
+                rikka.shizuku.ShizukuPlusAPI.OverlayManager.enableOverlay(packageName)
             } catch (e: Exception) {
                 com.hexodus.services.ShizukuBridge.executeOverlayCommand(packageName, "enable")
             }
@@ -51,7 +50,7 @@ object ShizukuPlusAPI {
 
         fun disableOverlay(packageName: String): Boolean {
             return try {
-                RealAPI.OverlayManager.disableOverlay(packageName)
+                rikka.shizuku.ShizukuPlusAPI.OverlayManager.disableOverlay(packageName)
             } catch (e: Exception) {
                 com.hexodus.services.ShizukuBridge.executeOverlayCommand(packageName, "disable")
             }
@@ -61,7 +60,7 @@ object ShizukuPlusAPI {
     object PackageManager {
         fun installPackage(path: String): Boolean {
             return try {
-                RealAPI.PackageManager.installPackage(path)
+                rikka.shizuku.ShizukuPlusAPI.PackageManager.installPackage(path)
             } catch (e: Exception) {
                 com.hexodus.services.ShizukuBridge.installApk(path)
             }
@@ -69,7 +68,7 @@ object ShizukuPlusAPI {
 
         fun uninstallPackage(packageName: String): Boolean {
             return try {
-                RealAPI.PackageManager.uninstallPackage(packageName)
+                rikka.shizuku.ShizukuPlusAPI.PackageManager.uninstallPackage(packageName)
             } catch (e: Exception) {
                 com.hexodus.services.ShizukuBridge.uninstallPackage(packageName)
             }
@@ -79,7 +78,7 @@ object ShizukuPlusAPI {
     object Settings {
         fun putSystem(key: String, value: Any): Boolean {
             return try {
-                RealAPI.Settings.putSystem(key, value.toString())
+                rikka.shizuku.ShizukuPlusAPI.Settings.putSystem(key, value.toString())
             } catch (e: Exception) {
                 com.hexodus.services.ShizukuBridge.executeShellCommand("settings put system $key $value") != null
             }
@@ -87,7 +86,7 @@ object ShizukuPlusAPI {
 
         fun getSystem(key: String): String? {
             return try {
-                RealAPI.Settings.getSystem(key)
+                rikka.shizuku.ShizukuPlusAPI.Settings.getSystem(key)
             } catch (e: Exception) {
                 com.hexodus.services.ShizukuBridge.executeShellCommand("settings get system $key")
             }
@@ -95,7 +94,7 @@ object ShizukuPlusAPI {
 
         fun putSecure(key: String, value: Any): Boolean {
             return try {
-                RealAPI.Settings.putSecure(key, value.toString())
+                rikka.shizuku.ShizukuPlusAPI.Settings.putSecure(key, value.toString())
             } catch (e: Exception) {
                 com.hexodus.services.ShizukuBridge.executeShellCommand("settings put secure $key $value") != null
             }
@@ -103,7 +102,7 @@ object ShizukuPlusAPI {
 
         fun putGlobal(key: String, value: Any): Boolean {
             return try {
-                RealAPI.Settings.putGlobal(key, value.toString())
+                rikka.shizuku.ShizukuPlusAPI.Settings.putGlobal(key, value.toString())
             } catch (e: Exception) {
                 com.hexodus.services.ShizukuBridge.executeShellCommand("settings put global $key $value") != null
             }
@@ -113,7 +112,7 @@ object ShizukuPlusAPI {
     object Dhizuku {
         fun isAvailable(): Boolean {
             return try {
-                RealAPI.Dhizuku.isAvailable()
+                rikka.shizuku.ShizukuPlusAPI.Dhizuku.isAvailable()
             } catch (e: Exception) {
                 false
             }
@@ -121,7 +120,7 @@ object ShizukuPlusAPI {
 
         fun getBinder(): IBinder? {
             return try {
-                RealAPI.Dhizuku.getBinder()
+                rikka.shizuku.ShizukuPlusAPI.Dhizuku.getBinder()
             } catch (e: Exception) {
                 null
             }

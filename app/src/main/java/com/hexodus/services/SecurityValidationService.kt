@@ -12,7 +12,7 @@ import com.hexodus.utils.SecurityUtils
  * Ensures all operations comply with security best practices
  */
 object SecurityValidationService {
-    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -284,7 +284,7 @@ object SecurityValidationService {
     fun validateThemePackage(apkPath: String): Boolean {
         try {
             // Validate file path
-            if (!SecurityUtils.isValidFilePath(apkPath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(apkPath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent).filterNotNull())) {
                 Log.e(TAG, "Invalid APK path: $apkPath")
                 return false
             }

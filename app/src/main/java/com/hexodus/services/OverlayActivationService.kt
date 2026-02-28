@@ -10,7 +10,7 @@ import com.hexodus.HexodusApplication
  * OverlayActivationService - Service that wraps OverlayManager to handle Intents
  */
 object OverlayActivationService {
-    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext get() = com.hexodus.HexodusApplication.context
 
     
     

@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.collect
  * Includes wallpaper-based theming, system resource inspection, and more
  */
 object AdvancedFeatureService {
-    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext get() = com.hexodus.HexodusApplication.context
 
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
@@ -100,7 +100,7 @@ object AdvancedFeatureService {
             
             // Validate inputs
             if (SecurityUtils.containsDangerousChars(wallpaperPath) || 
-                !SecurityUtils.isValidFilePath(wallpaperPath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent))) {
+                !SecurityUtils.isValidFilePath(wallpaperPath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent).filterNotNull())) {
                 Log.e(TAG, "Invalid wallpaper path: $wallpaperPath")
                 return
             }

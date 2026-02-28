@@ -13,7 +13,7 @@ import java.io.File
  * Inspired by AppLock, Amarok-Hider, and PrivacyFlip projects from awesome-shizuku
  */
 object PrivacySecurityService {
-    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -207,7 +207,7 @@ object PrivacySecurityService {
     private fun hideFile(filePath: String) {
         try {
             // Validate file path
-            if (!SecurityUtils.isValidFilePath(filePath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(filePath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent).filterNotNull())) {
                 Log.e(TAG, "Invalid file path: $filePath")
                 return
             }
@@ -223,8 +223,8 @@ object PrivacySecurityService {
                 return
             }
             
-            // In a real implementation, context would use Shizuku to change file attributes
-            // For context example, we'll add to our hidden list
+            // In a real implementation, appContext would use Shizuku to change file attributes
+            // For appContext example, we'll add to our hidden list
             hiddenFiles.add(filePath)
             
             // Also try to change file attributes to hidden
@@ -262,7 +262,7 @@ object PrivacySecurityService {
     private fun unhideFile(filePath: String) {
         try {
             // Validate file path
-            if (!SecurityUtils.isValidFilePath(filePath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(filePath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent).filterNotNull())) {
                 Log.e(TAG, "Invalid file path: $filePath")
                 return
             }
@@ -409,8 +409,8 @@ object PrivacySecurityService {
             
             Log.d(TAG, "Managing privacy with device locked: $deviceLocked")
             
-            // In a real implementation, context would apply privacy rules based on lock state
-            // For context example, we'll just log the action
+            // In a real implementation, appContext would apply privacy rules based on lock state
+            // For appContext example, we'll just log the action
             if (deviceLocked) {
                 // Apply privacy rules when device is locked
                 Log.d(TAG, "Applying privacy rules for locked state")
@@ -443,8 +443,8 @@ object PrivacySecurityService {
                 return
             }
             
-            // In a real implementation, context would scan for privacy issues
-            // For context example, we'll return mock results
+            // In a real implementation, appContext would scan for privacy issues
+            // For appContext example, we'll return mock results
             val privacyIssues = listOf(
                 mapOf("type" to "location_access", "app" to "com.example.tracking_app", "severity" to "high"),
                 mapOf("type" to "camera_access", "app" to "com.example.camera_app", "severity" to "medium"),

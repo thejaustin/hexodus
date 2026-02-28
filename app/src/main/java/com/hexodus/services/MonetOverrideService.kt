@@ -16,7 +16,7 @@ import com.hexodus.utils.ColorUtils
  * Based on techniques from awesome-shizuku projects for system-level theming
  */
 object MonetOverrideService {
-    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -183,9 +183,9 @@ object MonetOverrideService {
      * requires system-level privileges that are not available to regular apps
      */
     private fun applyCustomPalette(palette: Map<String, Int>, components: List<String>) {
-        // In a real implementation, context would interact with the system's
+        // In a real implementation, appContext would interact with the system's
         // color service to override the Material You color generation
-        // Since context isn't possible without system privileges, we'll log the attempt
+        // Since appContext isn't possible without system privileges, we'll log the attempt
         
         Log.d(TAG, "Attempting to apply custom palette for components: $components")
         for ((role, color) in palette) {

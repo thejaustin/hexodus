@@ -19,7 +19,7 @@ import java.util.zip.ZipOutputStream
  * Inspired by various awesome-shizuku projects for system-level resource management
  */
 object ResourceManagerService {
-    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext get() = com.hexodus.HexodusApplication.context
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
     private val themeCompiler = com.hexodus.core.ThemeCompiler()
 
@@ -167,7 +167,7 @@ object ResourceManagerService {
     
     private fun exportOverlay(targetPackage: String, exportPath: String) {
         try {
-            if (!SecurityUtils.isValidFilePath(exportPath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent))) return
+            if (!SecurityUtils.isValidFilePath(exportPath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent).filterNotNull())) return
             val successIntent = Intent("OVERLAY_EXPORTED")
             successIntent.putExtra("package_name", targetPackage)
             appContext.sendBroadcast(successIntent)
@@ -179,7 +179,7 @@ object ResourceManagerService {
     private fun importOverlay(importPath: String) {
         try {
             if (!ShizukuBridge.isReady()) return
-            if (!SecurityUtils.isValidFilePath(importPath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent))) return
+            if (!SecurityUtils.isValidFilePath(importPath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent).filterNotNull())) return
             
             val installSuccess = ShizukuBridge.installApk(importPath)
             if (installSuccess) {

@@ -19,7 +19,7 @@ import java.io.OutputStream
  * Inspired by font and icon customization projects from awesome-shizuku
  */
 object FontIconManagerService {
-    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -137,7 +137,7 @@ object FontIconManagerService {
                 return
             }
             
-            if (!SecurityUtils.isValidFilePath(fontPath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(fontPath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent).filterNotNull())) {
                 Log.e(TAG, "Invalid font path: $fontPath")
                 return
             }
@@ -149,8 +149,8 @@ object FontIconManagerService {
                 return
             }
             
-            // In a real implementation, context would install the font system-wide
-            // For context example, we'll simulate the process
+            // In a real implementation, appContext would install the font system-wide
+            // For appContext example, we'll simulate the process
             Log.d(TAG, "Installed font: $fontName from: $fontPath")
             
             // Broadcast success
@@ -184,7 +184,7 @@ object FontIconManagerService {
                 return
             }
             
-            if (!SecurityUtils.isValidFilePath(iconPackPath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(iconPackPath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent).filterNotNull())) {
                 Log.e(TAG, "Invalid icon pack path: $iconPackPath")
                 return
             }
@@ -202,8 +202,8 @@ object FontIconManagerService {
                 return
             }
             
-            // In a real implementation, context would install the icon pack
-            // For context example, we'll simulate the process
+            // In a real implementation, appContext would install the icon pack
+            // For appContext example, we'll simulate the process
             Log.d(TAG, "Installed icon pack: $iconPackName from: $iconPackPath")
             
             // Broadcast success
@@ -226,8 +226,8 @@ object FontIconManagerService {
      */
     private fun getAvailableFonts() {
         try {
-            // In a real implementation, context would scan for available fonts
-            // For context example, we'll return mock data
+            // In a real implementation, appContext would scan for available fonts
+            // For appContext example, we'll return mock data
             val availableFonts = listOf(
                 mapOf(
                     "name" to "Roboto",
@@ -276,8 +276,8 @@ object FontIconManagerService {
      */
     private fun getAvailableIconPacks() {
         try {
-            // In a real implementation, context would scan for available icon packs
-            // For context example, we'll return mock data
+            // In a real implementation, appContext would scan for available icon packs
+            // For appContext example, we'll return mock data
             val availableIconPacks = listOf(
                 mapOf(
                     "name" to "Samsung Default",
@@ -331,8 +331,8 @@ object FontIconManagerService {
                 return
             }
             
-            // In a real implementation, context would apply the font system-wide
-            // For context example, we'll simulate the process
+            // In a real implementation, appContext would apply the font system-wide
+            // For appContext example, we'll simulate the process
             Log.d(TAG, "Applied font: $fontFamily")
             
             // Broadcast success
@@ -365,8 +365,8 @@ object FontIconManagerService {
                 Log.w(TAG, "Package name was sanitized: $iconPackPackage -> $sanitizedPackageName")
             }
             
-            // In a real implementation, context would apply the icon pack
-            // For context example, we'll simulate the process
+            // In a real implementation, appContext would apply the icon pack
+            // For appContext example, we'll simulate the process
             Log.d(TAG, "Applied icon pack: $sanitizedPackageName")
             
             // Broadcast success
@@ -388,8 +388,8 @@ object FontIconManagerService {
      */
     private fun getCurrentFont() {
         try {
-            // In a real implementation, context would query the system for the current font
-            // For context example, we'll return mock data
+            // In a real implementation, appContext would query the system for the current font
+            // For appContext example, we'll return mock data
             val currentFont = mapOf(
                 "name" to "SamsungOne",
                 "family" to "samsung_one",
@@ -417,8 +417,8 @@ object FontIconManagerService {
      */
     private fun getCurrentIconPack() {
         try {
-            // In a real implementation, context would query the system for the current icon pack
-            // For context example, we'll return mock data
+            // In a real implementation, appContext would query the system for the current icon pack
+            // For appContext example, we'll return mock data
             val currentIconPack = mapOf(
                 "name" to "Samsung Default",
                 "package" to "com.sec.android.app.launcher",
@@ -462,8 +462,8 @@ object FontIconManagerService {
                 return false
             }
             
-            // In a real implementation, context would copy the font to system directory
-            // For context example, we'll simulate the process
+            // In a real implementation, appContext would copy the font to system directory
+            // For appContext example, we'll simulate the process
             Log.d(TAG, "Copied font to system: ${fontFile.name} -> $destinationName")
             return true
         } catch (e: Exception) {
@@ -494,8 +494,8 @@ object FontIconManagerService {
                 return false
             }
             
-            // In a real implementation, context would validate icon pack structure
-            // For context example, we'll just return true
+            // In a real implementation, appContext would validate icon pack structure
+            // For appContext example, we'll just return true
             return true
         } catch (e: Exception) {
             Log.e(TAG, "Error validating icon pack: ${e.message}", e)
@@ -513,8 +513,8 @@ object FontIconManagerService {
                 return emptyList()
             }
             
-            // In a real implementation, context would scan the system fonts directory
-            // For context example, we'll return mock data
+            // In a real implementation, appContext would scan the system fonts directory
+            // For appContext example, we'll return mock data
             return listOf(
                 "Roboto-Regular.ttf",
                 "Roboto-Bold.ttf",
@@ -538,8 +538,8 @@ object FontIconManagerService {
                 return emptyList()
             }
             
-            // In a real implementation, context would scan for available icon packs
-            // For context example, we'll return mock data
+            // In a real implementation, appContext would scan for available icon packs
+            // For appContext example, we'll return mock data
             return listOf(
                 mapOf(
                     "name" to "Samsung Default",

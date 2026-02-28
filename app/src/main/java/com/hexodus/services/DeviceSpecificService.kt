@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
  * Includes Samsung Z Flip 5 specific optimizations and foldable display support
  */
 object DeviceSpecificService {
-    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext get() = com.hexodus.HexodusApplication.context
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
     private const val TAG = "DeviceSpecificService"

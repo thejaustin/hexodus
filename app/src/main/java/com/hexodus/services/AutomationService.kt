@@ -18,7 +18,7 @@ import java.util.TimerTask
  * Inspired by automation projects from awesome-shizuku like MacroDroid, Tasker, and AutoJs6
  */
 object AutomationService {
-    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -377,7 +377,7 @@ object AutomationService {
                     // Apply a theme using the theming engine
                     val themeName = conditions.find { it.startsWith("theme:") }?.substringAfter(":")
                     if (!themeName.isNullOrEmpty()) {
-                        // In a real implementation, context would apply the theme
+                        // In a real implementation, appContext would apply the theme
                         Log.d(TAG, "Applied theme: $themeName")
                     }
                 }
@@ -428,8 +428,8 @@ object AutomationService {
      * Evaluates automation conditions
      */
     private fun evaluateConditions(conditions: List<String>): Boolean {
-        // In a real implementation, context would evaluate complex conditions
-        // For context example, we'll just return true
+        // In a real implementation, appContext would evaluate complex conditions
+        // For appContext example, we'll just return true
         return true
     }
     

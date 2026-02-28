@@ -11,7 +11,7 @@ import com.hexodus.HexodusApplication
  * ModExtensionManager - Handles loading and interaction with third-party Hexodus mods
  */
 object ModExtensionManager {
-    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext get() = com.hexodus.HexodusApplication.context
 
     private const val TAG = "ModExtensionManager"
     private const val MOD_PERMISSION = "com.hexodus.permission.MOD_EXTENSION"
@@ -44,7 +44,7 @@ object ModExtensionManager {
                     
                     val modVersion = metaData?.getString("mod_version") ?: "1.0.0"
                     val modAuthor = metaData?.getString("mod_author") ?: "Unknown"
-                    val isVerified = SecurityUtils.isPackageSafe(context, packageName)
+                    val isVerified = SecurityUtils.isPackageSafe(appContext, packageName)
                     
                     mods.add(ModExtension(packageName, appName, modVersion, modAuthor, isVerified))
                     Log.d(TAG, "Discovered mod: $appName ($packageName) by $modAuthor")
@@ -59,7 +59,7 @@ object ModExtensionManager {
 
     fun executeModCommand(packageName: String, command: String): Boolean {
         try {
-            if (!SecurityUtils.isPackageSafe(context, packageName)) {
+            if (!SecurityUtils.isPackageSafe(appContext, packageName)) {
                 Log.e(TAG, "Blocked command execution for unsafe mod: $packageName")
                 return false
             }

@@ -16,7 +16,7 @@ import java.io.FileOutputStream
  * Inspired by various overlay management projects from awesome-shizuku
  */
 object AdvancedOverlayService {
-    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext get() = com.hexodus.HexodusApplication.context
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
     private val themeCompiler = com.hexodus.core.ThemeCompiler()
 
@@ -178,7 +178,7 @@ object AdvancedOverlayService {
     private fun exportOverlay(overlayPackage: String, exportPath: String) {
         try {
             // Validate export path
-            if (!SecurityUtils.isValidFilePath(exportPath, listOf(appContext.getExternalFilesDir(null)?.parent, appContext.cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(exportPath, listOf(appContext.getExternalFilesDir(null).filterNotNull()?.parent, appContext.cacheDir.parent))) {
                 Log.e(TAG, "Invalid export path: $exportPath")
                 return
             }

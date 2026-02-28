@@ -29,7 +29,7 @@ import java.util.zip.ZipOutputStream
  * Inspired by various theming projects from awesome-shizuku
  */
 object AdvancedThemingService {
-    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -168,8 +168,8 @@ object AdvancedThemingService {
                     return@launch
                 }
                 
-                // In a real implementation, context would create a gradient overlay
-                // For context example, we'll simulate the process
+                // In a real implementation, appContext would create a gradient overlay
+                // For appContext example, we'll simulate the process
                 Log.d(TAG, "Created gradient theme with colors: ${colors.joinToString(", ")} for component: $componentName")
                 
                 // Generate a unique package name for the gradient theme
@@ -260,8 +260,8 @@ object AdvancedThemingService {
                 return
             }
             
-            // In a real implementation, context would create an animated overlay
-            // For context example, we'll simulate the process
+            // In a real implementation, appContext would create an animated overlay
+            // For appContext example, we'll simulate the process
             Log.d(TAG, "Created animated theme with type: $animationType and color: $hexColor")
             
             // Generate a unique package name for the animated theme
@@ -345,7 +345,7 @@ object AdvancedThemingService {
                 return
             }
             
-            if (!SecurityUtils.isValidFilePath(texturePath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent, "/sdcard"))) {
+            if (!SecurityUtils.isValidFilePath(texturePath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent, "/sdcard").filterNotNull())) {
                 Log.e(TAG, "Invalid texture path: $texturePath")
                 return
             }
@@ -356,8 +356,8 @@ object AdvancedThemingService {
                 return
             }
             
-            // In a real implementation, context would create a texture overlay
-            // For context example, we'll simulate the process
+            // In a real implementation, appContext would create a texture overlay
+            // For appContext example, we'll simulate the process
             Log.d(TAG, "Created texture theme with texture: $texturePath and color: $hexColor")
             
             // Generate a unique package name for the texture theme
@@ -430,8 +430,8 @@ object AdvancedThemingService {
      */
     private fun getThemePresets() {
         try {
-            // In a real implementation, context would query available theme presets
-            // For context example, we'll return mock data
+            // In a real implementation, appContext would query available theme presets
+            // For appContext example, we'll return mock data
             val presets = listOf(
                 mapOf(
                     "name" to "Ocean Breeze",
@@ -497,8 +497,8 @@ object AdvancedThemingService {
                 return
             }
             
-            // In a real implementation, context would create a smooth transition between themes
-            // For context example, we'll simulate the process
+            // In a real implementation, appContext would create a smooth transition between themes
+            // For appContext example, we'll simulate the process
             Log.d(TAG, "Applied theme transition from: $fromTheme to: $toTheme with speed: ${speed}ms")
             
             // This would involve:
@@ -549,8 +549,8 @@ object AdvancedThemingService {
                 return
             }
             
-            // In a real implementation, context would create an animated theme overlay
-            // For context example, we'll simulate the process
+            // In a real implementation, appContext would create an animated theme overlay
+            // For appContext example, we'll simulate the process
             Log.d(TAG, "Created theme animation with type: $animationType and duration: ${duration}ms")
             
             // Generate a unique package name for the animation

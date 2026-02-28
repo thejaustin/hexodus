@@ -12,7 +12,7 @@ import com.hexodus.utils.SecurityUtils
  * Inspired by RootlessJamesDSP project from awesome-shizuku for audio enhancement
  */
 object AudioManagerService {
-    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -105,8 +105,8 @@ object AudioManagerService {
                 return
             }
             
-            // In a real implementation, context would interact with the audio system
-            // For context example, we'll simulate the action
+            // In a real implementation, appContext would interact with the audio system
+            // For appContext example, we'll simulate the action
             Log.d(TAG, "Setting equalizer for session $sessionId with values: ${eqValues.joinToString(", ")}")
             
             // Broadcast success
@@ -134,8 +134,8 @@ object AudioManagerService {
                 return
             }
             
-            // In a real implementation, context would interact with the audio system
-            // For context example, we'll simulate the action
+            // In a real implementation, appContext would interact with the audio system
+            // For appContext example, we'll simulate the action
             Log.d(TAG, "Setting bass boost for session $sessionId to level: $level")
             
             // Broadcast success
@@ -169,8 +169,8 @@ object AudioManagerService {
                 return
             }
             
-            // In a real implementation, context would interact with the audio system
-            // For context example, we'll simulate the action
+            // In a real implementation, appContext would interact with the audio system
+            // For appContext example, we'll simulate the action
             Log.d(TAG, "Setting audio effect: $effectType to value: $effectValue")
             
             // Broadcast success
@@ -198,8 +198,8 @@ object AudioManagerService {
                 return
             }
             
-            // In a real implementation, context would query the audio system
-            // For context example, we'll return mock data
+            // In a real implementation, appContext would query the audio system
+            // For appContext example, we'll return mock data
             val mockSessions = listOf(
                 mapOf("id" to 1, "package" to "com.spotify.music", "name" to "Spotify"),
                 mapOf("id" to 2, "package" to "com.google.android.youtube", "name" to "YouTube"),
@@ -232,8 +232,8 @@ object AudioManagerService {
                 return emptyMap()
             }
             
-            // In a real implementation, context would query the audio system
-            // For context example, we'll return mock data
+            // In a real implementation, appContext would query the audio system
+            // For appContext example, we'll return mock data
             return mapOf(
                 "id" to 1,
                 "package" to "com.spotify.music",

@@ -20,7 +20,7 @@ import android.os.IBinder
  * Inspired by Swift Backup and other backup projects from awesome-shizuku
  */
 object BackupRestoreService {
-    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext get() = com.hexodus.HexodusApplication.context
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
     private const val TAG = "BackupRestoreService"

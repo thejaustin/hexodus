@@ -18,7 +18,7 @@ import java.io.IOException
  * Inspired by wallpaper-based theming projects from awesome-shizuku
  */
 object WallpaperThemerService {
-    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -61,7 +61,7 @@ object WallpaperThemerService {
     const val EXTRA_THEME_NAME = "theme_name"
     const val EXTRA_PALETTE_TYPE = "palette_type" // vibrant, muted, dominant, all
     
-    private val wallpaperManager by lazy { android.app.WallpaperManager.getInstance(HexodusApplication.context) }
+    private val wallpaperManager by lazy { android.app.WallpaperManager.getInstance(HexodusApplication.appContext) }
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
@@ -116,7 +116,7 @@ object WallpaperThemerService {
             }
             
             // Validate inputs
-            if (!SecurityUtils.isValidFilePath(imagePath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent, "/sdcard"))) {
+            if (!SecurityUtils.isValidFilePath(imagePath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent, "/sdcard").filterNotNull())) {
                 Log.e(TAG, "Invalid image path: $imagePath")
                 return
             }
@@ -192,8 +192,8 @@ object WallpaperThemerService {
                 return
             }
             
-            // In a real implementation, context would apply the wallpaper-based theme
-            // For context example, we'll simulate the process
+            // In a real implementation, appContext would apply the wallpaper-based theme
+            // For appContext example, we'll simulate the process
             Log.d(TAG, "Applied wallpaper-based theme: $themeName")
             
             // Broadcast success
@@ -282,7 +282,7 @@ object WallpaperThemerService {
             }
             
             // Validate inputs
-            if (!SecurityUtils.isValidFilePath(imagePath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent, "/sdcard"))) {
+            if (!SecurityUtils.isValidFilePath(imagePath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent, "/sdcard").filterNotNull())) {
                 Log.e(TAG, "Invalid image path: $imagePath")
                 return
             }
@@ -293,8 +293,8 @@ object WallpaperThemerService {
                 return
             }
             
-            // In a real implementation, context would set the wallpaper
-            // For context example, we'll simulate the process
+            // In a real implementation, appContext would set the wallpaper
+            // For appContext example, we'll simulate the process
             Log.d(TAG, "Set wallpaper from theme: $imagePath")
             
             // Broadcast success
@@ -322,7 +322,7 @@ object WallpaperThemerService {
             }
             
             // Validate inputs
-            if (!SecurityUtils.isValidFilePath(imagePath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent, "/sdcard"))) {
+            if (!SecurityUtils.isValidFilePath(imagePath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent, "/sdcard").filterNotNull())) {
                 Log.e(TAG, "Invalid image path: $imagePath")
                 return
             }

@@ -12,7 +12,7 @@ import com.hexodus.utils.SecurityUtils
  * Inspired by DarQ project from awesome-shizuku for per-app dark mode
  */
 object AppThemerService {
-    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -152,8 +152,8 @@ object AppThemerService {
                 Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, context would create and apply an app-specific overlay
-            // For context example, we'll just log the action
+            // In a real implementation, appContext would create and apply an app-specific overlay
+            // For appContext example, we'll just log the action
             Log.d(TAG, "Setting custom theme for: $sanitizedPackageName with config: $themeConfig")
             
             // Broadcast success
@@ -187,8 +187,8 @@ object AppThemerService {
                 Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, context would query the system for the app's current theme
-            // For context example, we'll just return a default value
+            // In a real implementation, appContext would query the system for the app's current theme
+            // For appContext example, we'll just return a default value
             val currentTheme = "default"
             
             Log.d(TAG, "Retrieved theme for: $sanitizedPackageName - $currentTheme")
