@@ -17,6 +17,16 @@ import java.security.MessageDigest
  * Based on techniques from awesome-shizuku projects for system-level theming
  */
 object HighContrastInjectorService {
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val packageName: String get() = context.packageName
+    private val cacheDir: java.io.File get() = context.cacheDir
+    private val filesDir: java.io.File get() = context.filesDir
+    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
+    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
+    private val applicationContext: android.content.Context get() = context
+
+    
+
     
     companion object {
         private const val TAG = "HCInjectorService"
@@ -52,7 +62,7 @@ object HighContrastInjectorService {
             }
         }
         
-        return Service.START_STICKY
+        return android.app.Service.START_STICKY
     }
     
     /**
@@ -68,7 +78,7 @@ object HighContrastInjectorService {
                 // We'll continue but broadcast a warning
                 val warningIntent = Intent("HIGH_CONTRAST_INJECTION_WARNING")
                 warningIntent.putExtra("warning", "Limited support on One UI 7/8. Some components may not theme correctly.")
-                HexodusApplication.context.sendBroadcast(warningIntent)
+                context.sendBroadcast(warningIntent)
                 
                 // In a real implementation for One UI 8, we would use a different technique here
                 // such as modifying existing themes instead of creating fake ones.
@@ -97,7 +107,7 @@ object HighContrastInjectorService {
                         val successIntent = Intent("HIGH_CONTRAST_INJECTION_SUCCESS")
                         successIntent.putExtra("package_name", fakePackageName)
                         successIntent.putExtra("theme_name", themeName)
-                        HexodusApplication.context.sendBroadcast(successIntent)
+                        context.sendBroadcast(successIntent)
                     } else {
                         Log.e(TAG, "Failed to enable high contrast overlay: $fakePackageName")
                         
@@ -105,7 +115,7 @@ object HighContrastInjectorService {
                         val failureIntent = Intent("HIGH_CONTRAST_INJECTION_FAILURE")
                         failureIntent.putExtra("package_name", fakePackageName)
                         failureIntent.putExtra("error", "Failed to enable overlay")
-                        HexodusApplication.context.sendBroadcast(failureIntent)
+                        context.sendBroadcast(failureIntent)
                     }
                 } else {
                     Log.e(TAG, "Failed to install high contrast package: $fakePackageName")
@@ -114,7 +124,7 @@ object HighContrastInjectorService {
                     val failureIntent = Intent("HIGH_CONTRAST_INJECTION_FAILURE")
                     failureIntent.putExtra("package_name", fakePackageName)
                     failureIntent.putExtra("error", "Failed to install package")
-                    HexodusApplication.context.sendBroadcast(failureIntent)
+                    context.sendBroadcast(failureIntent)
                 }
             }
         } catch (e: Exception) {
@@ -123,7 +133,7 @@ object HighContrastInjectorService {
             // Broadcast error
             val errorIntent = Intent("HIGH_CONTRAST_INJECTION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -133,7 +143,7 @@ object HighContrastInjectorService {
     private fun generateFakeHighContrastPackage(hexColor: String, themeName: String, components: List<String>): String? {
         try {
             // Create a temporary directory for the fake package
-            val tempDir = File(HexodusApplication.context.applicationContext.cacheDir, "hc_temp_${System.currentTimeMillis()}")
+            val tempDir = File(applicationContext.cacheDir, "hc_temp_${System.currentTimeMillis()}")
             tempDir.mkdirs()
             
             // Generate the fake package name
@@ -344,7 +354,7 @@ $componentXml
             // This would normally execute: cmd overlay disable <package_name>
             
             // Clean up temporary files
-            val tempDirs = HexodusApplication.context.applicationContext.cacheDir.listFiles()?.filter { file ->
+            val tempDirs = applicationContext.cacheDir.listFiles()?.filter { file ->
                 file.isDirectory && file.name.startsWith("hc_temp_")
             }
 
@@ -356,14 +366,14 @@ $componentXml
             
             // Broadcast success
             val successIntent = Intent("HIGH_CONTRAST_REMOVAL_SUCCESS")
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error removing high contrast theme: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("HIGH_CONTRAST_REMOVAL_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -376,7 +386,7 @@ $componentXml
             // For this example, we'll just broadcast an empty list
             val listIntent = Intent("HIGH_CONTRAST_THEMES_LIST")
             listIntent.putStringArrayListExtra("themes", arrayListOf())
-            HexodusApplication.context.sendBroadcast(listIntent)
+            context.sendBroadcast(listIntent)
             
             Log.d(TAG, "Listed high contrast themes")
         } catch (e: Exception) {
@@ -385,7 +395,7 @@ $componentXml
             // Broadcast error
             val errorIntent = Intent("HIGH_CONTRAST_LIST_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     

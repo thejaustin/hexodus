@@ -12,6 +12,16 @@ import com.hexodus.utils.SecurityUtils
  * Inspired by AmbientMusicMod project from awesome-shizuku for media features
  */
 object MediaNotificationService {
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val packageName: String get() = context.packageName
+    private val cacheDir: java.io.File get() = context.cacheDir
+    private val filesDir: java.io.File get() = context.filesDir
+    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
+    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
+    private val applicationContext: android.content.Context get() = context
+
+    
+
     
     companion object {
         private const val TAG = "MediaNotificationService"
@@ -66,7 +76,7 @@ object MediaNotificationService {
             }
         }
         
-        return Service.START_STICKY
+        return android.app.Service.START_STICKY
     }
     
     /**
@@ -98,14 +108,14 @@ object MediaNotificationService {
             successIntent.putExtra("track_title", title)
             successIntent.putExtra("track_artist", artist)
             successIntent.putExtra("album_art", albumArt)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error updating now playing: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("NOW_PLAYING_UPDATE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -133,14 +143,14 @@ object MediaNotificationService {
             val successIntent = Intent("NOTIFICATION_HIDDEN")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("notification_id", notificationId)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error hiding notification: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("NOTIFICATION_HIDE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -168,14 +178,14 @@ object MediaNotificationService {
             val successIntent = Intent("NOTIFICATION_SHOWN")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("notification_id", notificationId)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error showing notification: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("NOTIFICATION_SHOW_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -208,14 +218,14 @@ object MediaNotificationService {
             val successIntent = Intent("NOTIFICATION_CUSTOMIZED")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("config", config)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error customizing notification: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("NOTIFICATION_CUSTOMIZE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     

@@ -18,6 +18,16 @@ import kotlinx.coroutines.launch
  * Inspired by System UI Tuner project from awesome-shizuku
  */
 object SystemTunerService {
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val packageName: String get() = context.packageName
+    private val cacheDir: java.io.File get() = context.cacheDir
+    private val filesDir: java.io.File get() = context.filesDir
+    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
+    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
+    private val applicationContext: android.content.Context get() = context
+
+    
+
     
     companion object {
         private const val TAG = "SystemTunerService"
@@ -62,7 +72,7 @@ object SystemTunerService {
             }
         }
         
-        return Service.START_STICKY
+        return android.app.Service.START_STICKY
     }
     
     /**
@@ -102,14 +112,14 @@ object SystemTunerService {
                 val successIntent = Intent("SYSTEM_SETTING_MODIFIED")
                 successIntent.putExtra("setting_key", key)
                 successIntent.putExtra("setting_value", value)
-                HexodusApplication.context.sendBroadcast(successIntent)
+                context.sendBroadcast(successIntent)
             } catch (e: Exception) {
                 Log.e(TAG, "Error modifying system setting: ${e.message}", e)
                 
                 // Broadcast error
                 val errorIntent = Intent("SYSTEM_SETTING_ERROR")
                 errorIntent.putExtra("error_message", e.message)
-                HexodusApplication.context.sendBroadcast(errorIntent)
+                context.sendBroadcast(errorIntent)
             }
         }
     }
@@ -145,7 +155,7 @@ object SystemTunerService {
                     val successIntent = Intent("SYSTEM_SETTING_RETRIEVED")
                     successIntent.putExtra("setting_key", key)
                     successIntent.putExtra("setting_value", result.trim())
-                    HexodusApplication.context.sendBroadcast(successIntent)
+                    context.sendBroadcast(successIntent)
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error getting system setting: ${e.message}", e)
@@ -186,7 +196,7 @@ object SystemTunerService {
                 // Broadcast success
                 val successIntent = Intent("IMMERSIVE_MODE_TOGGLED")
                 successIntent.putExtra("immersive_mode", newValue)
-                HexodusApplication.context.sendBroadcast(successIntent)
+                context.sendBroadcast(successIntent)
                 
                 // Refresh system UI to apply changes
                  // Use OverlayManager instead

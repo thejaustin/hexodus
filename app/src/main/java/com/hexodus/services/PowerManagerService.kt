@@ -12,6 +12,16 @@ import com.hexodus.utils.SecurityUtils
  * Inspired by BatStats and EnforceDoze projects from awesome-shizuku
  */
 object PowerManagerService {
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val packageName: String get() = context.packageName
+    private val cacheDir: java.io.File get() = context.cacheDir
+    private val filesDir: java.io.File get() = context.filesDir
+    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
+    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
+    private val applicationContext: android.content.Context get() = context
+
+    
+
     
     companion object {
         private const val TAG = "PowerManagerService"
@@ -75,7 +85,7 @@ object PowerManagerService {
             }
         }
         
-        return Service.START_STICKY
+        return android.app.Service.START_STICKY
     }
     
     /**
@@ -100,14 +110,14 @@ object PowerManagerService {
                 // Broadcast success
                 val successIntent = Intent("BATTERY_STATS_RETRIEVED")
                 successIntent.putExtra("stats", HashMap(batteryStats))
-                HexodusApplication.context.sendBroadcast(successIntent)
+                context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to retrieve battery stats")
                 
                 // Broadcast failure
                 val failureIntent = Intent("BATTERY_STATS_FAILED")
                 failureIntent.putExtra("error", "Failed to execute command")
-                HexodusApplication.context.sendBroadcast(failureIntent)
+                context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error getting battery stats: ${e.message}", e)
@@ -115,7 +125,7 @@ object PowerManagerService {
             // Broadcast error
             val errorIntent = Intent("BATTERY_STATS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -139,14 +149,14 @@ object PowerManagerService {
                 
                 // Broadcast success
                 val successIntent = Intent("DOZE_ENFORCED")
-                HexodusApplication.context.sendBroadcast(successIntent)
+                context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to enforce doze mode")
                 
                 // Broadcast failure
                 val failureIntent = Intent("DOZE_ENFORCE_FAILED")
                 failureIntent.putExtra("error", "Failed to execute command")
-                HexodusApplication.context.sendBroadcast(failureIntent)
+                context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error enforcing doze mode: ${e.message}", e)
@@ -154,7 +164,7 @@ object PowerManagerService {
             // Broadcast error
             val errorIntent = Intent("DOZE_ENFORCE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -178,14 +188,14 @@ object PowerManagerService {
                 
                 // Broadcast success
                 val successIntent = Intent("DOZE_DISABLED")
-                HexodusApplication.context.sendBroadcast(successIntent)
+                context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to disable doze mode")
                 
                 // Broadcast failure
                 val failureIntent = Intent("DOZE_DISABLE_FAILED")
                 failureIntent.putExtra("error", "Failed to execute command")
-                HexodusApplication.context.sendBroadcast(failureIntent)
+                context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error disabling doze mode: ${e.message}", e)
@@ -193,7 +203,7 @@ object PowerManagerService {
             // Broadcast error
             val errorIntent = Intent("DOZE_DISABLE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -232,7 +242,7 @@ object PowerManagerService {
                 // Broadcast success
                 val successIntent = Intent("POWER_PROFILE_SET")
                 successIntent.putExtra("profile", profile)
-                HexodusApplication.context.sendBroadcast(successIntent)
+                context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to set power profile: $profile")
                 
@@ -240,7 +250,7 @@ object PowerManagerService {
                 val failureIntent = Intent("POWER_PROFILE_SET_FAILED")
                 failureIntent.putExtra("profile", profile)
                 failureIntent.putExtra("error", "Failed to execute command")
-                HexodusApplication.context.sendBroadcast(failureIntent)
+                context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error setting power profile: ${e.message}", e)
@@ -248,7 +258,7 @@ object PowerManagerService {
             // Broadcast error
             val errorIntent = Intent("POWER_PROFILE_SET_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -285,7 +295,7 @@ object PowerManagerService {
                 val successIntent = Intent("APP_BATTERY_OPTIMIZED")
                 successIntent.putExtra("package_name", sanitizedPackageName)
                 successIntent.putExtra("optimization_level", level)
-                HexodusApplication.context.sendBroadcast(successIntent)
+                context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to optimize battery for app: $sanitizedPackageName")
                 
@@ -293,7 +303,7 @@ object PowerManagerService {
                 val failureIntent = Intent("APP_BATTERY_OPTIMIZE_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
                 failureIntent.putExtra("error", "Failed to execute command")
-                HexodusApplication.context.sendBroadcast(failureIntent)
+                context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error optimizing app battery: ${e.message}", e)
@@ -301,7 +311,7 @@ object PowerManagerService {
             // Broadcast error
             val errorIntent = Intent("APP_BATTERY_OPTIMIZE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -334,7 +344,7 @@ object PowerManagerService {
                 val successIntent = Intent("POWER_USAGE_RETRIEVED")
                 successIntent.putExtra("package_name", sanitizedPackageName)
                 successIntent.putExtra("power_usage", HashMap(powerUsage))
-                HexodusApplication.context.sendBroadcast(successIntent)
+                context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to get power usage for app: $sanitizedPackageName")
                 
@@ -342,7 +352,7 @@ object PowerManagerService {
                 val failureIntent = Intent("POWER_USAGE_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
                 failureIntent.putExtra("error", "Failed to execute command")
-                HexodusApplication.context.sendBroadcast(failureIntent)
+                context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error getting power usage: ${e.message}", e)
@@ -350,7 +360,7 @@ object PowerManagerService {
             // Broadcast error
             val errorIntent = Intent("POWER_USAGE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -369,14 +379,14 @@ object PowerManagerService {
             val successIntent = Intent("POWER_OPTIMIZATION_SCHEDULED")
             successIntent.putExtra("schedule_time", scheduleTime)
             successIntent.putExtra("threshold", threshold)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error scheduling power optimization: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("POWER_OPTIMIZATION_SCHEDULE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     

@@ -15,6 +15,16 @@ import com.hexodus.utils.AccessibilityUtils
  * Performs checks to ensure the app meets Android 16 accessibility standards
  */
 object AccessibilityCheckerService {
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val packageName: String get() = context.packageName
+    private val cacheDir: java.io.File get() = context.cacheDir
+    private val filesDir: java.io.File get() = context.filesDir
+    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
+    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
+    private val applicationContext: android.content.Context get() = context
+
+    
+
     
     companion object {
         private const val TAG = "AccessibilityCheckerService"
@@ -34,7 +44,7 @@ object AccessibilityCheckerService {
         const val EXTRA_CONTENT_DESCRIPTION = "content_description"
     }
     
-    private val accessibilityManager by lazy { HexodusApplication.context.getSystemService(android.content.Context.ACCESSIBILITY_SERVICE) as android.view.accessibility.AccessibilityManager }
+    private val accessibilityManager by lazy { context.getSystemService(android.content.Context.ACCESSIBILITY_SERVICE) as android.view.accessibility.AccessibilityManager }
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
@@ -73,7 +83,7 @@ object AccessibilityCheckerService {
             }
         }
         
-        return Service.START_STICKY
+        return android.app.Service.START_STICKY
     }
     
     /**
@@ -93,7 +103,7 @@ object AccessibilityCheckerService {
             results["touch_exploration_enabled"] = accessibilityManager.isTouchExplorationEnabled
             
             // Check font scale
-            results["font_scale"] = HexodusApplication.context.resources.configuration.fontScale
+            results["font_scale"] = resources.configuration.fontScale
             
             // Check if reduce motion should be considered
             results["reduce_motion_enabled"] = false // Simplified check
@@ -103,7 +113,7 @@ object AccessibilityCheckerService {
             // Broadcast results
             val intent = Intent("ACCESSIBILITY_CHECKS_COMPLETED")
             intent.putExtra("results", HashMap(results))
-            HexodusApplication.context.sendBroadcast(intent)
+            context.sendBroadcast(intent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error running accessibility checks: ${e.message}", e)
@@ -111,7 +121,7 @@ object AccessibilityCheckerService {
             // Broadcast error
             val errorIntent = Intent("ACCESSIBILITY_CHECKS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -161,7 +171,7 @@ object AccessibilityCheckerService {
             val intent = Intent("COMPONENT_VALIDATION_COMPLETED")
             intent.putExtra("component_type", componentType)
             intent.putExtra("validation_results", HashMap(validationResults))
-            HexodusApplication.context.sendBroadcast(intent)
+            context.sendBroadcast(intent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error validating component: ${e.message}", e)
@@ -170,7 +180,7 @@ object AccessibilityCheckerService {
             val errorIntent = Intent("COMPONENT_VALIDATION_ERROR")
             errorIntent.putExtra("component_type", componentType)
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -184,7 +194,7 @@ object AccessibilityCheckerService {
             status["is_accessibility_enabled"] = accessibilityManager.isEnabled
             status["is_high_contrast_enabled"] = getHighTextContrastEnabled()
             status["is_touch_exploration_enabled"] = accessibilityManager.isTouchExplorationEnabled
-            status["font_scale"] = HexodusApplication.context.resources.configuration.fontScale
+            status["font_scale"] = resources.configuration.fontScale
             status["should_reduce_animations"] = AccessibilityUtils.shouldReduceAnimations(HexodusApplication.context)
             
             Log.d(TAG, "Accessibility status retrieved")
@@ -192,7 +202,7 @@ object AccessibilityCheckerService {
             // Broadcast status
             val intent = Intent("ACCESSIBILITY_STATUS_RETRIEVED")
             intent.putExtra("status", HashMap(status))
-            HexodusApplication.context.sendBroadcast(intent)
+            context.sendBroadcast(intent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error getting accessibility status: ${e.message}", e)
@@ -200,7 +210,7 @@ object AccessibilityCheckerService {
             // Broadcast error
             val errorIntent = Intent("ACCESSIBILITY_STATUS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -210,7 +220,7 @@ object AccessibilityCheckerService {
     fun isAccessibilityFriendly(): Boolean {
         return accessibilityManager.isEnabled ||
                getHighTextContrastEnabled() ||
-               HexodusApplication.context.resources.configuration.fontScale > 1.0f
+               resources.configuration.fontScale > 1.0f
     }
     
     /**
@@ -219,7 +229,7 @@ object AccessibilityCheckerService {
     fun getAccessibilityRecommendations(): List<String> {
         val recommendations = mutableListOf<String>()
 
-        if (HexodusApplication.context.resources.configuration.fontScale < 1.2f) {
+        if (resources.configuration.fontScale < 1.2f) {
             recommendations.add("Consider increasing text size for better readability")
         }
 

@@ -108,7 +108,7 @@ class AdvancedThemingService : LifecycleService() {
             }
         }
         
-        return Service.START_STICKY
+        return android.app.Service.START_STICKY
     }
     
     /**
@@ -162,7 +162,7 @@ class AdvancedThemingService : LifecycleService() {
                 )
                 
                 // Save the theme to internal storage temporarily
-                val tempFile = File(HexodusApplication.context.cacheDir, "${packageName}.apk")
+                val tempFile = File(cacheDir, "${packageName}.apk")
                 FileOutputStream(tempFile).use { it.write(themeData) }
                 
                 // Install the overlay using Shizuku
@@ -180,7 +180,7 @@ class AdvancedThemingService : LifecycleService() {
                         successIntent.putExtra("package_name", packageName)
                         successIntent.putStringArrayListExtra("colors", ArrayList(colors))
                         successIntent.putExtra("component", componentName)
-                        HexodusApplication.context.sendBroadcast(successIntent)
+                        context.sendBroadcast(successIntent)
                         
                         // Clean up temp file
                         tempFile.delete()
@@ -191,7 +191,7 @@ class AdvancedThemingService : LifecycleService() {
                         val failureIntent = Intent("GRADIENT_THEME_CREATION_FAILED")
                         failureIntent.putExtra("package_name", packageName)
                         failureIntent.putExtra("error", "Failed to enable overlay")
-                        HexodusApplication.context.sendBroadcast(failureIntent)
+                        context.sendBroadcast(failureIntent)
                         
                         // Clean up temp file
                         tempFile.delete()
@@ -203,7 +203,7 @@ class AdvancedThemingService : LifecycleService() {
                     val failureIntent = Intent("GRADIENT_THEME_INSTALL_FAILED")
                     failureIntent.putExtra("package_name", packageName)
                     failureIntent.putExtra("error", "Failed to install APK")
-                    HexodusApplication.context.sendBroadcast(failureIntent)
+                    context.sendBroadcast(failureIntent)
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error creating gradient theme: ${e.message}", e)
@@ -211,7 +211,7 @@ class AdvancedThemingService : LifecycleService() {
                 // Broadcast error
                 val errorIntent = Intent("GRADIENT_THEME_ERROR")
                 errorIntent.putExtra("error_message", e.message)
-                HexodusApplication.context.sendBroadcast(errorIntent)
+                context.sendBroadcast(errorIntent)
             }
         }
     }
@@ -254,7 +254,7 @@ class AdvancedThemingService : LifecycleService() {
             )
             
             // Save the theme to internal storage temporarily
-            val tempFile = File(HexodusApplication.context.cacheDir, "${packageName}.apk")
+            val tempFile = File(cacheDir, "${packageName}.apk")
             FileOutputStream(tempFile).use { it.write(themeData) }
             
             // Install the overlay using Shizuku
@@ -272,7 +272,7 @@ class AdvancedThemingService : LifecycleService() {
                     successIntent.putExtra("package_name", packageName)
                     successIntent.putExtra("animation_type", animationType)
                     successIntent.putExtra("hex_color", hexColor)
-                    HexodusApplication.context.sendBroadcast(successIntent)
+                    context.sendBroadcast(successIntent)
                     
                     // Clean up temp file
                     tempFile.delete()
@@ -283,7 +283,7 @@ class AdvancedThemingService : LifecycleService() {
                     val failureIntent = Intent("ANIMATED_THEME_CREATION_FAILED")
                     failureIntent.putExtra("package_name", packageName)
                     failureIntent.putExtra("error", "Failed to enable overlay")
-                    HexodusApplication.context.sendBroadcast(failureIntent)
+                    context.sendBroadcast(failureIntent)
                     
                     // Clean up temp file
                     tempFile.delete()
@@ -295,7 +295,7 @@ class AdvancedThemingService : LifecycleService() {
                 val failureIntent = Intent("ANIMATED_THEME_INSTALL_FAILED")
                 failureIntent.putExtra("package_name", packageName)
                 failureIntent.putExtra("error", "Failed to install APK")
-                HexodusApplication.context.sendBroadcast(failureIntent)
+                context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error creating animated theme: ${e.message}", e)
@@ -303,7 +303,7 @@ class AdvancedThemingService : LifecycleService() {
             // Broadcast error
             val errorIntent = Intent("ANIMATED_THEME_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -323,7 +323,7 @@ class AdvancedThemingService : LifecycleService() {
                 return
             }
             
-            if (!SecurityUtils.isValidFilePath(texturePath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent, "/sdcard"))) {
+            if (!SecurityUtils.isValidFilePath(texturePath, listOf(filesDir.parent, cacheDir.parent, "/sdcard"))) {
                 Log.e(TAG, "Invalid texture path: $texturePath")
                 return
             }
@@ -350,7 +350,7 @@ class AdvancedThemingService : LifecycleService() {
             )
             
             // Save the theme to internal storage temporarily
-            val tempFile = File(HexodusApplication.context.cacheDir, "${packageName}.apk")
+            val tempFile = File(cacheDir, "${packageName}.apk")
             FileOutputStream(tempFile).use { it.write(themeData) }
             
             // Install the overlay using Shizuku
@@ -368,7 +368,7 @@ class AdvancedThemingService : LifecycleService() {
                     successIntent.putExtra("package_name", packageName)
                     successIntent.putExtra("texture_path", texturePath)
                     successIntent.putExtra("hex_color", hexColor)
-                    HexodusApplication.context.sendBroadcast(successIntent)
+                    context.sendBroadcast(successIntent)
                     
                     // Clean up temp file
                     tempFile.delete()
@@ -379,7 +379,7 @@ class AdvancedThemingService : LifecycleService() {
                     val failureIntent = Intent("TEXTURE_THEME_CREATION_FAILED")
                     failureIntent.putExtra("package_name", packageName)
                     failureIntent.putExtra("error", "Failed to enable overlay")
-                    HexodusApplication.context.sendBroadcast(failureIntent)
+                    context.sendBroadcast(failureIntent)
                     
                     // Clean up temp file
                     tempFile.delete()
@@ -391,7 +391,7 @@ class AdvancedThemingService : LifecycleService() {
                 val failureIntent = Intent("TEXTURE_THEME_INSTALL_FAILED")
                 failureIntent.putExtra("package_name", packageName)
                 failureIntent.putExtra("error", "Failed to install APK")
-                HexodusApplication.context.sendBroadcast(failureIntent)
+                context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error creating texture theme: ${e.message}", e)
@@ -399,7 +399,7 @@ class AdvancedThemingService : LifecycleService() {
             // Broadcast error
             val errorIntent = Intent("TEXTURE_THEME_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -443,14 +443,14 @@ class AdvancedThemingService : LifecycleService() {
             // Broadcast results
             val successIntent = Intent("THEME_PRESETS_RETRIEVED")
             successIntent.putExtra("preset_count", presets.size)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting theme presets: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("THEME_PRESETS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -487,21 +487,21 @@ class AdvancedThemingService : LifecycleService() {
             // For now, we'll just apply the 'to' theme
             val applyIntent = Intent("com.hexodus.APPLY_THEME")
             applyIntent.putExtra("theme_name", toTheme)
-            HexodusApplication.context.sendBroadcast(applyIntent)
+            context.sendBroadcast(applyIntent)
             
             // Broadcast success
             val successIntent = Intent("THEME_TRANSITION_APPLIED")
             successIntent.putExtra("from_theme", fromTheme)
             successIntent.putExtra("to_theme", toTheme)
             successIntent.putExtra("transition_speed", speed)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error applying theme transition: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("THEME_TRANSITION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -543,7 +543,7 @@ class AdvancedThemingService : LifecycleService() {
             )
             
             // Save the theme to internal storage temporarily
-            val tempFile = File(HexodusApplication.context.cacheDir, "${packageName}.apk")
+            val tempFile = File(cacheDir, "${packageName}.apk")
             FileOutputStream(tempFile).use { it.write(themeData) }
             
             // Install the overlay using Shizuku
@@ -561,7 +561,7 @@ class AdvancedThemingService : LifecycleService() {
                     successIntent.putExtra("package_name", packageName)
                     successIntent.putExtra("animation_type", animationType)
                     successIntent.putExtra("duration", duration)
-                    HexodusApplication.context.sendBroadcast(successIntent)
+                    context.sendBroadcast(successIntent)
                     
                     // Clean up temp file
                     tempFile.delete()
@@ -572,7 +572,7 @@ class AdvancedThemingService : LifecycleService() {
                     val failureIntent = Intent("THEME_ANIMATION_CREATION_FAILED")
                     failureIntent.putExtra("package_name", packageName)
                     failureIntent.putExtra("error", "Failed to enable overlay")
-                    HexodusApplication.context.sendBroadcast(failureIntent)
+                    context.sendBroadcast(failureIntent)
                     
                     // Clean up temp file
                     tempFile.delete()
@@ -584,7 +584,7 @@ class AdvancedThemingService : LifecycleService() {
                 val failureIntent = Intent("THEME_ANIMATION_INSTALL_FAILED")
                 failureIntent.putExtra("package_name", packageName)
                 failureIntent.putExtra("error", "Failed to install APK")
-                HexodusApplication.context.sendBroadcast(failureIntent)
+                context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error creating theme animation: ${e.message}", e)
@@ -592,7 +592,7 @@ class AdvancedThemingService : LifecycleService() {
             // Broadcast error
             val errorIntent = Intent("THEME_ANIMATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     

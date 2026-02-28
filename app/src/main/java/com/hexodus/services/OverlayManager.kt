@@ -12,6 +12,16 @@ import java.io.File
  * OverlayManager - Singleton utility for managing overlays via Shizuku
  */
 object OverlayManager {
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val packageName: String get() = context.packageName
+    private val cacheDir: java.io.File get() = context.cacheDir
+    private val filesDir: java.io.File get() = context.filesDir
+    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
+    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
+    private val applicationContext: android.content.Context get() = context
+
+    
+
     private const val TAG = "OverlayManager"
 
     private fun useEnhancedApi(context: Context): Boolean {

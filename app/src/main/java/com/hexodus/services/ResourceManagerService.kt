@@ -20,6 +20,16 @@ import java.util.zip.ZipOutputStream
  * Inspired by various awesome-shizuku projects for system-level resource management
  */
 object ResourceManagerService {
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val packageName: String get() = context.packageName
+    private val cacheDir: java.io.File get() = context.cacheDir
+    private val filesDir: java.io.File get() = context.filesDir
+    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
+    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
+    private val applicationContext: android.content.Context get() = context
+
+    
+
     
     companion object {
         private const val TAG = "ResourceManagerService"
@@ -91,7 +101,7 @@ object ResourceManagerService {
             }
         }
         
-        return Service.START_STICKY
+        return android.app.Service.START_STICKY
     }
     
     /**
@@ -136,7 +146,7 @@ object ResourceManagerService {
             )
             
             // Save overlay to internal storage temporarily
-            val tempFile = File(HexodusApplication.context.cacheDir, "${sanitizedPackageName}.apk")
+            val tempFile = File(cacheDir, "${sanitizedPackageName}.apk")
             FileOutputStream(tempFile).use { it.write(overlayData) }
             
             // Install the overlay using Shizuku
@@ -154,7 +164,7 @@ object ResourceManagerService {
                     successIntent.putExtra("package_name", sanitizedPackageName)
                     successIntent.putExtra("name", name)
                     successIntent.putStringArrayListExtra("target_packages", ArrayList(validTargetPackages))
-                    HexodusApplication.context.sendBroadcast(successIntent)
+                    context.sendBroadcast(successIntent)
                     
                     // Clean up temp file
                     tempFile.delete()
@@ -165,7 +175,7 @@ object ResourceManagerService {
                     val failureIntent = Intent("OVERLAY_CREATION_FAILED")
                     failureIntent.putExtra("package_name", sanitizedPackageName)
                     failureIntent.putExtra("error", "Failed to enable overlay")
-                    HexodusApplication.context.sendBroadcast(failureIntent)
+                    context.sendBroadcast(failureIntent)
                     
                     // Clean up temp file
                     tempFile.delete()
@@ -177,7 +187,7 @@ object ResourceManagerService {
                 val failureIntent = Intent("OVERLAY_INSTALLATION_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
                 failureIntent.putExtra("error", "Failed to install APK")
-                HexodusApplication.context.sendBroadcast(failureIntent)
+                context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error creating overlay: ${e.message}", e)
@@ -185,7 +195,7 @@ object ResourceManagerService {
             // Broadcast error
             val errorIntent = Intent("OVERLAY_CREATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -220,7 +230,7 @@ object ResourceManagerService {
                 val failureIntent = Intent("OVERLAY_UPDATE_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
                 failureIntent.putExtra("error", "Failed to disable overlay for update")
-                HexodusApplication.context.sendBroadcast(failureIntent)
+                context.sendBroadcast(failureIntent)
                 return
             }
             
@@ -238,7 +248,7 @@ object ResourceManagerService {
                 // Broadcast success
                 val successIntent = Intent("OVERLAY_UPDATED")
                 successIntent.putExtra("package_name", sanitizedPackageName)
-                HexodusApplication.context.sendBroadcast(successIntent)
+                context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to re-enable updated overlay: $sanitizedPackageName")
                 
@@ -246,7 +256,7 @@ object ResourceManagerService {
                 val failureIntent = Intent("OVERLAY_UPDATE_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
                 failureIntent.putExtra("error", "Failed to re-enable overlay")
-                HexodusApplication.context.sendBroadcast(failureIntent)
+                context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error updating overlay: ${e.message}", e)
@@ -254,7 +264,7 @@ object ResourceManagerService {
             // Broadcast error
             val errorIntent = Intent("OVERLAY_UPDATE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -284,7 +294,7 @@ object ResourceManagerService {
                 val failureIntent = Intent("OVERLAY_DELETION_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
                 failureIntent.putExtra("error", "Failed to disable overlay")
-                HexodusApplication.context.sendBroadcast(failureIntent)
+                context.sendBroadcast(failureIntent)
                 return
             }
             
@@ -297,7 +307,7 @@ object ResourceManagerService {
                 // Broadcast success
                 val successIntent = Intent("OVERLAY_DELETED")
                 successIntent.putExtra("package_name", sanitizedPackageName)
-                HexodusApplication.context.sendBroadcast(successIntent)
+                context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to uninstall overlay: $sanitizedPackageName")
                 
@@ -305,7 +315,7 @@ object ResourceManagerService {
                 val failureIntent = Intent("OVERLAY_DELETION_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
                 failureIntent.putExtra("error", "Failed to uninstall package")
-                HexodusApplication.context.sendBroadcast(failureIntent)
+                context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error deleting overlay: ${e.message}", e)
@@ -313,7 +323,7 @@ object ResourceManagerService {
             // Broadcast error
             val errorIntent = Intent("OVERLAY_DELETION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -355,14 +365,14 @@ object ResourceManagerService {
             // Broadcast results
             val successIntent = Intent("OVERLAYS_LISTED")
             successIntent.putExtra("overlay_count", overlays.size)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error listing overlays: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("OVERLAYS_LISTING_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -382,7 +392,7 @@ object ResourceManagerService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            if (!SecurityUtils.isValidFilePath(exportPath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(exportPath, listOf(filesDir.parent, cacheDir.parent))) {
                 Log.e(TAG, "Invalid export path: $exportPath")
                 return
             }
@@ -395,14 +405,14 @@ object ResourceManagerService {
             val successIntent = Intent("OVERLAY_EXPORTED")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("export_path", exportPath)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error exporting overlay: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("OVERLAY_EXPORT_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -417,7 +427,7 @@ object ResourceManagerService {
             }
             
             // Validate inputs
-            if (!SecurityUtils.isValidFilePath(importPath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(importPath, listOf(filesDir.parent, cacheDir.parent))) {
                 Log.e(TAG, "Invalid import path: $importPath")
                 return
             }
@@ -444,7 +454,7 @@ object ResourceManagerService {
                 // Broadcast success
                 val successIntent = Intent("OVERLAY_IMPORTED")
                 successIntent.putExtra("import_path", importPath)
-                HexodusApplication.context.sendBroadcast(successIntent)
+                context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to install imported overlay: $importPath")
                 
@@ -452,7 +462,7 @@ object ResourceManagerService {
                 val failureIntent = Intent("OVERLAY_IMPORT_FAILED")
                 failureIntent.putExtra("import_path", importPath)
                 failureIntent.putExtra("error", "Failed to install APK")
-                HexodusApplication.context.sendBroadcast(failureIntent)
+                context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error importing overlay: ${e.message}", e)
@@ -460,7 +470,7 @@ object ResourceManagerService {
             // Broadcast error
             val errorIntent = Intent("OVERLAY_IMPORT_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     

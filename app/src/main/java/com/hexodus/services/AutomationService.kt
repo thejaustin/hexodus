@@ -18,6 +18,16 @@ import java.util.TimerTask
  * Inspired by automation projects from awesome-shizuku like MacroDroid, Tasker, and AutoJs6
  */
 object AutomationService {
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val packageName: String get() = context.packageName
+    private val cacheDir: java.io.File get() = context.cacheDir
+    private val filesDir: java.io.File get() = context.filesDir
+    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
+    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
+    private val applicationContext: android.content.Context get() = context
+
+    
+
     
     companion object {
         private const val TAG = "AutomationService"
@@ -110,7 +120,7 @@ object AutomationService {
             }
         }
         
-        return Service.START_STICKY
+        return android.app.Service.START_STICKY
     }
     
     /**
@@ -182,14 +192,14 @@ object AutomationService {
             val successIntent = Intent("AUTOMATION_CREATED")
             successIntent.putExtra("automation_name", name)
             successIntent.putExtra("trigger", trigger)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error creating automation: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("AUTOMATION_CREATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -230,14 +240,14 @@ object AutomationService {
             // Broadcast success
             val successIntent = Intent("AUTOMATION_EXECUTED")
             successIntent.putExtra("automation_name", automationName)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error executing automation: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("AUTOMATION_EXECUTION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -262,14 +272,14 @@ object AutomationService {
             // Broadcast results
             val successIntent = Intent("AUTOMATIONS_RETRIEVED")
             successIntent.putExtra("automation_count", automationList.size)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting automations: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("AUTOMATIONS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -323,14 +333,14 @@ object AutomationService {
             successIntent.putExtra("automation_name", name)
             successIntent.putExtra("schedule_time", scheduleTime)
             successIntent.putExtra("repeat_interval", repeatInterval ?: 0L)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error scheduling automation: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("AUTOMATION_SCHEDULING_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     

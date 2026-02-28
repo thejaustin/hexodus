@@ -19,6 +19,16 @@ import androidx.annotation.RequiresApi
  * Inspired by power management projects from awesome-shizuku
  */
 object PerformanceOptimizerService {
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val packageName: String get() = context.packageName
+    private val cacheDir: java.io.File get() = context.cacheDir
+    private val filesDir: java.io.File get() = context.filesDir
+    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
+    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
+    private val applicationContext: android.content.Context get() = context
+
+    
+
     
     companion object {
         private const val TAG = "PerformanceOptimizerService"
@@ -35,7 +45,7 @@ object PerformanceOptimizerService {
         const val EXTRA_CLEAN_SCOPE = "clean_scope" // cache, temp, all
     }
     
-    private val powerManager by lazy { HexodusApplication.context.getSystemService(android.content.Context.POWER_SERVICE) as android.os.PowerManager }
+    private val powerManager by lazy { context.getSystemService(android.content.Context.POWER_SERVICE) as android.os.PowerManager }
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
@@ -68,7 +78,7 @@ object PerformanceOptimizerService {
             }
         }
         
-        return Service.START_STICKY
+        return android.app.Service.START_STICKY
     }
     
     /**
@@ -101,14 +111,14 @@ object PerformanceOptimizerService {
             // Broadcast results
             val successIntent = Intent("BATTERY_STATS_RETRIEVED")
             successIntent.putExtra("battery_stats", HashMap(batteryStats))
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting battery stats: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("BATTERY_STATS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -135,14 +145,14 @@ object PerformanceOptimizerService {
             // Broadcast success
             val successIntent = Intent("APP_OPTIMIZED")
             successIntent.putExtra("package_name", sanitizedPackageName)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error optimizing app: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_OPTIMIZATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -169,14 +179,14 @@ object PerformanceOptimizerService {
             // Broadcast success
             val successIntent = Intent("POWER_MODE_SET")
             successIntent.putExtra("power_mode", mode)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error managing power mode: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("POWER_MODE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -191,8 +201,8 @@ object PerformanceOptimizerService {
                 return
             }
             
-            val storageManager = HexodusApplication.context.getSystemService(Context.STORAGE_SERVICE) as StorageManager
-            val storageStatsManager = HexodusApplication.context.getSystemService(Context.STORAGE_STATS_SERVICE) as StorageStatsManager
+            val storageManager = context.getSystemService(Context.STORAGE_SERVICE) as StorageManager
+            val storageStatsManager = context.getSystemService(Context.STORAGE_STATS_SERVICE) as StorageStatsManager
             
             // In a real implementation, this would query storage stats
             // For this example, we'll simulate the process
@@ -212,14 +222,14 @@ object PerformanceOptimizerService {
             // Broadcast results
             val successIntent = Intent("STORAGE_STATS_RETRIEVED")
             successIntent.putExtra("storage_stats", HashMap(storageStats))
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting storage stats: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("STORAGE_STATS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -254,14 +264,14 @@ object PerformanceOptimizerService {
             val successIntent = Intent("STORAGE_CLEANED")
             successIntent.putExtra("clean_scope", scope)
             successIntent.putExtra("freed_space_bytes", freedSpace)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error cleaning storage: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("STORAGE_CLEAN_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -288,14 +298,14 @@ object PerformanceOptimizerService {
             // Broadcast results
             val successIntent = Intent("MEMORY_INFO_RETRIEVED")
             successIntent.putExtra("memory_info", HashMap(memoryInfo))
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting memory info: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("MEMORY_INFO_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     

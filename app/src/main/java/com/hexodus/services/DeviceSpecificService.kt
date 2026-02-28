@@ -23,6 +23,16 @@ import kotlinx.coroutines.launch
  * Includes Samsung Z Flip 5 specific optimizations and foldable display support
  */
 object DeviceSpecificService {
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val packageName: String get() = context.packageName
+    private val cacheDir: java.io.File get() = context.cacheDir
+    private val filesDir: java.io.File get() = context.filesDir
+    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
+    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
+    private val applicationContext: android.content.Context get() = context
+
+    
+
     
     companion object {
         private const val TAG = "DeviceSpecificService"
@@ -72,7 +82,7 @@ object DeviceSpecificService {
             }
         }
         
-        return Service.START_STICKY
+        return android.app.Service.START_STICKY
     }
     
     /**
@@ -105,14 +115,14 @@ object DeviceSpecificService {
             // Broadcast results
             val successIntent = Intent("DEVICE_INFO_RETRIEVED")
             successIntent.putExtra("device_info", HashMap(deviceInfo))
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting device info: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("DEVICE_INFO_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -126,7 +136,7 @@ object DeviceSpecificService {
                 
                 // Broadcast not applicable
                 val notApplicableIntent = Intent("FOLDABLE_OPTIMIZATION_NOT_APPLICABLE")
-                HexodusApplication.context.sendBroadcast(notApplicableIntent)
+                context.sendBroadcast(notApplicableIntent)
                 return
             }
             
@@ -136,14 +146,14 @@ object DeviceSpecificService {
             
             // Broadcast success
             val successIntent = Intent("FOLDABLE_OPTIMIZED")
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error optimizing for foldable: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("FOLDABLE_OPTIMIZATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -159,14 +169,14 @@ object DeviceSpecificService {
             // Broadcast results
             val successIntent = Intent("DISPLAY_FEATURES_RETRIEVED")
             successIntent.putExtra("display_features", HashMap(displayFeatures))
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting display features: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("DISPLAY_FEATURES_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -186,7 +196,7 @@ object DeviceSpecificService {
                 // Broadcast not supported
                 val notSupportedIntent = Intent("DEX_MODE_NOT_SUPPORTED")
                 notSupportedIntent.putExtra("error", "DeX mode is only available on Samsung devices")
-                HexodusApplication.context.sendBroadcast(notSupportedIntent)
+                context.sendBroadcast(notSupportedIntent)
                 return
             }
             
@@ -203,14 +213,14 @@ object DeviceSpecificService {
             // Broadcast success
             val successIntent = Intent("DEX_MODE_SET")
             successIntent.putExtra("dex_mode", mode)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error managing DeX mode: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("DEX_MODE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -225,7 +235,7 @@ object DeviceSpecificService {
                 // Broadcast not supported
                 val notSupportedIntent = Intent("BIXBY_CAPABILITIES_NOT_SUPPORTED")
                 notSupportedIntent.putExtra("error", "Bixby is only available on Samsung devices")
-                HexodusApplication.context.sendBroadcast(notSupportedIntent)
+                context.sendBroadcast(notSupportedIntent)
                 return
             }
             
@@ -248,14 +258,14 @@ object DeviceSpecificService {
             // Broadcast results
             val successIntent = Intent("BIXBY_CAPABILITIES_RETRIEVED")
             successIntent.putExtra("bixby_capabilities", HashMap(bixbyCapabilities))
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting Bixby capabilities: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("BIXBY_CAPABILITIES_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -275,7 +285,7 @@ object DeviceSpecificService {
                 // Broadcast not supported
                 val notSupportedIntent = Intent("ONE_UI_FEATURE_NOT_SUPPORTED")
                 notSupportedIntent.putExtra("error", "One UI features are only available on Samsung devices")
-                HexodusApplication.context.sendBroadcast(notSupportedIntent)
+                context.sendBroadcast(notSupportedIntent)
                 return
             }
             
@@ -305,14 +315,14 @@ object DeviceSpecificService {
             val successIntent = Intent("ONE_UI_FEATURE_SET")
             successIntent.putExtra("feature_name", featureName)
             successIntent.putExtra("enabled", enabled)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error managing One UI feature: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("ONE_UI_FEATURE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -320,7 +330,7 @@ object DeviceSpecificService {
      * Internal method to get display features
      */
     private fun getDisplayFeaturesInternal(): Map<String, Any> {
-        val displayManager = HexodusApplication.context.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
+        val displayManager = context.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
         val displays = displayManager.displays
         
         val features = mutableMapOf<String, Any>()
@@ -369,11 +379,11 @@ object DeviceSpecificService {
         if (display == null) return 0f
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val windowManager = HexodusApplication.context.getSystemService(Context.WINDOW_SERVICE) as android.view.WindowManager
+            val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as android.view.WindowManager
             val windowMetrics = windowManager.currentWindowMetrics
             val bounds = windowMetrics.bounds
-            val xdpi = HexodusApplication.context.resources.displayMetrics.xdpi
-            val ydpi = HexodusApplication.context.resources.displayMetrics.ydpi
+            val xdpi = resources.displayMetrics.xdpi
+            val ydpi = resources.displayMetrics.ydpi
             if (xdpi <= 0f || ydpi <= 0f) return 0f
             val widthInches = bounds.width() / xdpi
             val heightInches = bounds.height() / ydpi
@@ -393,7 +403,7 @@ object DeviceSpecificService {
      */
     private fun getRamSizeGB(): Float {
         val memInfo = android.app.ActivityManager.MemoryInfo()
-        val activityManager = HexodusApplication.context.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
+        val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
         activityManager.getMemoryInfo(memInfo)
         
         // This gets available RAM, but we want total RAM
@@ -405,8 +415,8 @@ object DeviceSpecificService {
      * Gets storage size in GB
      */
     private fun getStorageSizeGB(): Float {
-        val storageManager = HexodusApplication.context.getSystemService(Context.STORAGE_SERVICE) as android.os.storage.StorageManager
-        val storageStatsManager = HexodusApplication.context.getSystemService(Context.STORAGE_STATS_SERVICE) as android.app.usage.StorageStatsManager
+        val storageManager = context.getSystemService(Context.STORAGE_SERVICE) as android.os.storage.StorageManager
+        val storageStatsManager = context.getSystemService(Context.STORAGE_STATS_SERVICE) as android.app.usage.StorageStatsManager
         
         // In a real implementation, we'd get actual storage stats
         // For this example, return a common value
@@ -476,7 +486,7 @@ object DeviceSpecificService {
         intent.putExtra("is_foldable", hasFoldingFeature)
         intent.putExtra("is_tabletop", isTabletop)
         intent.putExtra("is_separating", isSeparating)
-        HexodusApplication.context.sendBroadcast(intent)
+        context.sendBroadcast(intent)
     }
     
     /**

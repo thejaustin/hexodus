@@ -18,6 +18,16 @@ import java.io.IOException
  * Inspired by wallpaper-based theming projects from awesome-shizuku
  */
 object WallpaperThemerService {
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val packageName: String get() = context.packageName
+    private val cacheDir: java.io.File get() = context.cacheDir
+    private val filesDir: java.io.File get() = context.filesDir
+    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
+    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
+    private val applicationContext: android.content.Context get() = context
+
+    
+
     
     companion object {
         private const val TAG = "WallpaperThemerService"
@@ -75,7 +85,7 @@ object WallpaperThemerService {
             }
         }
         
-        return Service.START_STICKY
+        return android.app.Service.START_STICKY
     }
     
     /**
@@ -89,7 +99,7 @@ object WallpaperThemerService {
             }
             
             // Validate inputs
-            if (!SecurityUtils.isValidFilePath(imagePath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent, "/sdcard"))) {
+            if (!SecurityUtils.isValidFilePath(imagePath, listOf(filesDir.parent, cacheDir.parent, "/sdcard"))) {
                 Log.e(TAG, "Invalid image path: $imagePath")
                 return
             }
@@ -135,7 +145,7 @@ object WallpaperThemerService {
             val successIntent = Intent("COLORS_EXTRACTED")
             successIntent.putExtra("image_path", imagePath)
             successIntent.putIntegerArrayListExtra("colors", ArrayList(finalColors))
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
             
             // Clean up bitmap
             bitmap.recycle()
@@ -145,7 +155,7 @@ object WallpaperThemerService {
             // Broadcast error
             val errorIntent = Intent("COLOR_EXTRACTION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -172,14 +182,14 @@ object WallpaperThemerService {
             // Broadcast success
             val successIntent = Intent("WALLPAPER_THEME_APPLIED")
             successIntent.putExtra("theme_name", themeName)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error applying wallpaper theme: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("WALLPAPER_THEME_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -222,7 +232,7 @@ object WallpaperThemerService {
                 // Broadcast results
                 val successIntent = Intent("CURRENT_WALLPAPER_COLORS_RETRIEVED")
                 successIntent.putExtra("colors", HashMap(colors))
-                HexodusApplication.context.sendBroadcast(successIntent)
+                context.sendBroadcast(successIntent)
                 
                 // Clean up bitmap
                 wallpaperBitmap.recycle()
@@ -232,7 +242,7 @@ object WallpaperThemerService {
                 // Broadcast error
                 val errorIntent = Intent("CURRENT_WALLPAPER_COLORS_ERROR")
                 errorIntent.putExtra("error", "Failed to retrieve wallpaper")
-                HexodusApplication.context.sendBroadcast(errorIntent)
+                context.sendBroadcast(errorIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error getting current wallpaper colors: ${e.message}", e)
@@ -240,7 +250,7 @@ object WallpaperThemerService {
             // Broadcast error
             val errorIntent = Intent("CURRENT_WALLPAPER_COLORS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -255,7 +265,7 @@ object WallpaperThemerService {
             }
             
             // Validate inputs
-            if (!SecurityUtils.isValidFilePath(imagePath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent, "/sdcard"))) {
+            if (!SecurityUtils.isValidFilePath(imagePath, listOf(filesDir.parent, cacheDir.parent, "/sdcard"))) {
                 Log.e(TAG, "Invalid image path: $imagePath")
                 return
             }
@@ -273,14 +283,14 @@ object WallpaperThemerService {
             // Broadcast success
             val successIntent = Intent("WALLPAPER_SET_FROM_THEME")
             successIntent.putExtra("image_path", imagePath)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error setting wallpaper from theme: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("WALLPAPER_SET_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -295,7 +305,7 @@ object WallpaperThemerService {
             }
             
             // Validate inputs
-            if (!SecurityUtils.isValidFilePath(imagePath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent, "/sdcard"))) {
+            if (!SecurityUtils.isValidFilePath(imagePath, listOf(filesDir.parent, cacheDir.parent, "/sdcard"))) {
                 Log.e(TAG, "Invalid image path: $imagePath")
                 return
             }
@@ -370,7 +380,7 @@ object WallpaperThemerService {
             successIntent.putExtra("image_path", imagePath)
             successIntent.putExtra("palette_type", paletteType)
             successIntent.putExtra("colors", HashMap(colors))
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
             
             // Clean up bitmap
             bitmap.recycle()
@@ -380,7 +390,7 @@ object WallpaperThemerService {
             // Broadcast error
             val errorIntent = Intent("PALETTE_GENERATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     

@@ -21,6 +21,16 @@ import kotlinx.coroutines.launch
  * Optimized for Samsung Z Flip 5 and other foldable devices based on awesome-shizuku insights
  */
 object FoldableDisplayService {
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val packageName: String get() = context.packageName
+    private val cacheDir: java.io.File get() = context.cacheDir
+    private val filesDir: java.io.File get() = context.filesDir
+    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
+    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
+    private val applicationContext: android.content.Context get() = context
+
+    
+
 
     companion object {
         private const val TAG = "FoldableDisplayService"
@@ -48,7 +58,7 @@ object FoldableDisplayService {
             }
         }
 
-        return Service.START_STICKY
+        return android.app.Service.START_STICKY
     }
 
     /**
@@ -126,13 +136,13 @@ object FoldableDisplayService {
      * Gets the screen diagonal size in inches using modern APIs
      */
     private fun getScreenSizeInches(): Float {
-        val windowManager = HexodusApplication.context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val windowMetrics: WindowMetrics = windowManager.currentWindowMetrics
             val bounds = windowMetrics.bounds
-            val HexodusApplication.context.resources = HexodusApplication.context.resources
-            val xdpi = HexodusApplication.context.resources.displayMetrics.xdpi
-            val ydpi = HexodusApplication.context.resources.displayMetrics.ydpi
+            val resources = resources
+            val xdpi = resources.displayMetrics.xdpi
+            val ydpi = resources.displayMetrics.ydpi
             if (xdpi <= 0f || ydpi <= 0f) return 6.0f
             val widthInches = bounds.width() / xdpi
             val heightInches = bounds.height() / ydpi
@@ -160,7 +170,7 @@ object FoldableDisplayService {
      * Updates resource mapping based on current display context
      */
     private fun updateResourceMapping() {
-        val prefs = HexodusApplication.context.applicationContext.getSharedPreferences("display_context", 0)
+        val prefs = applicationContext.getSharedPreferences("display_context", 0)
         val editor = prefs.edit()
 
         editor.putBoolean("is_cover_screen", isCoverScreen)
@@ -209,6 +219,6 @@ object FoldableDisplayService {
      * Gets display metrics for the current context
      */
     fun getCurrentDisplayMetrics(): DisplayMetrics {
-        return HexodusApplication.context.resources.displayMetrics
+        return resources.displayMetrics
     }
 }

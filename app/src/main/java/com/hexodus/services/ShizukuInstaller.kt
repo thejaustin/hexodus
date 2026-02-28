@@ -21,6 +21,16 @@ import com.hexodus.utils.PrefsManager
  * or silently using Shizuku. Refactored from Service to Singleton.
  */
 object ShizukuInstaller {
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val packageName: String get() = context.packageName
+    private val cacheDir: java.io.File get() = context.cacheDir
+    private val filesDir: java.io.File get() = context.filesDir
+    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
+    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
+    private val applicationContext: android.content.Context get() = context
+
+    
+
 
     private const val TAG = "ShizukuInstaller"
 
@@ -70,7 +80,7 @@ object ShizukuInstaller {
                             val progressIntent = Intent("APK_INSTALLATION_PROGRESS")
                             progressIntent.putExtra("app_name", appName)
                             progressIntent.putExtra("progress", progress)
-                            HexodusApplication.context.sendBroadcast(progressIntent)
+                            context.sendBroadcast(progressIntent)
                         }
                     }
                 }
@@ -81,7 +91,7 @@ object ShizukuInstaller {
             installingIntent.putExtra("app_name", appName)
             installingIntent.putExtra("progress", 100)
             installingIntent.putExtra("status", "Installing...")
-            HexodusApplication.context.sendBroadcast(installingIntent)
+            context.sendBroadcast(installingIntent)
 
             // 2. Install the APK
             if (ShizukuBridge.isReady()) {
@@ -95,7 +105,7 @@ object ShizukuInstaller {
             errorIntent.putExtra("success", false)
             errorIntent.putExtra("app_name", appName)
             errorIntent.putExtra("error", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
 
@@ -153,7 +163,7 @@ object ShizukuInstaller {
         
         val intent = Intent("APK_INSTALLATION_RESULT")
         intent.putExtra("success", success)
-        HexodusApplication.context.sendBroadcast(intent)
+        context.sendBroadcast(intent)
     }
 
     private fun installLegacy(apkFile: File): Boolean {

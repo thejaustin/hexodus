@@ -12,6 +12,16 @@ import com.hexodus.utils.SecurityUtils
  * Inspired by DarQ project from awesome-shizuku for per-app dark mode
  */
 object AppThemerService {
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val packageName: String get() = context.packageName
+    private val cacheDir: java.io.File get() = context.cacheDir
+    private val filesDir: java.io.File get() = context.filesDir
+    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
+    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
+    private val applicationContext: android.content.Context get() = context
+
+    
+
     
     companion object {
         private const val TAG = "AppThemerService"
@@ -54,7 +64,7 @@ object AppThemerService {
             }
         }
         
-        return Service.START_STICKY
+        return android.app.Service.START_STICKY
     }
     
     /**
@@ -89,7 +99,7 @@ object AppThemerService {
                 val successIntent = Intent("APP_FORCE_DARK_SET")
                 successIntent.putExtra("package_name", sanitizedPackageName)
                 successIntent.putExtra("force_dark", forceDark)
-                HexodusApplication.context.sendBroadcast(successIntent)
+                context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to set force dark mode for: $sanitizedPackageName")
                 
@@ -97,7 +107,7 @@ object AppThemerService {
                 val failureIntent = Intent("APP_FORCE_DARK_SET_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
                 failureIntent.putExtra("error", "Failed to execute command")
-                HexodusApplication.context.sendBroadcast(failureIntent)
+                context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error setting app dark mode: ${e.message}", e)
@@ -105,7 +115,7 @@ object AppThemerService {
             // Broadcast error
             val errorIntent = Intent("APP_FORCE_DARK_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -133,14 +143,14 @@ object AppThemerService {
             val successIntent = Intent("APP_THEME_SET")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("theme_config", themeConfig)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error setting app theme: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_THEME_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -170,14 +180,14 @@ object AppThemerService {
             val successIntent = Intent("APP_THEME_RETRIEVED")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("theme_config", currentTheme)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting app theme: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_THEME_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     

@@ -16,6 +16,16 @@ import android.Manifest
  * Inspired by privacy-focused projects from awesome-shizuku
  */
 object PrivacyManagerService {
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val packageName: String get() = context.packageName
+    private val cacheDir: java.io.File get() = context.cacheDir
+    private val filesDir: java.io.File get() = context.filesDir
+    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
+    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
+    private val applicationContext: android.content.Context get() = context
+
+    
+
     
     companion object {
         private const val TAG = "PrivacyManagerService"
@@ -77,7 +87,7 @@ object PrivacyManagerService {
             }
         }
         
-        return Service.START_STICKY
+        return android.app.Service.START_STICKY
     }
     
     /**
@@ -127,14 +137,14 @@ object PrivacyManagerService {
             val successIntent = Intent("APP_PERMISSIONS_RETRIEVED")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("permission_count", permissions.size)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting app permissions: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_PERMISSIONS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -168,14 +178,14 @@ object PrivacyManagerService {
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("permission_name", permissionName)
             successIntent.putExtra("granted", granted)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error setting app permission: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_PERMISSION_SET_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -184,7 +194,7 @@ object PrivacyManagerService {
      */
     private fun getUsageStats(packageName: String, timeRange: Long) {
         try {
-            val usageStatsManager = HexodusApplication.context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+            val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
             
             // In a real implementation, this would query usage stats
             // For this example, we'll simulate the process
@@ -200,14 +210,14 @@ object PrivacyManagerService {
             val successIntent = Intent("USAGE_STATS_RETRIEVED")
             successIntent.putExtra("package_name", packageName)
             successIntent.putExtra("usage_stats", HashMap(usageStats))
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting usage stats: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("USAGE_STATS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -241,14 +251,14 @@ object PrivacyManagerService {
             val successIntent = Intent("APP_TRACKING_SET")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("tracking_level", trackingLevel)
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error managing app tracking: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_TRACKING_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     
@@ -278,14 +288,14 @@ object PrivacyManagerService {
             val successIntent = Intent("PRIVACY_SCORE_CALCULATED")
             successIntent.putExtra("package_name", packageName)
             successIntent.putExtra("privacy_score", HashMap(privacyScore))
-            HexodusApplication.context.sendBroadcast(successIntent)
+            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error calculating privacy score: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("PRIVACY_SCORE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            context.sendBroadcast(errorIntent)
         }
     }
     

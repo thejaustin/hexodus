@@ -16,6 +16,16 @@ import com.hexodus.utils.ColorUtils
  * Based on techniques from awesome-shizuku projects for system-level theming
  */
 object MonetOverrideService {
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val packageName: String get() = context.packageName
+    private val cacheDir: java.io.File get() = context.cacheDir
+    private val filesDir: java.io.File get() = context.filesDir
+    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
+    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
+    private val applicationContext: android.content.Context get() = context
+
+    
+
     
     companion object {
         private const val TAG = "MonetOverrideService"
@@ -44,7 +54,7 @@ object MonetOverrideService {
             }
         }
         
-        return Service.START_STICKY
+        return android.app.Service.START_STICKY
     }
     
     /**
@@ -167,7 +177,7 @@ object MonetOverrideService {
         
         // Simulate the process by storing the palette in shared preferences
         // which can be accessed by other parts of the app
-        val prefs = HexodusApplication.context.applicationContext.getSharedPreferences("monet_override", 0)
+        val prefs = applicationContext.getSharedPreferences("monet_override", 0)
         val editor = prefs.edit()
         
         for ((role, color) in palette) {
@@ -182,20 +192,20 @@ object MonetOverrideService {
         val intent = Intent("MONET_OVERRIDE_UPDATED")
         intent.putExtra("palette", HashMap(palette))
         intent.putStringArrayListExtra("components", ArrayList(components))
-        HexodusApplication.context.sendBroadcast(intent)
+        context.sendBroadcast(intent)
     }
     
     /**
      * Restores the original system palette
      */
     private fun restoreOriginalPalette() {
-        val prefs = HexodusApplication.context.applicationContext.getSharedPreferences("monet_override", 0)
+        val prefs = applicationContext.getSharedPreferences("monet_override", 0)
         val editor = prefs.edit()
         editor.clear()
         editor.apply()
         
         // Broadcast an intent to notify other components
         val intent = Intent("MONET_OVERRIDE_RESTORED")
-        HexodusApplication.context.sendBroadcast(intent)
+        context.sendBroadcast(intent)
     }
 }

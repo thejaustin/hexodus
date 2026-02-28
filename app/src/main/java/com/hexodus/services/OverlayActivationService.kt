@@ -10,6 +10,16 @@ import android.util.Log
  * OverlayActivationService - Service that wraps OverlayManager to handle Intents
  */
 object OverlayActivationService {
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val packageName: String get() = context.packageName
+    private val cacheDir: java.io.File get() = context.cacheDir
+    private val filesDir: java.io.File get() = context.filesDir
+    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
+    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
+    private val applicationContext: android.content.Context get() = context
+
+    
+
     
     companion object {
         private const val TAG = "OverlayActivationService"
@@ -35,7 +45,7 @@ object OverlayActivationService {
                     val success = OverlayManager.activateOverlay(HexodusApplication.context, packageName, apkPath, validateSignature)
                     val resultIntent = Intent(if (success) "OVERLAY_ACTIVATION_SUCCESS" else "OVERLAY_ACTIVATION_FAILURE")
                     resultIntent.putExtra("package_name", packageName)
-                    HexodusApplication.context.sendBroadcast(resultIntent)
+                    context.sendBroadcast(resultIntent)
                 }
             }
             ACTION_DEACTIVATE_OVERLAY -> {
@@ -44,7 +54,7 @@ object OverlayActivationService {
                     val success = OverlayManager.deactivateOverlay(HexodusApplication.context, packageName)
                     val resultIntent = Intent(if (success) "OVERLAY_DEACTIVATION_SUCCESS" else "OVERLAY_DEACTIVATION_FAILURE")
                     resultIntent.putExtra("package_name", packageName)
-                    HexodusApplication.context.sendBroadcast(resultIntent)
+                    context.sendBroadcast(resultIntent)
                 }
             }
             ACTION_REFRESH_OVERLAYS -> {
@@ -52,7 +62,7 @@ object OverlayActivationService {
             }
         }
         
-        return Service.START_STICKY
+        return android.app.Service.START_STICKY
     }
 
     // Still providing this for legacy/direct callers, though they should use OverlayManager directly
