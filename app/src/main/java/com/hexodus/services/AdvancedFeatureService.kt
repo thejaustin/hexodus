@@ -25,6 +25,8 @@ import kotlinx.coroutines.flow.collect
  */
 object AdvancedFeatureService {
     private val context get() = com.hexodus.HexodusApplication.context
+
+    
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
     private val themeCompiler = com.hexodus.core.ThemeCompiler()
     
@@ -151,7 +153,7 @@ object AdvancedFeatureService {
     }
     
     /**
-     * Inspects system resources using Shizuku
+     * Inspects system context.resources using Shizuku
      */
     private fun inspectSystemResources(targetPackage: String) {
         try {
@@ -171,15 +173,15 @@ object AdvancedFeatureService {
                 "strings" to listOf("app_name", "title_activity_main", "menu_settings")
             )
             
-            Log.d(TAG, "Inspected resources for package: $sanitizedPackageName")
+            Log.d(TAG, "Inspected context.resources for package: $sanitizedPackageName")
             
             // Broadcast results
             val successIntent = Intent("SYSTEM_RESOURCES_INSPECTED")
             successIntent.putExtra("package_name", sanitizedPackageName)
-            successIntent.putExtra("resources", HashMap(resourcesMap))
+            successIntent.putExtra("context.resources", HashMap(resourcesMap))
             context.sendBroadcast(successIntent)
         } catch (e: Exception) {
-            Log.e(TAG, "Error inspecting system resources: ${e.message}", e)
+            Log.e(TAG, "Error inspecting system context.resources: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("SYSTEM_RESOURCES_INSPECTION_ERROR")

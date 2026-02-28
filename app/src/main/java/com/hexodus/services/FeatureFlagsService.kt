@@ -18,6 +18,8 @@ import moe.shizuku.plus.ShizukuPlusAPI
  */
 object FeatureFlagsService {
     private val context get() = com.hexodus.HexodusApplication.context
+
+    
     
     
     

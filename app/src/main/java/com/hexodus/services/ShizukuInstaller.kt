@@ -22,6 +22,8 @@ import com.hexodus.utils.PrefsManager
  */
 object ShizukuInstaller {
     private val context get() = com.hexodus.HexodusApplication.context
+
+    
     private const val TAG = "ShizukuInstaller"
 
     suspend fun downloadAndInstall(apkUrl: String, appName: String) = withContext(Dispatchers.IO) {

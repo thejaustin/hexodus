@@ -17,6 +17,8 @@ import android.Manifest
  */
 object PrivacyManagerService {
     private val context get() = com.hexodus.HexodusApplication.context
+
+    
     
     
     

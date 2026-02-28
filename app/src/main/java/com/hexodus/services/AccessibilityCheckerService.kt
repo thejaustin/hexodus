@@ -16,6 +16,8 @@ import com.hexodus.utils.AccessibilityUtils
  */
 object AccessibilityCheckerService {
     private val context get() = com.hexodus.HexodusApplication.context
+
+    
     
     
     

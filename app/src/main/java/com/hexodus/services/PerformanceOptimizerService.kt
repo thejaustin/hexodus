@@ -20,6 +20,8 @@ import androidx.annotation.RequiresApi
  */
 object PerformanceOptimizerService {
     private val context get() = com.hexodus.HexodusApplication.context
+
+    
     
     
     

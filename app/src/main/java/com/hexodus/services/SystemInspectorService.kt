@@ -16,6 +16,8 @@ import java.io.File
  */
 object SystemInspectorService {
     private val context get() = com.hexodus.HexodusApplication.context
+
+    
     private val pm: PackageManager by lazy { context.packageManager }
     
     private const val TAG = "SystemInspectorService"
@@ -123,12 +125,12 @@ object SystemInspectorService {
         try {
             if (!ShizukuBridge.isReady()) return
             val sanitized = SecurityUtils.sanitizePackageName(targetPackage)
-            Log.d(TAG, "Retrieved resources for: $sanitized")
+            Log.d(TAG, "Retrieved context.resources for: $sanitized")
             val successIntent = Intent("APP_RESOURCES_RETRIEVED")
             successIntent.putExtra("package_name", sanitized)
             context.sendBroadcast(successIntent)
         } catch (e: Exception) {
-            Log.e(TAG, "Error getting app resources: ${e.message}", e)
+            Log.e(TAG, "Error getting app context.resources: ${e.message}", e)
         }
     }
     

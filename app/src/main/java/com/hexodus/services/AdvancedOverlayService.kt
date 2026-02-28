@@ -17,6 +17,8 @@ import java.io.FileOutputStream
  */
 object AdvancedOverlayService {
     private val context get() = com.hexodus.HexodusApplication.context
+
+    
     
     
     

@@ -18,6 +18,8 @@ import java.security.MessageDigest
  */
 object HighContrastInjectorService {
     private val context get() = com.hexodus.HexodusApplication.context
+
+    
     
     
     

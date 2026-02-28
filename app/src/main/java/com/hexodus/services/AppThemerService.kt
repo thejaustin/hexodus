@@ -13,6 +13,8 @@ import com.hexodus.utils.SecurityUtils
  */
 object AppThemerService {
     private val context get() = com.hexodus.HexodusApplication.context
+
+    
     
     
     

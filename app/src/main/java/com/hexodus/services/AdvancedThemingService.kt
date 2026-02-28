@@ -30,6 +30,8 @@ import java.util.zip.ZipOutputStream
  */
 object AdvancedThemingService {
     private val context get() = com.hexodus.HexodusApplication.context
+
+    
     
     
     
@@ -79,7 +81,7 @@ object AdvancedThemingService {
     
     fun onCreate() {
         
-        themeCompiler = ThemeCompiler()
+        val themeCompiler = ThemeCompiler()
         Log.d(TAG, "AdvancedThemingService created")
     }
     

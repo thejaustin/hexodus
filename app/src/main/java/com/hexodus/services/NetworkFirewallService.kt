@@ -23,6 +23,8 @@ import com.hexodus.MainActivity
  */
 object NetworkFirewallService {
     private val context get() = com.hexodus.HexodusApplication.context
+
+    
     
     
     

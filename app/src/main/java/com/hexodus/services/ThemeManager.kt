@@ -17,6 +17,8 @@ import java.io.FileOutputStream
  */
 object ThemeManager {
     private val context get() = com.hexodus.HexodusApplication.context
+
+    
     private const val TAG = "ThemeManager"
     private val themeCompiler = ThemeCompiler()
     

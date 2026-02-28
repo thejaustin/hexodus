@@ -22,6 +22,8 @@ import kotlinx.coroutines.launch
  */
 object FoldableDisplayService {
     private val context get() = com.hexodus.HexodusApplication.context
+
+    
     
     
     
@@ -155,7 +157,7 @@ object FoldableDisplayService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val windowMetrics: WindowMetrics = windowManager.currentWindowMetrics
             val bounds = windowMetrics.bounds
-            val context.resources = context.resources
+            val resources = context.resources
             val xdpi = context.resources.displayMetrics.xdpi
             val ydpi = context.resources.displayMetrics.ydpi
             if (xdpi <= 0f || ydpi <= 0f) return 6.0f

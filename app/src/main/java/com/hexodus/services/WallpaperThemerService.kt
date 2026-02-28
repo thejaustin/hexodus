@@ -19,6 +19,8 @@ import java.io.IOException
  */
 object WallpaperThemerService {
     private val context get() = com.hexodus.HexodusApplication.context
+
+    
     
     
     

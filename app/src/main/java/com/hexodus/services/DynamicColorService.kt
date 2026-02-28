@@ -16,6 +16,8 @@ import com.hexodus.utils.ColorUtils
  */
 object DynamicColorService {
     private val context get() = com.hexodus.HexodusApplication.context
+
+    
     
     
     

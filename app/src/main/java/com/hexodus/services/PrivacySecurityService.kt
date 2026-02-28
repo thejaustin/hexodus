@@ -14,6 +14,8 @@ import java.io.File
  */
 object PrivacySecurityService {
     private val context get() = com.hexodus.HexodusApplication.context
+
+    
     
     
     

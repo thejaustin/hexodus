@@ -21,6 +21,8 @@ import java.util.zip.ZipOutputStream
  */
 object ResourceManagerService {
     private val context get() = com.hexodus.HexodusApplication.context
+
+    
     
     
     
@@ -73,7 +75,7 @@ object ResourceManagerService {
             ACTION_CREATE_OVERLAY -> {
                 val overlayName = intent.getStringExtra(EXTRA_OVERLAY_NAME)
                 val overlayPackage = intent.getStringExtra(EXTRA_OVERLAY_PACKAGE)
-                val context.resources = intent.getStringExtra(EXTRA_OVERLAY_RESOURCES)
+                val resources = intent.getStringExtra(EXTRA_OVERLAY_RESOURCES)
                 val targetPackages = intent.getStringArrayListExtra(EXTRA_TARGET_PACKAGES) ?: arrayListOf("android")
                 val priority = intent.getIntExtra(EXTRA_OVERLAY_PRIORITY, 0)
                 
@@ -83,7 +85,7 @@ object ResourceManagerService {
             }
             ACTION_UPDATE_OVERLAY -> {
                 val overlayPackage = intent.getStringExtra(EXTRA_OVERLAY_PACKAGE)
-                val context.resources = intent.getStringExtra(EXTRA_OVERLAY_RESOURCES)
+                val resources = intent.getStringExtra(EXTRA_OVERLAY_RESOURCES)
                 
                 if (!overlayPackage.isNullOrEmpty() && !context.resources.isNullOrEmpty()) {
                     updateOverlay(overlayPackage, context.resources)

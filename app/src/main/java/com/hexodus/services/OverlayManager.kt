@@ -13,6 +13,8 @@ import java.io.File
  */
 object OverlayManager {
     private val context get() = com.hexodus.HexodusApplication.context
+
+    
     private const val TAG = "OverlayManager"
 
     private fun useEnhancedApi(): Boolean {
