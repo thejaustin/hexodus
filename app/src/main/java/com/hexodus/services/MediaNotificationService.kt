@@ -1,4 +1,7 @@
 package com.hexodus.services
+import com.hexodus.HexodusApplication
+
+import android.app.Service
 
 import android.content.Intent
 import android.util.Log
@@ -63,7 +66,7 @@ object MediaNotificationService {
             }
         }
         
-        return START_STICKY
+        return Service.START_STICKY
     }
     
     /**
@@ -95,14 +98,14 @@ object MediaNotificationService {
             successIntent.putExtra("track_title", title)
             successIntent.putExtra("track_artist", artist)
             successIntent.putExtra("album_art", albumArt)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error updating now playing: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("NOW_PLAYING_UPDATE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -130,14 +133,14 @@ object MediaNotificationService {
             val successIntent = Intent("NOTIFICATION_HIDDEN")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("notification_id", notificationId)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error hiding notification: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("NOTIFICATION_HIDE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -165,14 +168,14 @@ object MediaNotificationService {
             val successIntent = Intent("NOTIFICATION_SHOWN")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("notification_id", notificationId)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error showing notification: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("NOTIFICATION_SHOW_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -205,14 +208,14 @@ object MediaNotificationService {
             val successIntent = Intent("NOTIFICATION_CUSTOMIZED")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("config", config)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error customizing notification: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("NOTIFICATION_CUSTOMIZE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     

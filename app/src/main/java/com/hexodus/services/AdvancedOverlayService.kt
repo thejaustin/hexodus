@@ -1,4 +1,7 @@
 package com.hexodus.services
+import com.hexodus.HexodusApplication
+
+import android.app.Service
 
 import android.content.Intent
 import android.util.Log
@@ -86,7 +89,7 @@ object AdvancedOverlayService {
             }
         }
         
-        return START_STICKY
+        return Service.START_STICKY
     }
     
     /**
@@ -137,14 +140,14 @@ object AdvancedOverlayService {
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("priority", priority)
             successIntent.putStringArrayListExtra("target_packages", ArrayList(validTargetPackages))
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error creating advanced overlay: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("ADVANCED_OVERLAY_CREATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -177,14 +180,14 @@ object AdvancedOverlayService {
             val successIntent = Intent("OVERLAY_PRIORITY_SET")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("priority", priority)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error managing overlay priority: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("OVERLAY_PRIORITY_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -232,14 +235,14 @@ object AdvancedOverlayService {
             // Broadcast results
             val successIntent = Intent("ACTIVE_OVERLAYS_RETRIEVED")
             successIntent.putExtra("overlay_count", activeOverlays.size)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting active overlays: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("ACTIVE_OVERLAYS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -286,14 +289,14 @@ object AdvancedOverlayService {
             val successIntent = Intent("OVERLAY_VALIDATED")
             successIntent.putExtra("overlay_path", overlayPath)
             successIntent.putExtra("signature_valid", validateSignature)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error validating overlay: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("OVERLAY_VALIDATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -327,14 +330,14 @@ object AdvancedOverlayService {
             val successIntent = Intent("OVERLAY_BATCH_OPERATION_COMPLETED")
             successIntent.putExtra("operation", operation)
             successIntent.putExtra("affected_count", validPackages.size)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error performing batch overlay operation: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("OVERLAY_BATCH_OPERATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -369,14 +372,14 @@ object AdvancedOverlayService {
             val successIntent = Intent("OVERLAY_DEPENDENCIES_RETRIEVED")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("dependencies", HashMap(dependencies))
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting overlay dependencies: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("OVERLAY_DEPENDENCIES_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     

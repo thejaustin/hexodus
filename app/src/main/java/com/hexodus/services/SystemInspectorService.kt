@@ -1,4 +1,7 @@
 package com.hexodus.services
+import com.hexodus.HexodusApplication
+
+import android.app.Service
 
 import android.content.Intent
 import android.util.Log
@@ -78,7 +81,7 @@ object SystemInspectorService {
             }
         }
         
-        return START_STICKY
+        return Service.START_STICKY
     }
     
     /**
@@ -132,14 +135,14 @@ object SystemInspectorService {
             val successIntent = Intent("APP_LIBRARIES_RETRIEVED")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("library_count", libraries.size)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting app libraries: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_LIBRARIES_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -169,7 +172,7 @@ object SystemInspectorService {
                 val successIntent = Intent("SYSTEM_PROPERTY_RETRIEVED")
                 successIntent.putExtra("property_name", propertyName)
                 successIntent.putExtra("property_value", result.trim())
-                sendBroadcast(successIntent)
+                HexodusApplication.context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to get system property: $propertyName")
                 
@@ -177,7 +180,7 @@ object SystemInspectorService {
                 val failureIntent = Intent("SYSTEM_PROPERTY_ERROR")
                 failureIntent.putExtra("property_name", propertyName)
                 failureIntent.putExtra("error", "Failed to execute command")
-                sendBroadcast(failureIntent)
+                HexodusApplication.context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error getting system property: ${e.message}", e)
@@ -185,7 +188,7 @@ object SystemInspectorService {
             // Broadcast error
             val errorIntent = Intent("SYSTEM_PROPERTY_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -222,14 +225,14 @@ object SystemInspectorService {
                 // Broadcast results
                 val successIntent = Intent("ALL_SYSTEM_PROPERTIES_RETRIEVED")
                 successIntent.putExtra("property_count", properties.size)
-                sendBroadcast(successIntent)
+                HexodusApplication.context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to get all system properties")
                 
                 // Broadcast failure
                 val failureIntent = Intent("ALL_SYSTEM_PROPERTIES_ERROR")
                 failureIntent.putExtra("error", "Failed to execute command")
-                sendBroadcast(failureIntent)
+                HexodusApplication.context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error getting all system properties: ${e.message}", e)
@@ -237,7 +240,7 @@ object SystemInspectorService {
             // Broadcast error
             val errorIntent = Intent("ALL_SYSTEM_PROPERTIES_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -292,14 +295,14 @@ object SystemInspectorService {
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("resource_type", resourceType)
             successIntent.putExtra("resource_count", resources.size)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting app resources: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_RESOURCES_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -340,14 +343,14 @@ object SystemInspectorService {
             val successIntent = Intent("INSTALLATION_SOURCE_RETRIEVED")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("source", source)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting installation source: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("INSTALLATION_SOURCE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -381,14 +384,14 @@ object SystemInspectorService {
             val successIntent = Intent("APP_ABI_RETRIEVED")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("abi_info", HashMap(abiInfo))
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting app ABI: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_ABI_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -420,14 +423,14 @@ object SystemInspectorService {
             // Broadcast results
             val successIntent = Intent("SYSTEM_HEALTH_RETRIEVED")
             successIntent.putExtra("system_health", HashMap(systemHealth))
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting system health: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("SYSTEM_HEALTH_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     

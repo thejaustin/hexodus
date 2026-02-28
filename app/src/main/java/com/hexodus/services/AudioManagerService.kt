@@ -1,4 +1,7 @@
 package com.hexodus.services
+import com.hexodus.HexodusApplication
+
+import android.app.Service
 
 import android.content.Intent
 import android.util.Log
@@ -56,7 +59,7 @@ object AudioManagerService {
             }
         }
         
-        return START_STICKY
+        return Service.START_STICKY
     }
     
     /**
@@ -83,14 +86,14 @@ object AudioManagerService {
             val successIntent = Intent("EQUALIZER_SET")
             successIntent.putExtra("session_id", sessionId)
             successIntent.putStringArrayListExtra("equalizer_values", eqValues)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error setting equalizer: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("EQUALIZER_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -112,14 +115,14 @@ object AudioManagerService {
             val successIntent = Intent("BASS_BOOST_SET")
             successIntent.putExtra("session_id", sessionId)
             successIntent.putExtra("level", level)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error setting bass boost: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("BASS_BOOST_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -147,14 +150,14 @@ object AudioManagerService {
             val successIntent = Intent("AUDIO_EFFECT_SET")
             successIntent.putExtra("effect_type", effectType)
             successIntent.putExtra("effect_value", effectValue)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error setting audio effect: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("AUDIO_EFFECT_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -181,14 +184,14 @@ object AudioManagerService {
             // Broadcast success
             val successIntent = Intent("AUDIO_SESSIONS_RETRIEVED")
             successIntent.putExtra("session_count", mockSessions.size)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting audio sessions: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("AUDIO_SESSIONS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     

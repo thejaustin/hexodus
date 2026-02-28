@@ -19,7 +19,7 @@ class CapabilityManager(private val context: Context) {
         private const val TAG = "CapabilityManager"
     }
 
-    data class Capabilities(
+    data class DeviceCapabilities(
         val isRooted: Boolean,
         val isShizukuReady: Boolean,
         val isShizukuPlusReady: Boolean,
@@ -34,7 +34,7 @@ class CapabilityManager(private val context: Context) {
     /**
      * Perform a full sweep of the system to detect what we can do.
      */
-    fun detectCapabilities(): Capabilities {
+    fun detectCapabilities(): DeviceCapabilities {
         val isShizukuReady = try {
             Shizuku.pingBinder() && Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
         } catch (e: Exception) {
@@ -130,7 +130,7 @@ class CapabilityManager(private val context: Context) {
     /**
      * Determines if an app/feature is compatible with the current capabilities.
      */
-    fun isCompatible(requirements: List<String>, current: Capabilities): Boolean {
+    fun isCompatible(requirements: List<String>, current: DeviceCapabilities): Boolean {
         if (requirements.isEmpty()) return true
         
         val reqs = requirements.map { it.uppercase() }

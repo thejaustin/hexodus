@@ -1,4 +1,7 @@
 package com.hexodus.services
+import com.hexodus.HexodusApplication
+
+import android.app.Service
 
 import android.content.Intent
 import android.util.Log
@@ -109,7 +112,7 @@ object FeatureFlagsService {
                 restoreSystemDefaults()
             }
         }
-        return START_STICKY
+        return Service.START_STICKY
     }
 
     private fun useEnhancedApi(): Boolean {
@@ -127,7 +130,7 @@ object FeatureFlagsService {
             } else {
                 ShizukuBridge.executeShellCommand("settings put global $flagName $value")
             }
-            sendBroadcast(Intent("FEATURE_FLAG_TOGGLED").putExtra(EXTRA_FLAG_NAME, flagName).putExtra("success", true))
+            HexodusApplication.context.sendBroadcast(Intent("FEATURE_FLAG_TOGGLED").putExtra(EXTRA_FLAG_NAME, flagName).putExtra("success", true))
         }
     }
 
@@ -140,7 +143,7 @@ object FeatureFlagsService {
             } else {
                 ShizukuBridge.executeShellCommand(command)
             }
-            sendBroadcast(Intent("NOW_BRIEF_ENABLED").putExtra("success", true))
+            HexodusApplication.context.sendBroadcast(Intent("NOW_BRIEF_ENABLED").putExtra("success", true))
         }
     }
 
@@ -153,7 +156,7 @@ object FeatureFlagsService {
             } else {
                 ShizukuBridge.executeShellCommand(command)
             }
-            sendBroadcast(Intent("SCOPED_STORAGE_BYPASSED").putExtra("target_package", targetPackage).putExtra("success", true))
+            HexodusApplication.context.sendBroadcast(Intent("SCOPED_STORAGE_BYPASSED").putExtra("target_package", targetPackage).putExtra("success", true))
         }
     }
 
@@ -179,7 +182,7 @@ object FeatureFlagsService {
                     if (digits.isNotEmpty()) cycleCount = digits.toInt() / 100
                 }
             }
-            sendBroadcast(Intent("BATTERY_HEALTH_RETRIEVED").putExtra("cycle_count", cycleCount).putExtra("capacity_percent", savedCapacity))
+            HexodusApplication.context.sendBroadcast(Intent("BATTERY_HEALTH_RETRIEVED").putExtra("cycle_count", cycleCount).putExtra("capacity_percent", savedCapacity))
         }
     }
 
@@ -196,7 +199,7 @@ object FeatureFlagsService {
                 ShizukuBridge.executeShellCommand("settings put system accelerator_app_list_sort_type $value")
                 ShizukuBridge.executeShellCommand("am force-stop com.sec.android.app.launcher")
             }
-            sendBroadcast(Intent("VERTICAL_DRAWER_TOGGLED").putExtra("enabled", enabled))
+            HexodusApplication.context.sendBroadcast(Intent("VERTICAL_DRAWER_TOGGLED").putExtra("enabled", enabled))
         }
     }
 
@@ -210,7 +213,7 @@ object FeatureFlagsService {
                 ShizukuBridge.executeShellCommand("settings put global $key $value")
             }
             syncSystemState()
-            sendBroadcast(Intent("GLOBAL_SETTING_TOGGLED").putExtra(EXTRA_FLAG_NAME, key).putExtra("enabled", enabled))
+            HexodusApplication.context.sendBroadcast(Intent("GLOBAL_SETTING_TOGGLED").putExtra(EXTRA_FLAG_NAME, key).putExtra("enabled", enabled))
         }
     }
 
@@ -224,7 +227,7 @@ object FeatureFlagsService {
                 ShizukuBridge.executeShellCommand("settings put secure $key $value")
             }
             syncSystemState()
-            sendBroadcast(Intent("SECURE_SETTING_TOGGLED").putExtra(EXTRA_FLAG_NAME, key).putExtra("enabled", enabled))
+            HexodusApplication.context.sendBroadcast(Intent("SECURE_SETTING_TOGGLED").putExtra(EXTRA_FLAG_NAME, key).putExtra("enabled", enabled))
         }
     }
 
@@ -238,7 +241,7 @@ object FeatureFlagsService {
                 ShizukuBridge.executeShellCommand("settings put system $key $value")
             }
             syncSystemState()
-            sendBroadcast(Intent("SYSTEM_SETTING_TOGGLED").putExtra(EXTRA_FLAG_NAME, key).putExtra("enabled", enabled))
+            HexodusApplication.context.sendBroadcast(Intent("SYSTEM_SETTING_TOGGLED").putExtra(EXTRA_FLAG_NAME, key).putExtra("enabled", enabled))
         }
     }
 
@@ -266,7 +269,7 @@ object FeatureFlagsService {
             } else {
                 ShizukuBridge.executeShellCommand("settings put global sem_low_power_mode_v2 $value")
             }
-            sendBroadcast(Intent("PERFORMANCE_PROFILE_SET").putExtra("profile", profile).putExtra("success", true))
+            HexodusApplication.context.sendBroadcast(Intent("PERFORMANCE_PROFILE_SET").putExtra("profile", profile).putExtra("success", true))
         }
     }
 
@@ -309,7 +312,7 @@ object FeatureFlagsService {
                     ShizukuBridge.executeShellCommand("killall com.android.systemui")
                 }
 
-                sendBroadcast(Intent("SYSTEM_DEFAULTS_RESTORED").putExtra("success", true))
+                HexodusApplication.context.sendBroadcast(Intent("SYSTEM_DEFAULTS_RESTORED").putExtra("success", true))
             } catch (e: Exception) {
                 Log.e(TAG, "Error restoring defaults", e)
             }

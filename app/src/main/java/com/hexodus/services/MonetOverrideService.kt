@@ -1,4 +1,7 @@
 package com.hexodus.services
+import com.hexodus.HexodusApplication
+
+import android.app.Service
 
 import android.content.Intent
 import android.content.res.Resources
@@ -41,7 +44,7 @@ object MonetOverrideService {
             }
         }
         
-        return START_STICKY
+        return Service.START_STICKY
     }
     
     /**
@@ -179,7 +182,7 @@ object MonetOverrideService {
         val intent = Intent("MONET_OVERRIDE_UPDATED")
         intent.putExtra("palette", HashMap(palette))
         intent.putStringArrayListExtra("components", ArrayList(components))
-        sendBroadcast(intent)
+        HexodusApplication.context.sendBroadcast(intent)
     }
     
     /**
@@ -193,6 +196,6 @@ object MonetOverrideService {
         
         // Broadcast an intent to notify other components
         val intent = Intent("MONET_OVERRIDE_RESTORED")
-        sendBroadcast(intent)
+        HexodusApplication.context.sendBroadcast(intent)
     }
 }

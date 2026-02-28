@@ -1,4 +1,7 @@
 package com.hexodus.services
+import com.hexodus.HexodusApplication
+
+import android.app.Service
 
 import android.content.Intent
 import android.util.Log
@@ -88,7 +91,7 @@ object NetworkFirewallService {
             }
         }
         
-        return START_STICKY
+        return Service.START_STICKY
     }
     
     /**
@@ -121,14 +124,14 @@ object NetworkFirewallService {
             val successIntent = Intent("APP_NETWORK_BLOCKED")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("network_type", networkType)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error blocking app network: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_NETWORK_BLOCK_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -162,14 +165,14 @@ object NetworkFirewallService {
             val successIntent = Intent("APP_NETWORK_ALLOWED")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("network_type", networkType)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error allowing app network: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_NETWORK_ALLOW_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -204,14 +207,14 @@ object NetworkFirewallService {
             val successIntent = Intent("APP_NETWORK_ACCESS_RETRIEVED")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("network_access", HashMap(networkAccess))
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting app network access: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_NETWORK_ACCESS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -244,14 +247,14 @@ object NetworkFirewallService {
             // Broadcast results
             val successIntent = Intent("NETWORK_ACTIVITY_RETRIEVED")
             successIntent.putExtra("network_activity", HashMap(networkActivity))
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting network activity: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("NETWORK_ACTIVITY_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -285,14 +288,14 @@ object NetworkFirewallService {
             val successIntent = Intent("FIREWALL_RULE_MANAGED")
             successIntent.putExtra("rule", rule)
             successIntent.putExtra("action", action)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error managing firewall rule: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("FIREWALL_RULE_MANAGEMENT_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -321,14 +324,14 @@ object NetworkFirewallService {
             // Broadcast results
             val successIntent = Intent("FIREWALL_STATUS_RETRIEVED")
             successIntent.putExtra("firewall_status", HashMap(firewallStatus))
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting firewall status: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("FIREWALL_STATUS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     

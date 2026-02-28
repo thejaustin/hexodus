@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hexodus.R
 import com.hexodus.core.ThemeCompiler
-import com.hexodus.services.ThemeManagerService
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color as AndroidColor

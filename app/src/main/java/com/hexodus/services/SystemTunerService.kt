@@ -1,4 +1,7 @@
 package com.hexodus.services
+import com.hexodus.HexodusApplication
+
+import android.app.Service
 
 import android.content.Intent
 import android.util.Log
@@ -59,7 +62,7 @@ object SystemTunerService {
             }
         }
         
-        return START_STICKY
+        return Service.START_STICKY
     }
     
     /**
@@ -99,14 +102,14 @@ object SystemTunerService {
                 val successIntent = Intent("SYSTEM_SETTING_MODIFIED")
                 successIntent.putExtra("setting_key", key)
                 successIntent.putExtra("setting_value", value)
-                sendBroadcast(successIntent)
+                HexodusApplication.context.sendBroadcast(successIntent)
             } catch (e: Exception) {
                 Log.e(TAG, "Error modifying system setting: ${e.message}", e)
                 
                 // Broadcast error
                 val errorIntent = Intent("SYSTEM_SETTING_ERROR")
                 errorIntent.putExtra("error_message", e.message)
-                sendBroadcast(errorIntent)
+                HexodusApplication.context.sendBroadcast(errorIntent)
             }
         }
     }
@@ -142,7 +145,7 @@ object SystemTunerService {
                     val successIntent = Intent("SYSTEM_SETTING_RETRIEVED")
                     successIntent.putExtra("setting_key", key)
                     successIntent.putExtra("setting_value", result.trim())
-                    sendBroadcast(successIntent)
+                    HexodusApplication.context.sendBroadcast(successIntent)
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error getting system setting: ${e.message}", e)
@@ -183,7 +186,7 @@ object SystemTunerService {
                 // Broadcast success
                 val successIntent = Intent("IMMERSIVE_MODE_TOGGLED")
                 successIntent.putExtra("immersive_mode", newValue)
-                sendBroadcast(successIntent)
+                HexodusApplication.context.sendBroadcast(successIntent)
                 
                 // Refresh system UI to apply changes
                  // Use OverlayManager instead

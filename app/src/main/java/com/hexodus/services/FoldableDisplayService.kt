@@ -1,5 +1,7 @@
 package com.hexodus.services
 
+import android.app.Service
+
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -46,7 +48,7 @@ object FoldableDisplayService {
             }
         }
 
-        return START_STICKY
+        return Service.START_STICKY
     }
 
     /**

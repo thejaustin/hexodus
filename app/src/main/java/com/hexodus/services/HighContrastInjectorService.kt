@@ -1,4 +1,7 @@
 package com.hexodus.services
+import com.hexodus.HexodusApplication
+
+import android.app.Service
 
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -49,7 +52,7 @@ object HighContrastInjectorService {
             }
         }
         
-        return START_STICKY
+        return Service.START_STICKY
     }
     
     /**
@@ -65,7 +68,7 @@ object HighContrastInjectorService {
                 // We'll continue but broadcast a warning
                 val warningIntent = Intent("HIGH_CONTRAST_INJECTION_WARNING")
                 warningIntent.putExtra("warning", "Limited support on One UI 7/8. Some components may not theme correctly.")
-                sendBroadcast(warningIntent)
+                HexodusApplication.context.sendBroadcast(warningIntent)
                 
                 // In a real implementation for One UI 8, we would use a different technique here
                 // such as modifying existing themes instead of creating fake ones.
@@ -94,7 +97,7 @@ object HighContrastInjectorService {
                         val successIntent = Intent("HIGH_CONTRAST_INJECTION_SUCCESS")
                         successIntent.putExtra("package_name", fakePackageName)
                         successIntent.putExtra("theme_name", themeName)
-                        sendBroadcast(successIntent)
+                        HexodusApplication.context.sendBroadcast(successIntent)
                     } else {
                         Log.e(TAG, "Failed to enable high contrast overlay: $fakePackageName")
                         
@@ -102,7 +105,7 @@ object HighContrastInjectorService {
                         val failureIntent = Intent("HIGH_CONTRAST_INJECTION_FAILURE")
                         failureIntent.putExtra("package_name", fakePackageName)
                         failureIntent.putExtra("error", "Failed to enable overlay")
-                        sendBroadcast(failureIntent)
+                        HexodusApplication.context.sendBroadcast(failureIntent)
                     }
                 } else {
                     Log.e(TAG, "Failed to install high contrast package: $fakePackageName")
@@ -111,7 +114,7 @@ object HighContrastInjectorService {
                     val failureIntent = Intent("HIGH_CONTRAST_INJECTION_FAILURE")
                     failureIntent.putExtra("package_name", fakePackageName)
                     failureIntent.putExtra("error", "Failed to install package")
-                    sendBroadcast(failureIntent)
+                    HexodusApplication.context.sendBroadcast(failureIntent)
                 }
             }
         } catch (e: Exception) {
@@ -120,7 +123,7 @@ object HighContrastInjectorService {
             // Broadcast error
             val errorIntent = Intent("HIGH_CONTRAST_INJECTION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -353,14 +356,14 @@ $componentXml
             
             // Broadcast success
             val successIntent = Intent("HIGH_CONTRAST_REMOVAL_SUCCESS")
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error removing high contrast theme: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("HIGH_CONTRAST_REMOVAL_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -373,7 +376,7 @@ $componentXml
             // For this example, we'll just broadcast an empty list
             val listIntent = Intent("HIGH_CONTRAST_THEMES_LIST")
             listIntent.putStringArrayListExtra("themes", arrayListOf())
-            sendBroadcast(listIntent)
+            HexodusApplication.context.sendBroadcast(listIntent)
             
             Log.d(TAG, "Listed high contrast themes")
         } catch (e: Exception) {
@@ -382,7 +385,7 @@ $componentXml
             // Broadcast error
             val errorIntent = Intent("HIGH_CONTRAST_LIST_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     

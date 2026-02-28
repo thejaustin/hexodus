@@ -1,4 +1,7 @@
 package com.hexodus.services
+import com.hexodus.HexodusApplication
+
+import android.app.Service
 
 import android.content.Intent
 import android.util.Log
@@ -91,7 +94,7 @@ object PrivacySecurityService {
             }
         }
         
-        return START_STICKY
+        return Service.START_STICKY
     }
     
     /**
@@ -122,14 +125,14 @@ object PrivacySecurityService {
             val successIntent = Intent("APP_LOCKED")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("lock_method", lockMethod)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error locking app: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_LOCK_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -160,14 +163,14 @@ object PrivacySecurityService {
             // Broadcast success
             val successIntent = Intent("APP_UNLOCKED")
             successIntent.putExtra("package_name", sanitizedPackageName)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error unlocking app: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_UNLOCK_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -215,14 +218,14 @@ object PrivacySecurityService {
             // Broadcast success
             val successIntent = Intent("FILE_HIDDEN")
             successIntent.putExtra("file_path", filePath)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error hiding file: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("FILE_HIDE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -264,14 +267,14 @@ object PrivacySecurityService {
             // Broadcast success
             val successIntent = Intent("FILE_UNHIDDEN")
             successIntent.putExtra("file_path", filePath)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error unhiding file: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("FILE_UNHIDE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -301,7 +304,7 @@ object PrivacySecurityService {
                 // Broadcast success
                 val successIntent = Intent("APP_HIDDEN_FROM_LAUNCHER")
                 successIntent.putExtra("package_name", sanitizedPackageName)
-                sendBroadcast(successIntent)
+                HexodusApplication.context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to hide app from launcher: $sanitizedPackageName")
                 
@@ -309,7 +312,7 @@ object PrivacySecurityService {
                 val failureIntent = Intent("APP_HIDE_FROM_LAUNCHER_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
                 failureIntent.putExtra("error", "Failed to execute command")
-                sendBroadcast(failureIntent)
+                HexodusApplication.context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error hiding app: ${e.message}", e)
@@ -317,7 +320,7 @@ object PrivacySecurityService {
             // Broadcast error
             val errorIntent = Intent("APP_HIDE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -347,7 +350,7 @@ object PrivacySecurityService {
                 // Broadcast success
                 val successIntent = Intent("APP_UNHIDDEN_FROM_LAUNCHER")
                 successIntent.putExtra("package_name", sanitizedPackageName)
-                sendBroadcast(successIntent)
+                HexodusApplication.context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to unhide app from launcher: $sanitizedPackageName")
                 
@@ -355,7 +358,7 @@ object PrivacySecurityService {
                 val failureIntent = Intent("APP_UNHIDE_FROM_LAUNCHER_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
                 failureIntent.putExtra("error", "Failed to execute command")
-                sendBroadcast(failureIntent)
+                HexodusApplication.context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error unhiding app: ${e.message}", e)
@@ -363,7 +366,7 @@ object PrivacySecurityService {
             // Broadcast error
             val errorIntent = Intent("APP_UNHIDE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -392,14 +395,14 @@ object PrivacySecurityService {
             // Broadcast success
             val successIntent = Intent("PRIVACY_MANAGED")
             successIntent.putExtra("device_locked", deviceLocked)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error managing privacy: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("PRIVACY_MANAGE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -426,14 +429,14 @@ object PrivacySecurityService {
             // Broadcast results
             val resultsIntent = Intent("PRIVACY_SCAN_COMPLETED")
             resultsIntent.putExtra("issue_count", privacyIssues.size)
-            sendBroadcast(resultsIntent)
+            HexodusApplication.context.sendBroadcast(resultsIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error scanning for privacy issues: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("PRIVACY_SCAN_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     

@@ -1,4 +1,7 @@
 package com.hexodus.services
+import com.hexodus.HexodusApplication
+
+import android.app.Service
 
 import android.content.Intent
 import android.util.Log
@@ -53,7 +56,7 @@ object DynamicColorService {
             }
         }
         
-        return START_STICKY
+        return Service.START_STICKY
     }
     
     /**
@@ -81,7 +84,7 @@ object DynamicColorService {
             intent.putExtra("tonal_palette", HashMap(tonalPalette))
             intent.putExtra("source", source)
             intent.putStringArrayListExtra("components", components)
-            sendBroadcast(intent)
+            HexodusApplication.context.sendBroadcast(intent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error generating dynamic colors: ${e.message}", e)
@@ -89,7 +92,7 @@ object DynamicColorService {
             // Broadcast error
             val errorIntent = Intent("DYNAMIC_COLORS_GENERATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -114,7 +117,7 @@ object DynamicColorService {
             val intent = Intent("DYNAMIC_COLORS_APPLIED")
             intent.putExtra("base_color", baseColor)
             intent.putStringArrayListExtra("components", components)
-            sendBroadcast(intent)
+            HexodusApplication.context.sendBroadcast(intent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error applying dynamic colors: ${e.message}", e)
@@ -122,7 +125,7 @@ object DynamicColorService {
             // Broadcast error
             val errorIntent = Intent("DYNAMIC_COLORS_APPLICATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -146,7 +149,7 @@ object DynamicColorService {
             // Broadcast wallpaper colors
             val intent = Intent("WALLPAPER_COLORS_UPDATED")
             intent.putIntegerArrayListExtra("colors", ArrayList(wallpaperColors))
-            sendBroadcast(intent)
+            HexodusApplication.context.sendBroadcast(intent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error updating wallpaper colors: ${e.message}", e)
@@ -154,7 +157,7 @@ object DynamicColorService {
             // Broadcast error
             val errorIntent = Intent("WALLPAPER_COLORS_UPDATE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     

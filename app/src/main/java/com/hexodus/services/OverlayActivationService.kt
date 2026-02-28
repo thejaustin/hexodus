@@ -1,4 +1,7 @@
 package com.hexodus.services
+import com.hexodus.HexodusApplication
+
+import android.app.Service
 
 import android.content.Intent
 import android.util.Log
@@ -32,7 +35,7 @@ object OverlayActivationService {
                     val success = OverlayManager.activateOverlay(this, packageName, apkPath, validateSignature)
                     val resultIntent = Intent(if (success) "OVERLAY_ACTIVATION_SUCCESS" else "OVERLAY_ACTIVATION_FAILURE")
                     resultIntent.putExtra("package_name", packageName)
-                    sendBroadcast(resultIntent)
+                    HexodusApplication.context.sendBroadcast(resultIntent)
                 }
             }
             ACTION_DEACTIVATE_OVERLAY -> {
@@ -41,7 +44,7 @@ object OverlayActivationService {
                     val success = OverlayManager.deactivateOverlay(this, packageName)
                     val resultIntent = Intent(if (success) "OVERLAY_DEACTIVATION_SUCCESS" else "OVERLAY_DEACTIVATION_FAILURE")
                     resultIntent.putExtra("package_name", packageName)
-                    sendBroadcast(resultIntent)
+                    HexodusApplication.context.sendBroadcast(resultIntent)
                 }
             }
             ACTION_REFRESH_OVERLAYS -> {
@@ -49,7 +52,7 @@ object OverlayActivationService {
             }
         }
         
-        return START_STICKY
+        return Service.START_STICKY
     }
 
     // Still providing this for legacy/direct callers, though they should use OverlayManager directly

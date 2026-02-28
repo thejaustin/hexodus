@@ -1,4 +1,7 @@
 package com.hexodus.services
+import com.hexodus.HexodusApplication
+
+import android.app.Service
 
 import android.content.Intent
 import android.util.Log
@@ -77,7 +80,7 @@ object AppManagerService {
             }
         }
         
-        return START_STICKY
+        return Service.START_STICKY
     }
     
     /**
@@ -105,7 +108,7 @@ object AppManagerService {
                 // Broadcast success
                 val successIntent = Intent("APP_FROZEN")
                 successIntent.putExtra("package_name", sanitizedPackageName)
-                sendBroadcast(successIntent)
+                HexodusApplication.context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to freeze app: $sanitizedPackageName")
                 
@@ -113,7 +116,7 @@ object AppManagerService {
                 val failureIntent = Intent("APP_FREEZE_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
                 failureIntent.putExtra("error", "Failed to execute command")
-                sendBroadcast(failureIntent)
+                HexodusApplication.context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error freezing app: ${e.message}", e)
@@ -121,7 +124,7 @@ object AppManagerService {
             // Broadcast error
             val errorIntent = Intent("APP_FREEZE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -150,7 +153,7 @@ object AppManagerService {
                 // Broadcast success
                 val successIntent = Intent("APP_UNFROZEN")
                 successIntent.putExtra("package_name", sanitizedPackageName)
-                sendBroadcast(successIntent)
+                HexodusApplication.context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to unfreeze app: $sanitizedPackageName")
                 
@@ -158,7 +161,7 @@ object AppManagerService {
                 val failureIntent = Intent("APP_UNFREEZE_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
                 failureIntent.putExtra("error", "Failed to execute command")
-                sendBroadcast(failureIntent)
+                HexodusApplication.context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error unfreezing app: ${e.message}", e)
@@ -166,7 +169,7 @@ object AppManagerService {
             // Broadcast error
             val errorIntent = Intent("APP_UNFREEZE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -195,7 +198,7 @@ object AppManagerService {
                 // Broadcast success
                 val successIntent = Intent("APP_HIDDEN")
                 successIntent.putExtra("package_name", sanitizedPackageName)
-                sendBroadcast(successIntent)
+                HexodusApplication.context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to hide app: $sanitizedPackageName")
                 
@@ -203,7 +206,7 @@ object AppManagerService {
                 val failureIntent = Intent("APP_HIDE_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
                 failureIntent.putExtra("error", "Failed to execute command")
-                sendBroadcast(failureIntent)
+                HexodusApplication.context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error hiding app: ${e.message}", e)
@@ -211,7 +214,7 @@ object AppManagerService {
             // Broadcast error
             val errorIntent = Intent("APP_HIDE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -240,7 +243,7 @@ object AppManagerService {
                 // Broadcast success
                 val successIntent = Intent("APP_UNHIDDEN")
                 successIntent.putExtra("package_name", sanitizedPackageName)
-                sendBroadcast(successIntent)
+                HexodusApplication.context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to unhide app: $sanitizedPackageName")
                 
@@ -248,7 +251,7 @@ object AppManagerService {
                 val failureIntent = Intent("APP_UNHIDE_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
                 failureIntent.putExtra("error", "Failed to execute command")
-                sendBroadcast(failureIntent)
+                HexodusApplication.context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error unhiding app: ${e.message}", e)
@@ -256,7 +259,7 @@ object AppManagerService {
             // Broadcast error
             val errorIntent = Intent("APP_UNHIDE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -285,7 +288,7 @@ object AppManagerService {
                 // Broadcast success
                 val successIntent = Intent("APP_FORCE_STOPPED")
                 successIntent.putExtra("package_name", sanitizedPackageName)
-                sendBroadcast(successIntent)
+                HexodusApplication.context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to force stop app: $sanitizedPackageName")
                 
@@ -293,7 +296,7 @@ object AppManagerService {
                 val failureIntent = Intent("APP_FORCE_STOP_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
                 failureIntent.putExtra("error", "Failed to execute command")
-                sendBroadcast(failureIntent)
+                HexodusApplication.context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error force stopping app: ${e.message}", e)
@@ -301,7 +304,7 @@ object AppManagerService {
             // Broadcast error
             val errorIntent = Intent("APP_FORCE_STOP_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -357,14 +360,14 @@ object AppManagerService {
             successIntent.putExtra("success_count", successCount)
             successIntent.putExtra("total_count", packageNames.size)
             successIntent.putStringArrayListExtra("failed_packages", ArrayList(failedPackages))
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error performing batch operation: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("BATCH_OPERATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -397,7 +400,7 @@ object AppManagerService {
                 val successIntent = Intent("APP_INFO_RETRIEVED")
                 successIntent.putExtra("package_name", sanitizedPackageName)
                 successIntent.putExtra("app_info", HashMap(appInfo))
-                sendBroadcast(successIntent)
+                HexodusApplication.context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to get app info: $sanitizedPackageName")
                 
@@ -405,7 +408,7 @@ object AppManagerService {
                 val failureIntent = Intent("APP_INFO_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
                 failureIntent.putExtra("error", "Failed to execute command")
-                sendBroadcast(failureIntent)
+                HexodusApplication.context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error getting app info: ${e.message}", e)
@@ -413,7 +416,7 @@ object AppManagerService {
             // Broadcast error
             val errorIntent = Intent("APP_INFO_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     

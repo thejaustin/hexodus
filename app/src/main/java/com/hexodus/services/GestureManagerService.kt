@@ -1,4 +1,7 @@
 package com.hexodus.services
+import com.hexodus.HexodusApplication
+
+import android.app.Service
 
 import android.content.Intent
 import android.util.Log
@@ -52,7 +55,7 @@ object GestureManagerService {
             }
         }
         
-        return START_STICKY
+        return Service.START_STICKY
     }
     
     /**
@@ -83,14 +86,14 @@ object GestureManagerService {
             val successIntent = Intent("GESTURE_REGISTERED")
             successIntent.putExtra("gesture_type", gestureType)
             successIntent.putExtra("gesture_action", gestureAction)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error registering gesture: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("GESTURE_REGISTRATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -131,7 +134,7 @@ object GestureManagerService {
             // Broadcast error
             val errorIntent = Intent("ACTION_EXECUTION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -160,7 +163,7 @@ object GestureManagerService {
                 // Broadcast success
                 val successIntent = Intent("APP_LAUNCHED")
                 successIntent.putExtra("package_name", sanitizedPackageName)
-                sendBroadcast(successIntent)
+                HexodusApplication.context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to launch app: $sanitizedPackageName")
                 
@@ -168,7 +171,7 @@ object GestureManagerService {
                 val failureIntent = Intent("APP_LAUNCH_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
                 failureIntent.putExtra("error", "Failed to execute command")
-                sendBroadcast(failureIntent)
+                HexodusApplication.context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error launching app: ${e.message}", e)
@@ -191,7 +194,7 @@ object GestureManagerService {
             
             // Broadcast success
             val successIntent = Intent("FLASHLIGHT_TOGGLED")
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error toggling flashlight: ${e.message}", e)
         }
@@ -215,14 +218,14 @@ object GestureManagerService {
                 
                 // Broadcast success
                 val successIntent = Intent("SCREENSHOT_TAKEN")
-                sendBroadcast(successIntent)
+                HexodusApplication.context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to take screenshot")
                 
                 // Broadcast failure
                 val failureIntent = Intent("SCREENSHOT_FAILED")
                 failureIntent.putExtra("error", "Failed to execute command")
-                sendBroadcast(failureIntent)
+                HexodusApplication.context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error taking screenshot: ${e.message}", e)
@@ -258,7 +261,7 @@ object GestureManagerService {
                 // Broadcast success
                 val successIntent = Intent("MEDIA_CONTROL_EXECUTED")
                 successIntent.putExtra("action", action)
-                sendBroadcast(successIntent)
+                HexodusApplication.context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to execute media control: $action")
                 
@@ -266,7 +269,7 @@ object GestureManagerService {
                 val failureIntent = Intent("MEDIA_CONTROL_FAILED")
                 failureIntent.putExtra("action", action)
                 failureIntent.putExtra("error", "Failed to execute command")
-                sendBroadcast(failureIntent)
+                HexodusApplication.context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error controlling media: ${e.message}", e)
@@ -301,7 +304,7 @@ object GestureManagerService {
                 // Broadcast success
                 val successIntent = Intent("VOLUME_CONTROL_EXECUTED")
                 successIntent.putExtra("action", action)
-                sendBroadcast(successIntent)
+                HexodusApplication.context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to execute volume control: $action")
                 
@@ -309,7 +312,7 @@ object GestureManagerService {
                 val failureIntent = Intent("VOLUME_CONTROL_FAILED")
                 failureIntent.putExtra("action", action)
                 failureIntent.putExtra("error", "Failed to execute command")
-                sendBroadcast(failureIntent)
+                HexodusApplication.context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error controlling volume: ${e.message}", e)
@@ -332,7 +335,7 @@ object GestureManagerService {
             // Broadcast the list
             val listIntent = Intent("GESTURE_LIST")
             listIntent.putExtra("gesture_count", gestureList.size)
-            sendBroadcast(listIntent)
+            HexodusApplication.context.sendBroadcast(listIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error listing gestures: ${e.message}", e)
         }

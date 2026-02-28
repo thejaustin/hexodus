@@ -1,4 +1,7 @@
 package com.hexodus.services
+import com.hexodus.HexodusApplication
+
+import android.app.Service
 
 import android.content.Intent
 import android.util.Log
@@ -102,7 +105,7 @@ object BackupRestoreService {
             }
         }
         
-        return START_STICKY
+        return Service.START_STICKY
     }
     
     /**
@@ -242,14 +245,14 @@ object BackupRestoreService {
             successIntent.putExtra("backup_path", backupFile.absolutePath)
             successIntent.putExtra("backup_name", backupName)
             successIntent.putExtra("theme_count", backupData.themes.size)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error creating backup: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("BACKUP_CREATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -328,14 +331,14 @@ object BackupRestoreService {
             val successIntent = Intent("BACKUP_RESTORED")
             successIntent.putExtra("backup_path", backupPath)
             successIntent.putExtra("theme_count", backupData.themes.size)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error restoring backup: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("BACKUP_RESTORE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -368,14 +371,14 @@ object BackupRestoreService {
             // Broadcast results
             val successIntent = Intent("BACKUPS_LISTED")
             successIntent.putExtra("backup_count", backups.size)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error listing backups: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("BACKUPS_LIST_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -402,7 +405,7 @@ object BackupRestoreService {
                 // Broadcast success
                 val successIntent = Intent("BACKUP_DELETED")
                 successIntent.putExtra("backup_path", backupPath)
-                sendBroadcast(successIntent)
+                HexodusApplication.context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to delete backup: $backupPath")
                 
@@ -410,7 +413,7 @@ object BackupRestoreService {
                 val failureIntent = Intent("BACKUP_DELETION_FAILED")
                 failureIntent.putExtra("backup_path", backupPath)
                 failureIntent.putExtra("error", "Failed to delete file")
-                sendBroadcast(failureIntent)
+                HexodusApplication.context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error deleting backup: ${e.message}", e)
@@ -418,7 +421,7 @@ object BackupRestoreService {
             // Broadcast error
             val errorIntent = Intent("BACKUP_DELETION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -481,14 +484,14 @@ object BackupRestoreService {
             val successIntent = Intent("THEME_EXPORTED")
             successIntent.putExtra("theme_name", themeName)
             successIntent.putExtra("export_path", exportFile.absolutePath)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error exporting theme: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("THEME_EXPORT_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -526,14 +529,14 @@ object BackupRestoreService {
             // Broadcast success
             val successIntent = Intent("THEME_IMPORTED")
             successIntent.putExtra("theme_path", themePath)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error importing theme: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("THEME_IMPORT_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     

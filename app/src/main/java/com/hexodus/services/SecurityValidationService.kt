@@ -1,4 +1,7 @@
 package com.hexodus.services
+import com.hexodus.HexodusApplication
+
+import android.app.Service
 
 import android.content.Intent
 import android.util.Log
@@ -64,7 +67,7 @@ object SecurityValidationService {
             }
         }
         
-        return START_STICKY
+        return Service.START_STICKY
     }
     
     /**
@@ -91,7 +94,7 @@ object SecurityValidationService {
             val intent = Intent("INPUT_VALIDATION_COMPLETED")
             intent.putExtra("input", input)
             intent.putExtra("validation_results", HashMap(results))
-            sendBroadcast(intent)
+            HexodusApplication.context.sendBroadcast(intent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error validating input: ${e.message}", e)
@@ -100,7 +103,7 @@ object SecurityValidationService {
             val errorIntent = Intent("INPUT_VALIDATION_ERROR")
             errorIntent.putExtra("input", input)
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -130,7 +133,7 @@ object SecurityValidationService {
             intent.putExtra("file_path", filePath)
             intent.putExtra("allowed_directories", ArrayList(allowedDirectories))
             intent.putExtra("validation_results", HashMap(results))
-            sendBroadcast(intent)
+            HexodusApplication.context.sendBroadcast(intent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error validating file path: ${e.message}", e)
@@ -139,7 +142,7 @@ object SecurityValidationService {
             val errorIntent = Intent("FILE_PATH_VALIDATION_ERROR")
             errorIntent.putExtra("file_path", filePath)
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -165,7 +168,7 @@ object SecurityValidationService {
             val intent = Intent("COMMAND_VALIDATION_COMPLETED")
             intent.putExtra("command", command)
             intent.putExtra("validation_results", HashMap(results))
-            sendBroadcast(intent)
+            HexodusApplication.context.sendBroadcast(intent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error validating command: ${e.message}", e)
@@ -174,7 +177,7 @@ object SecurityValidationService {
             val errorIntent = Intent("COMMAND_VALIDATION_ERROR")
             errorIntent.putExtra("command", command)
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -197,7 +200,7 @@ object SecurityValidationService {
             val intent = Intent("PACKAGE_NAME_VALIDATION_COMPLETED")
             intent.putExtra("package_name", packageName)
             intent.putExtra("validation_results", HashMap(results))
-            sendBroadcast(intent)
+            HexodusApplication.context.sendBroadcast(intent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error validating package name: ${e.message}", e)
@@ -206,7 +209,7 @@ object SecurityValidationService {
             val errorIntent = Intent("PACKAGE_NAME_VALIDATION_ERROR")
             errorIntent.putExtra("package_name", packageName)
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -235,7 +238,7 @@ object SecurityValidationService {
             val intent = Intent("INPUT_SANITIZATION_COMPLETED")
             intent.putExtra("original_input", input)
             intent.putExtra("sanitized_input", sanitized)
-            sendBroadcast(intent)
+            HexodusApplication.context.sendBroadcast(intent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error sanitizing input: ${e.message}", e)
@@ -244,7 +247,7 @@ object SecurityValidationService {
             val errorIntent = Intent("INPUT_SANITIZATION_ERROR")
             errorIntent.putExtra("input", input)
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     

@@ -1,4 +1,7 @@
 package com.hexodus.services
+import com.hexodus.HexodusApplication
+
+import android.app.Service
 
 import android.content.Intent
 import android.os.Build
@@ -70,7 +73,7 @@ object AccessibilityCheckerService {
             }
         }
         
-        return START_STICKY
+        return Service.START_STICKY
     }
     
     /**
@@ -100,7 +103,7 @@ object AccessibilityCheckerService {
             // Broadcast results
             val intent = Intent("ACCESSIBILITY_CHECKS_COMPLETED")
             intent.putExtra("results", HashMap(results))
-            sendBroadcast(intent)
+            HexodusApplication.context.sendBroadcast(intent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error running accessibility checks: ${e.message}", e)
@@ -108,7 +111,7 @@ object AccessibilityCheckerService {
             // Broadcast error
             val errorIntent = Intent("ACCESSIBILITY_CHECKS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -158,7 +161,7 @@ object AccessibilityCheckerService {
             val intent = Intent("COMPONENT_VALIDATION_COMPLETED")
             intent.putExtra("component_type", componentType)
             intent.putExtra("validation_results", HashMap(validationResults))
-            sendBroadcast(intent)
+            HexodusApplication.context.sendBroadcast(intent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error validating component: ${e.message}", e)
@@ -167,7 +170,7 @@ object AccessibilityCheckerService {
             val errorIntent = Intent("COMPONENT_VALIDATION_ERROR")
             errorIntent.putExtra("component_type", componentType)
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -189,7 +192,7 @@ object AccessibilityCheckerService {
             // Broadcast status
             val intent = Intent("ACCESSIBILITY_STATUS_RETRIEVED")
             intent.putExtra("status", HashMap(status))
-            sendBroadcast(intent)
+            HexodusApplication.context.sendBroadcast(intent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error getting accessibility status: ${e.message}", e)
@@ -197,7 +200,7 @@ object AccessibilityCheckerService {
             // Broadcast error
             val errorIntent = Intent("ACCESSIBILITY_STATUS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     

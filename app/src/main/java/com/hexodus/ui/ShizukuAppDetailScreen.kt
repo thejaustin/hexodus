@@ -20,7 +20,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.hexodus.services.CapabilityManager
-import com.hexodus.services.ShizukuInstallerService
 import com.hexodus.utils.ShizukuRepoParser
 import com.hexodus.utils.RedundancyEngine
 import kotlinx.coroutines.launch
@@ -35,7 +34,7 @@ fun ShizukuAppDetailScreen(navController: NavController, appName: String) {
     var app by remember { mutableStateOf<ShizukuRepoParser.ShizukuApp?>(null) }
     var similarApps by remember { mutableStateOf<List<ShizukuRepoParser.ShizukuApp>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
-    var caps by remember { mutableStateOf<CapabilityManager.Capabilities?>(null) }
+    var caps by remember { mutableStateOf<CapabilityManager.DeviceCapabilities?>(null) }
     
     // Installation state
     var isInstalling by remember { mutableStateOf(false) }

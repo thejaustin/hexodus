@@ -32,7 +32,7 @@ fun AwesomeShizukuScreen(navController: NavController) {
     var isLoading by remember { mutableStateOf(true) }
     var selectedTags by remember { mutableStateOf<Set<String>>(emptySet()) }
     var showIncompatible by remember { mutableStateOf(false) }
-    var caps by remember { mutableStateOf<CapabilityManager.Capabilities?>(null) }
+    var caps by remember { mutableStateOf<CapabilityManager.DeviceCapabilities?>(null) }
 
     val allTags = remember(apps) {
         apps.flatMap { it.tags }.toSet().sorted()

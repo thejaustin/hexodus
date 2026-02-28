@@ -1,4 +1,7 @@
 package com.hexodus.services
+import com.hexodus.HexodusApplication
+
+import android.app.Service
 
 import android.content.Intent
 import android.util.Log
@@ -88,7 +91,7 @@ object FontIconManagerService {
             }
         }
         
-        return START_STICKY
+        return Service.START_STICKY
     }
     
     /**
@@ -127,14 +130,14 @@ object FontIconManagerService {
             val successIntent = Intent("FONT_INSTALLED")
             successIntent.putExtra("font_name", fontName)
             successIntent.putExtra("font_path", fontPath)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error installing font: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("FONT_INSTALL_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -180,14 +183,14 @@ object FontIconManagerService {
             val successIntent = Intent("ICON_PACK_INSTALLED")
             successIntent.putExtra("icon_pack_name", iconPackName)
             successIntent.putExtra("icon_pack_path", iconPackPath)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error installing icon pack: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("ICON_PACK_INSTALL_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -230,14 +233,14 @@ object FontIconManagerService {
             // Broadcast results
             val successIntent = Intent("AVAILABLE_FONTS_RETRIEVED")
             successIntent.putExtra("font_count", availableFonts.size)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting available fonts: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("AVAILABLE_FONTS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -274,14 +277,14 @@ object FontIconManagerService {
             // Broadcast results
             val successIntent = Intent("AVAILABLE_ICON_PACKS_RETRIEVED")
             successIntent.putExtra("icon_pack_count", availableIconPacks.size)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting available icon packs: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("AVAILABLE_ICON_PACKS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -308,14 +311,14 @@ object FontIconManagerService {
             // Broadcast success
             val successIntent = Intent("FONT_APPLIED")
             successIntent.putExtra("font_family", fontFamily)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error applying font: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("FONT_APPLICATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -342,14 +345,14 @@ object FontIconManagerService {
             // Broadcast success
             val successIntent = Intent("ICON_PACK_APPLIED")
             successIntent.putExtra("icon_pack_package", sanitizedPackageName)
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error applying icon pack: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("ICON_PACK_APPLICATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -371,14 +374,14 @@ object FontIconManagerService {
             // Broadcast results
             val successIntent = Intent("CURRENT_FONT_RETRIEVED")
             successIntent.putExtra("current_font", HashMap(currentFont))
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting current font: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("CURRENT_FONT_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -400,14 +403,14 @@ object FontIconManagerService {
             // Broadcast results
             val successIntent = Intent("CURRENT_ICON_PACK_RETRIEVED")
             successIntent.putExtra("current_icon_pack", HashMap(currentIconPack))
-            sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting current icon pack: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("CURRENT_ICON_PACK_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
