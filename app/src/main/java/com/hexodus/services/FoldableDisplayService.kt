@@ -21,11 +21,11 @@ import kotlinx.coroutines.launch
  * Optimized for Samsung Z Flip 5 and other foldable devices based on awesome-shizuku insights
  */
 object FoldableDisplayService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName_: String get() = context.packageName
-    private val cacheDir_: java.io.File get() = context.cacheDir
-    private val filesDir_: java.io.File get() = context.filesDir
-    private val resources_: android.content.res.Resources get() = context.resources
+    private val context get() = com.hexodus.HexodusApplication.context
+    
+    
+    
+    
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
@@ -155,7 +155,7 @@ object FoldableDisplayService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val windowMetrics: WindowMetrics = windowManager.currentWindowMetrics
             val bounds = windowMetrics.bounds
-            val resources = resources
+            val context.resources = context.resources
             val xdpi = context.resources.displayMetrics.xdpi
             val ydpi = context.resources.displayMetrics.ydpi
             if (xdpi <= 0f || ydpi <= 0f) return 6.0f
@@ -185,7 +185,7 @@ object FoldableDisplayService {
      * Updates resource mapping based on current display context
      */
     private fun updateResourceMapping() {
-        val prefs = applicationContext.getSharedPreferences("display_context", 0)
+        val prefs = context.applicationContext.getSharedPreferences("display_context", 0)
         val editor = prefs.edit()
 
         editor.putBoolean("is_cover_screen", isCoverScreen)

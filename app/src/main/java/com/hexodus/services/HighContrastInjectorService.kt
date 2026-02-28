@@ -17,11 +17,11 @@ import java.security.MessageDigest
  * Based on techniques from awesome-shizuku projects for system-level theming
  */
 object HighContrastInjectorService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName_: String get() = context.packageName
-    private val cacheDir_: java.io.File get() = context.cacheDir
-    private val filesDir_: java.io.File get() = context.filesDir
-    private val resources_: android.content.res.Resources get() = context.resources
+    private val context get() = com.hexodus.HexodusApplication.context
+    
+    
+    
+    
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
@@ -158,7 +158,7 @@ object HighContrastInjectorService {
     private fun generateFakeHighContrastPackage(hexColor: String, themeName: String, components: List<String>): String? {
         try {
             // Create a temporary directory for the fake package
-            val tempDir = File(applicationContext.context.cacheDir, "hc_temp_${System.currentTimeMillis()}")
+            val tempDir = File(context.applicationContext.context.cacheDir, "hc_temp_${System.currentTimeMillis()}")
             tempDir.mkdirs()
             
             // Generate the fake package name
@@ -212,10 +212,10 @@ object HighContrastInjectorService {
     /**
      * Generates a manifest that mimics a high contrast theme
      */
-    private fun generateHighContrastManifest(packageName: String, hexColor: String, themeName: String): String {
+    private fun generateHighContrastManifest(targetPackageName: String, hexColor: String, themeName: String): String {
         return """<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="$packageName"
+    package="$targetPackageName"
     android:versionCode="1"
     android:versionName="1.0">
     
@@ -267,7 +267,7 @@ object HighContrastInjectorService {
     <color name="system_nav_bar_divider_color">#${shiftColor(colorInt, 0.3f).toString(16).substring(2).uppercase()}</color>""" else ""
         
         return """<?xml version="1.0" encoding="utf-8"?>
-<resources>
+<context.resources>
     <!-- High contrast colors based on user hex -->
     <color name="high_contrast_color_primary">#${colorInt.toString(16).substring(2).uppercase()}</color>
     <color name="high_contrast_color_primary_dark">#${darkerColor.toString(16).substring(2).uppercase()}</color>
@@ -286,7 +286,7 @@ object HighContrastInjectorService {
     $statusBarSection
     $navBarSection
     
-</resources>"""
+</context.resources>"""
     }
     
     /**
@@ -309,7 +309,7 @@ object HighContrastInjectorService {
     <color name="m3_sys_color_dynamic_system_nav_bar_divider">#${shiftColor(colorInt, 0.3f).toString(16).substring(2).uppercase()}</color>""" else ""
         
         return """<?xml version="1.0" encoding="utf-8"?>
-<resources>
+<context.resources>
     <!-- Material You Dynamic Colors for High Contrast -->
     <color name="system_accent1_0">#${colorInt.toString(16).substring(2).uppercase()}</color>
     <color name="system_accent1_100">#${colorInt.toString(16).substring(2).uppercase()}</color>
@@ -323,20 +323,20 @@ object HighContrastInjectorService {
     $statusBarSection
     $navBarSection
     
-</resources>"""
+</context.resources>"""
     }
     
     /**
      * Generates overlay configuration
      */
-    private fun generateOverlayConfig(packageName: String, components: List<String>): String {
+    private fun generateOverlayConfig(targetPackageName: String, components: List<String>): String {
         val componentXml = components.joinToString("\n        ") { comp ->
             "        <component name=\"$comp\" enabled=\"true\" />"
         }
         
         return """<?xml version="1.0" encoding="utf-8"?>
 <theming-config>
-    <overlay-package>$packageName</overlay-package>
+    <overlay-package>$targetPackageName</overlay-package>
     <target-packages>
         <package>android</package>
         <package>com.android.systemui</package>
@@ -369,7 +369,7 @@ $componentXml
             // This would normally execute: cmd overlay disable <package_name>
             
             // Clean up temporary files
-            val tempDirs = applicationContext.context.cacheDir.listFiles()?.filter { file ->
+            val tempDirs = context.applicationContext.context.cacheDir.listFiles()?.filter { file ->
                 file.isDirectory && file.name.startsWith("hc_temp_")
             }
 

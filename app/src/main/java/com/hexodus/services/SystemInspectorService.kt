@@ -15,11 +15,11 @@ import java.io.File
  * Inspired by LibChecker and other system inspection projects from awesome-shizuku
  */
 object SystemInspectorService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName_: String get() = context.packageName
-    private val cacheDir_: java.io.File get() = context.cacheDir
-    private val filesDir_: java.io.File get() = context.filesDir
-    private val resources_: android.content.res.Resources get() = context.resources
+    private val context get() = com.hexodus.HexodusApplication.context
+    
+    
+    
+    
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
@@ -61,10 +61,10 @@ object SystemInspectorService {
         
         when (action) {
             ACTION_GET_APP_LIBRARIES -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 
-                if (!packageName.isNullOrEmpty()) {
-                    getAppLibraries(packageName)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    getAppLibraries(targetPackageName)
                 }
             }
             ACTION_GET_SYSTEM_PROPERTIES -> {
@@ -77,25 +77,25 @@ object SystemInspectorService {
                 }
             }
             ACTION_GET_APP_RESOURCES -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val resourceType = intent.getStringExtra(EXTRA_RESOURCE_TYPE) ?: "all"
                 
-                if (!packageName.isNullOrEmpty()) {
-                    getAppResources(packageName, resourceType)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    getAppResources(targetPackageName, resourceType)
                 }
             }
             ACTION_GET_INSTALLATION_SOURCE -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 
-                if (!packageName.isNullOrEmpty()) {
-                    getInstallationSource(packageName)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    getInstallationSource(targetPackageName)
                 }
             }
             ACTION_GET_APP_ABI -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 
-                if (!packageName.isNullOrEmpty()) {
-                    getAppAbi(packageName)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    getAppAbi(targetPackageName)
                 }
             }
             ACTION_GET_SYSTEM_HEALTH -> {
@@ -109,7 +109,7 @@ object SystemInspectorService {
     /**
      * Gets libraries used by an app using Shizuku
      */
-    private fun getAppLibraries(packageName: String) {
+    private fun getAppLibraries(targetPackageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -117,9 +117,9 @@ object SystemInspectorService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, context would inspect the app's libraries
@@ -267,9 +267,9 @@ object SystemInspectorService {
     }
     
     /**
-     * Gets resources from an app using Shizuku
+     * Gets context.resources from an app using Shizuku
      */
-    private fun getAppResources(packageName: String, resourceType: String) {
+    private fun getAppResources(targetPackageName: String, resourceType: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -277,9 +277,9 @@ object SystemInspectorService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             val validResourceTypes = listOf("drawable", "string", "color", "layout", "all")
@@ -288,9 +288,9 @@ object SystemInspectorService {
                 return
             }
             
-            // In a real implementation, context would inspect the app's resources
+            // In a real implementation, context would inspect the app's context.resources
             // For context example, we'll simulate the process
-            val resources = when (resourceType) {
+            val context.resources = when (resourceType) {
                 "drawable" -> listOf("ic_launcher", "ic_menu", "bg_splash")
                 "string" -> listOf("app_name", "title_activity_main", "menu_settings")
                 "color" -> listOf("primary_color", "accent_color", "background_color")
@@ -310,7 +310,7 @@ object SystemInspectorService {
                 )
             }
             
-            Log.d(TAG, "Retrieved ${context.resources.size} resources of type '$resourceType' for: $sanitizedPackageName")
+            Log.d(TAG, "Retrieved ${context.resources.size} context.resources of type '$resourceType' for: $sanitizedPackageName")
             
             // Broadcast results
             val successIntent = Intent("APP_RESOURCES_RETRIEVED")
@@ -319,7 +319,7 @@ object SystemInspectorService {
             successIntent.putExtra("resource_count", context.resources.size)
             context.sendBroadcast(successIntent)
         } catch (e: Exception) {
-            Log.e(TAG, "Error getting app resources: ${e.message}", e)
+            Log.e(TAG, "Error getting app context.resources: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_RESOURCES_ERROR")
@@ -331,7 +331,7 @@ object SystemInspectorService {
     /**
      * Gets the installation source of an app using Shizuku
      */
-    private fun getInstallationSource(packageName: String) {
+    private fun getInstallationSource(targetPackageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -339,9 +339,9 @@ object SystemInspectorService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             val command = "pm dump $sanitizedPackageName | grep -i install"
@@ -379,7 +379,7 @@ object SystemInspectorService {
     /**
      * Gets the ABI (Application Binary Interface) of an app
      */
-    private fun getAppAbi(packageName: String) {
+    private fun getAppAbi(targetPackageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -387,9 +387,9 @@ object SystemInspectorService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, context would query the app's native libraries
@@ -459,7 +459,7 @@ object SystemInspectorService {
     /**
      * Gets detailed app information
      */
-    fun getAppDetails(packageName: String): Map<String, Any>? {
+    fun getAppDetails(targetPackageName: String): Map<String, Any>? {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -467,9 +467,9 @@ object SystemInspectorService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // Get app info from package manager
@@ -506,7 +506,7 @@ object SystemInspectorService {
     /**
      * Gets app size information using Shizuku
      */
-    private fun getAppSizeInfo(packageName: String): Map<String, Long> {
+    private fun getAppSizeInfo(targetPackageName: String): Map<String, Long> {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")

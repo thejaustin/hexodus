@@ -16,15 +16,15 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
 /**
- * ResourceManagerService - Service for managing system resources and overlays
+ * ResourceManagerService - Service for managing system context.resources and overlays
  * Inspired by various awesome-shizuku projects for system-level resource management
  */
 object ResourceManagerService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName_: String get() = context.packageName
-    private val cacheDir_: java.io.File get() = context.cacheDir
-    private val filesDir_: java.io.File get() = context.filesDir
-    private val resources_: android.content.res.Resources get() = context.resources
+    private val context get() = com.hexodus.HexodusApplication.context
+    
+    
+    
+    
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
@@ -73,20 +73,20 @@ object ResourceManagerService {
             ACTION_CREATE_OVERLAY -> {
                 val overlayName = intent.getStringExtra(EXTRA_OVERLAY_NAME)
                 val overlayPackage = intent.getStringExtra(EXTRA_OVERLAY_PACKAGE)
-                val resources = intent.getStringExtra(EXTRA_OVERLAY_RESOURCES)
+                val context.resources = intent.getStringExtra(EXTRA_OVERLAY_RESOURCES)
                 val targetPackages = intent.getStringArrayListExtra(EXTRA_TARGET_PACKAGES) ?: arrayListOf("android")
                 val priority = intent.getIntExtra(EXTRA_OVERLAY_PRIORITY, 0)
                 
                 if (!overlayName.isNullOrEmpty() && !overlayPackage.isNullOrEmpty() && !context.resources.isNullOrEmpty()) {
-                    createOverlay(overlayName, overlayPackage, resources, targetPackages, priority)
+                    createOverlay(overlayName, overlayPackage, context.resources, targetPackages, priority)
                 }
             }
             ACTION_UPDATE_OVERLAY -> {
                 val overlayPackage = intent.getStringExtra(EXTRA_OVERLAY_PACKAGE)
-                val resources = intent.getStringExtra(EXTRA_OVERLAY_RESOURCES)
+                val context.resources = intent.getStringExtra(EXTRA_OVERLAY_RESOURCES)
                 
                 if (!overlayPackage.isNullOrEmpty() && !context.resources.isNullOrEmpty()) {
-                    updateOverlay(overlayPackage, resources)
+                    updateOverlay(overlayPackage, context.resources)
                 }
             }
             ACTION_DELETE_OVERLAY -> {
@@ -124,8 +124,8 @@ object ResourceManagerService {
      */
     private fun createOverlay(
         name: String, 
-        packageName: String, 
-        resources: String, 
+        targetPackageName: String, 
+        context.resources: String, 
         targetPackages: List<String>, 
         priority: Int
     ) {
@@ -136,12 +136,12 @@ object ResourceManagerService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
-            if (SecurityUtils.containsDangerousChars(name) || SecurityUtils.containsDangerousChars(resources)) {
+            if (SecurityUtils.containsDangerousChars(name) || SecurityUtils.containsDangerousChars(context.resources)) {
                 Log.e(TAG, "Dangerous characters detected in overlay creation parameters")
                 return
             }
@@ -154,10 +154,10 @@ object ResourceManagerService {
             
             // Create overlay APK in memory
             val overlayData = themeCompiler.compileTheme(
-                "#FF6200EE", // Default color, would come from resources
+                "#FF6200EE", // Default color, would come from context.resources
                 sanitizedPackageName,
                 name,
-                mapOf("status_bar" to true, "navigation_bar" to true) // Would come from resources
+                mapOf("status_bar" to true, "navigation_bar" to true) // Would come from context.resources
             )
             
             // Save overlay to internal storage temporarily
@@ -217,7 +217,7 @@ object ResourceManagerService {
     /**
      * Updates an existing overlay
      */
-    private fun updateOverlay(packageName: String, resources: String) {
+    private fun updateOverlay(targetPackageName: String, context.resources: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -225,13 +225,13 @@ object ResourceManagerService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
-            if (SecurityUtils.containsDangerousChars(resources)) {
-                Log.e(TAG, "Dangerous characters detected in overlay resources")
+            if (SecurityUtils.containsDangerousChars(context.resources)) {
+                Log.e(TAG, "Dangerous characters detected in overlay context.resources")
                 return
             }
             
@@ -249,7 +249,7 @@ object ResourceManagerService {
                 return
             }
             
-            // Create updated overlay (same as create but with updated resources)
+            // Create updated overlay (same as create but with updated context.resources)
             // In a real implementation, context would update the existing overlay
             // For context example, we'll simulate the process
             Log.d(TAG, "Updated overlay: $sanitizedPackageName")
@@ -286,7 +286,7 @@ object ResourceManagerService {
     /**
      * Deletes an overlay using Shizuku
      */
-    private fun deleteOverlay(packageName: String) {
+    private fun deleteOverlay(targetPackageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -294,9 +294,9 @@ object ResourceManagerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // Disable the overlay first
@@ -394,7 +394,7 @@ object ResourceManagerService {
     /**
      * Exports an overlay to a file
      */
-    private fun exportOverlay(packageName: String, exportPath: String) {
+    private fun exportOverlay(targetPackageName: String, exportPath: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -402,9 +402,9 @@ object ResourceManagerService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             if (!SecurityUtils.isValidFilePath(exportPath, listOf(context.filesDir.parent, context.cacheDir.parent))) {
@@ -492,7 +492,7 @@ object ResourceManagerService {
     /**
      * Gets information about an overlay
      */
-    fun getOverlayInfo(packageName: String): Map<String, Any>? {
+    fun getOverlayInfo(targetPackageName: String): Map<String, Any>? {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -500,9 +500,9 @@ object ResourceManagerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, context would query the system for overlay info
@@ -524,7 +524,7 @@ object ResourceManagerService {
     /**
      * Checks if an overlay is enabled
      */
-    fun isOverlayEnabled(packageName: String): Boolean {
+    fun isOverlayEnabled(targetPackageName: String): Boolean {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -532,9 +532,9 @@ object ResourceManagerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, context would check the overlay status

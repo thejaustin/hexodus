@@ -18,7 +18,7 @@ class ModExtensionManager(private val context: Context) {
     const val META_DATA_MOD_AUTHOR = "com.hexodus.mod.AUTHOR"
 
     data class ModExtension(
-        val packageName: String,
+        val targetPackageName: String,
         val appName: String,
         val version: String,
         val author: String,
@@ -46,7 +46,7 @@ class ModExtensionManager(private val context: Context) {
                 val applicationInfo = serviceInfo.applicationInfo
                 
                 val appName = pm.getApplicationLabel(applicationInfo).toString()
-                val packageName = serviceInfo.packageName
+                val targetPackageName = serviceInfo.packageName
                 
                 var modVersion = "1.0"
                 var modAuthor = "Unknown"
@@ -61,10 +61,10 @@ class ModExtensionManager(private val context: Context) {
                 }
                 
                 // Verify the mod (e.g., check signature or permissions)
-                val isVerified = verifyModSignature(packageName)
+                val isVerified = verifyModSignature(targetPackageName)
                 
-                mods.add(ModExtension(packageName, appName, modVersion, modAuthor, isVerified))
-                Log.d(TAG, "Discovered mod: $appName ($packageName) by $modAuthor")
+                mods.add(ModExtension(targetPackageName, appName, modVersion, modAuthor, isVerified))
+                Log.d(TAG, "Discovered mod: $appName ($targetPackageName) by $modAuthor")
                 
             } catch (e: Exception) {
                 Log.e(TAG, "Error processing mod extension: ${e.message}")
@@ -79,18 +79,18 @@ class ModExtensionManager(private val context: Context) {
      * In a real app, context would check if the app signature matches a known list,
      * or if the user has explicitly trusted context developer.
      */
-    private fun verifyModSignature(packageName: String): Boolean {
+    private fun verifyModSignature(targetPackageName: String): Boolean {
         // Mock verification - assume true for safe packages or if security checks pass
-        return SecurityUtils.isPackageSafe(context, packageName)
+        return SecurityUtils.isPackageSafe(context, targetPackageName)
     }
 
     /**
      * Sends a command to a specific mod extension.
      */
-    fun executeModCommand(packageName: String, command: String, args: Map<String, String>): Boolean {
+    fun executeModCommand(targetPackageName: String, command: String, args: Map<String, String>): Boolean {
         try {
             val intent = Intent(ACTION_MOD_EXTENSION)
-            intent.setPackage(packageName)
+            intent.setPackage(targetPackageName)
             intent.putExtra("command", command)
             
             for ((key, value) in args) {
@@ -99,10 +99,10 @@ class ModExtensionManager(private val context: Context) {
             
             // Send to service
             context.startService(intent)
-            Log.d(TAG, "Executed command '$command' on mod '$packageName'")
+            Log.d(TAG, "Executed command '$command' on mod '$targetPackageName'")
             return true
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to execute command on mod '$packageName': ${e.message}")
+            Log.e(TAG, "Failed to execute command on mod '$targetPackageName': ${e.message}")
             return false
         }
     }

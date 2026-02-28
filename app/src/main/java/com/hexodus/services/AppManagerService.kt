@@ -12,11 +12,11 @@ import com.hexodus.utils.SecurityUtils
  * Inspired by Hail, Ice Box, and Inure App Manager projects from awesome-shizuku
  */
 object AppManagerService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName_: String get() = context.packageName
-    private val cacheDir_: java.io.File get() = context.cacheDir
-    private val filesDir_: java.io.File get() = context.filesDir
-    private val resources_: android.content.res.Resources get() = context.resources
+    private val context get() = com.hexodus.HexodusApplication.context
+    
+    
+    
+    
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
@@ -60,33 +60,33 @@ object AppManagerService {
         
         when (action) {
             ACTION_FREEZE_APP -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
-                if (!packageName.isNullOrEmpty()) {
-                    freezeApp(packageName)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    freezeApp(targetPackageName)
                 }
             }
             ACTION_UNFREEZE_APP -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
-                if (!packageName.isNullOrEmpty()) {
-                    unfreezeApp(packageName)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    unfreezeApp(targetPackageName)
                 }
             }
             ACTION_HIDE_APP -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
-                if (!packageName.isNullOrEmpty()) {
-                    hideApp(packageName)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    hideApp(targetPackageName)
                 }
             }
             ACTION_UNHIDE_APP -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
-                if (!packageName.isNullOrEmpty()) {
-                    unhideApp(packageName)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    unhideApp(targetPackageName)
                 }
             }
             ACTION_FORCE_STOP_APP -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
-                if (!packageName.isNullOrEmpty()) {
-                    forceStopApp(packageName)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    forceStopApp(targetPackageName)
                 }
             }
             ACTION_BATCH_OPERATION -> {
@@ -98,9 +98,9 @@ object AppManagerService {
                 }
             }
             ACTION_GET_APP_INFO -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
-                if (!packageName.isNullOrEmpty()) {
-                    getAppInfo(packageName)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    getAppInfo(targetPackageName)
                 }
             }
         }
@@ -111,7 +111,7 @@ object AppManagerService {
     /**
      * Freezes an app using Shizuku
      */
-    private fun freezeApp(packageName: String) {
+    private fun freezeApp(targetPackageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -119,9 +119,9 @@ object AppManagerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             val command = "pm disable-user --user 0 $sanitizedPackageName"
@@ -156,7 +156,7 @@ object AppManagerService {
     /**
      * Unfreezes an app using Shizuku
      */
-    private fun unfreezeApp(packageName: String) {
+    private fun unfreezeApp(targetPackageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -164,9 +164,9 @@ object AppManagerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             val command = "pm enable $sanitizedPackageName"
@@ -201,7 +201,7 @@ object AppManagerService {
     /**
      * Hides an app using Shizuku
      */
-    private fun hideApp(packageName: String) {
+    private fun hideApp(targetPackageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -209,9 +209,9 @@ object AppManagerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             val command = "pm hide $sanitizedPackageName"
@@ -246,7 +246,7 @@ object AppManagerService {
     /**
      * Unhides an app using Shizuku
      */
-    private fun unhideApp(packageName: String) {
+    private fun unhideApp(targetPackageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -254,9 +254,9 @@ object AppManagerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             val command = "pm unhide $sanitizedPackageName"
@@ -291,7 +291,7 @@ object AppManagerService {
     /**
      * Force stops an app using Shizuku
      */
-    private fun forceStopApp(packageName: String) {
+    private fun forceStopApp(targetPackageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -299,9 +299,9 @@ object AppManagerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             val command = "am force-stop $sanitizedPackageName"
@@ -354,16 +354,16 @@ object AppManagerService {
             var successCount = 0
             val failedPackages = mutableListOf<String>()
             
-            for (packageName in sanitizedPackageNames) {
+            for (targetPackageName in sanitizedPackageNames) {
                 val command = when (operationType.lowercase()) {
-                    "freeze" -> "pm disable-user --user 0 $packageName"
-                    "unfreeze" -> "pm enable $packageName"
-                    "hide" -> "pm hide $packageName"
-                    "unhide" -> "pm unhide $packageName"
-                    "force_stop" -> "am force-stop $packageName"
+                    "freeze" -> "pm disable-user --user 0 $targetPackageName"
+                    "unfreeze" -> "pm enable $targetPackageName"
+                    "hide" -> "pm hide $targetPackageName"
+                    "unhide" -> "pm unhide $targetPackageName"
+                    "force_stop" -> "am force-stop $targetPackageName"
                     else -> {
                         Log.w(TAG, "Unknown operation type: $operationType")
-                        failedPackages.add(packageName)
+                        failedPackages.add(targetPackageName)
                         continue
                     }
                 }
@@ -373,7 +373,7 @@ object AppManagerService {
                 if (result != null) {
                     successCount++
                 } else {
-                    failedPackages.add(packageName)
+                    failedPackages.add(targetPackageName)
                 }
             }
             
@@ -399,7 +399,7 @@ object AppManagerService {
     /**
      * Gets app information using Shizuku
      */
-    private fun getAppInfo(packageName: String) {
+    private fun getAppInfo(targetPackageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -407,9 +407,9 @@ object AppManagerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             val command = "dumpsys package $sanitizedPackageName"

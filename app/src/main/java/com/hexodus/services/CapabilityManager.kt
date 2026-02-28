@@ -15,7 +15,9 @@ import moe.shizuku.plus.ShizukuPlusAPI
  */
 class CapabilityManager(private val context: Context) {
 
-    private const val TAG = "CapabilityManager"
+    companion object {
+        private const val TAG = "CapabilityManager"
+    }
 
     data class DeviceCapabilities(
         val isRooted: Boolean,

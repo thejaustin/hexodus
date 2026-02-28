@@ -12,11 +12,11 @@ import com.hexodus.utils.SecurityUtils
  * Inspired by AmbientMusicMod project from awesome-shizuku for media features
  */
 object MediaNotificationService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName_: String get() = context.packageName
-    private val cacheDir_: java.io.File get() = context.cacheDir
-    private val filesDir_: java.io.File get() = context.filesDir
-    private val resources_: android.content.res.Resources get() = context.resources
+    private val context get() = com.hexodus.HexodusApplication.context
+    
+    
+    
+    
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
@@ -66,27 +66,27 @@ object MediaNotificationService {
                 updateNowPlaying(title, artist, albumArt)
             }
             ACTION_HIDE_NOTIFICATION -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, -1)
                 
-                if (!packageName.isNullOrEmpty()) {
-                    hideNotification(packageName, notificationId)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    hideNotification(targetPackageName, notificationId)
                 }
             }
             ACTION_SHOW_NOTIFICATION -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, -1)
                 
-                if (!packageName.isNullOrEmpty()) {
-                    showNotification(packageName, notificationId)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    showNotification(targetPackageName, notificationId)
                 }
             }
             ACTION_CUSTOMIZE_NOTIFICATION -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val config = intent.getStringExtra(EXTRA_CUSTOMIZATION_CONFIG)
                 
-                if (!packageName.isNullOrEmpty() && !config.isNullOrEmpty()) {
-                    customizeNotification(packageName, config)
+                if (!targetPackageName.isNullOrEmpty() && !config.isNullOrEmpty()) {
+                    customizeNotification(targetPackageName, config)
                 }
             }
         }
@@ -137,7 +137,7 @@ object MediaNotificationService {
     /**
      * Hides a notification using Shizuku
      */
-    private fun hideNotification(packageName: String, notificationId: Int) {
+    private fun hideNotification(targetPackageName: String, notificationId: Int) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -145,9 +145,9 @@ object MediaNotificationService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, context would use NotificationManagerService to cancel notifications
@@ -172,7 +172,7 @@ object MediaNotificationService {
     /**
      * Shows a notification using Shizuku
      */
-    private fun showNotification(packageName: String, notificationId: Int) {
+    private fun showNotification(targetPackageName: String, notificationId: Int) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -180,9 +180,9 @@ object MediaNotificationService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, context would interact with the notification system
@@ -207,7 +207,7 @@ object MediaNotificationService {
     /**
      * Customizes a notification using Shizuku
      */
-    private fun customizeNotification(packageName: String, config: String) {
+    private fun customizeNotification(targetPackageName: String, config: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -215,9 +215,9 @@ object MediaNotificationService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             if (SecurityUtils.containsDangerousChars(config)) {

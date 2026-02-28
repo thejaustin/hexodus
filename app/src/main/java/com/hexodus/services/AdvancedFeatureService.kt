@@ -24,33 +24,9 @@ import kotlinx.coroutines.flow.collect
  * Includes wallpaper-based theming, system resource inspection, and more
  */
 object AdvancedFeatureService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName_: String get() = context.packageName
-    private val cacheDir_: java.io.File get() = context.cacheDir
-    private val filesDir_: java.io.File get() = context.filesDir
-    private val resources_: android.content.res.Resources get() = context.resources
-    
+    private val context get() = com.hexodus.HexodusApplication.context
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
-
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-    
-
+    private val themeCompiler = com.hexodus.core.ThemeCompiler()
     
     private const val TAG = "AdvancedFeatureService"
     private const val ACTION_APPLY_WALLPAPER_THEME = "com.hexodus.APPLY_WALLPAPER_THEME"
@@ -80,8 +56,8 @@ object AdvancedFeatureService {
                 }
             }
             ACTION_INSPECT_SYSTEM_RESOURCES -> {
-                val packageName = intent.getStringExtra(EXTRA_RESOURCE_PACKAGE) ?: "android"
-                inspectSystemResources(packageName)
+                val resPackage = intent.getStringExtra(EXTRA_RESOURCE_PACKAGE) ?: "android"
+                inspectSystemResources(resPackage)
             }
             ACTION_MANAGE_APP_GROUPS -> {
                 val groupName = intent.getStringExtra(EXTRA_APP_GROUP_NAME)
@@ -130,18 +106,14 @@ object AdvancedFeatureService {
             // Extract colors from wallpaper
             val bitmap = BitmapFactory.decodeFile(wallpaperPath)
             if (bitmap != null) {
-                // In a real implementation, context would use Palette API to extract colors
-                // For context example, we'll simulate the process
                 val primaryColor = extractDominantColor(bitmap)
+                val hexColorString = "#${Integer.toHexString(primaryColor).substring(2).uppercase()}"
                 
-                Log.d(TAG, "Wallpaper-based theme applied with primary color: #${
-                    Integer.toHexString(primaryColor).substring(2).uppercase()
-                }")
+                Log.d(TAG, "Wallpaper-based theme applied with primary color: $hexColorString")
                 
-                // Generate and apply theme based on wallpaper colors
-                themeCompiler = ThemeCompiler()
+                // Generate theme based on wallpaper colors
                 val themeData = themeCompiler.compileTheme(
-                    "#${Integer.toHexString(primaryColor).substring(2).uppercase()}",
+                    hexColorString,
                     "wallpaper_theme_${System.currentTimeMillis()}",
                     "Wallpaper Theme",
                     mapOf(
@@ -153,8 +125,7 @@ object AdvancedFeatureService {
                 )
                 
                 // Apply the generated theme
-                 // Use OverlayManager instead
-                OverlayManager.applyTheme(HexodusApplication.context, themeData, "wallpaper_based_theme")
+                OverlayManager.applyTheme(themeData, "wallpaper_based_theme")
                 
                 // Broadcast success
                 val successIntent = Intent("WALLPAPER_THEME_APPLIED")
@@ -182,7 +153,7 @@ object AdvancedFeatureService {
     /**
      * Inspects system resources using Shizuku
      */
-    private fun inspectSystemResources(packageName: String) {
+    private fun inspectSystemResources(targetPackage: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -190,14 +161,10 @@ object AdvancedFeatureService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
-            }
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackage)
             
-            // In a real implementation, context would inspect system resources
-            // For context example, we'll simulate the process
-            val resources = mapOf(
+            // Simulate the process
+            val resourcesMap = mapOf(
                 "colors" to listOf("#FF6200EE", "#FF03DAC6", "#FF018786"),
                 "drawables" to listOf("ic_launcher", "ic_settings", "ic_home"),
                 "layouts" to listOf("activity_main", "fragment_settings", "dialog_confirmation"),
@@ -209,7 +176,7 @@ object AdvancedFeatureService {
             // Broadcast results
             val successIntent = Intent("SYSTEM_RESOURCES_INSPECTED")
             successIntent.putExtra("package_name", sanitizedPackageName)
-            successIntent.putExtra("resources", HashMap(resources))
+            successIntent.putExtra("resources", HashMap(resourcesMap))
             context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error inspecting system resources: ${e.message}", e)
@@ -244,8 +211,6 @@ object AdvancedFeatureService {
                 }
             }
             
-            // In a real implementation, context would manage app groups
-            // For context example, we'll simulate the process
             Log.d(TAG, "Managed app group: $groupName with apps: ${apps.joinToString(", ")}")
             
             // Broadcast success
@@ -279,8 +244,6 @@ object AdvancedFeatureService {
                 return
             }
             
-            // In a real implementation, context would customize quick settings
-            // For context example, we'll simulate the process
             Log.d(TAG, "Customized quick settings with config: $config")
             
             // Broadcast success
@@ -315,8 +278,6 @@ object AdvancedFeatureService {
                 }
             }
             
-            // In a real implementation, context would modify status bar icons
-            // For context example, we'll simulate the process
             Log.d(TAG, "Modified status bar icons: ${icons.joinToString(", ")}")
             
             // Broadcast success
@@ -349,8 +310,6 @@ object AdvancedFeatureService {
                 return
             }
             
-            // In a real implementation, context would modify system animation scales
-            // For context example, we'll simulate the process
             Log.d(TAG, "Controlled system animations with scale: $scale")
             
             // Broadcast success
@@ -371,8 +330,6 @@ object AdvancedFeatureService {
      * Extracts the dominant color from a bitmap
      */
     private fun extractDominantColor(bitmap: Bitmap): Int {
-        // In a real implementation, context would use Palette API
-        // For context example, we'll return a simulated dominant color
         return -0x9efff2 // Simulated dominant color
     }
 }

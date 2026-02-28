@@ -19,11 +19,11 @@ import androidx.annotation.RequiresApi
  * Inspired by power management projects from awesome-shizuku
  */
 object PerformanceOptimizerService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName_: String get() = context.packageName
-    private val cacheDir_: java.io.File get() = context.cacheDir
-    private val filesDir_: java.io.File get() = context.filesDir
-    private val resources_: android.content.res.Resources get() = context.resources
+    private val context get() = com.hexodus.HexodusApplication.context
+    
+    
+    
+    
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
@@ -70,9 +70,9 @@ object PerformanceOptimizerService {
                 getBatteryStats()
             }
             ACTION_OPTIMIZE_APP -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
-                if (!packageName.isNullOrEmpty()) {
-                    optimizeApp(packageName)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    optimizeApp(targetPackageName)
                 }
             }
             ACTION_MANAGE_POWER_MODE -> {
@@ -140,7 +140,7 @@ object PerformanceOptimizerService {
     /**
      * Optimizes an app using Shizuku
      */
-    private fun optimizeApp(packageName: String) {
+    private fun optimizeApp(targetPackageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -148,9 +148,9 @@ object PerformanceOptimizerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, context would optimize the app
@@ -327,7 +327,7 @@ object PerformanceOptimizerService {
     /**
      * Gets app-specific performance statistics
      */
-    fun getAppPerformanceStats(packageName: String): Map<String, Any>? {
+    fun getAppPerformanceStats(targetPackageName: String): Map<String, Any>? {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -335,9 +335,9 @@ object PerformanceOptimizerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, context would query app performance stats
@@ -358,7 +358,7 @@ object PerformanceOptimizerService {
     /**
      * Forces app to be optimized by the system
      */
-    fun forceAppOptimization(packageName: String): Boolean {
+    fun forceAppOptimization(targetPackageName: String): Boolean {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -366,9 +366,9 @@ object PerformanceOptimizerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, context would force app optimization

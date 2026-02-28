@@ -16,11 +16,11 @@ import java.io.FileOutputStream
  * Handles theme creation, application, sharing, and persistence
  */
 object ThemeManager {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName_: String get() = context.packageName
-    private val cacheDir_: java.io.File get() = context.cacheDir
-    private val filesDir_: java.io.File get() = context.filesDir
-    private val resources_: android.content.res.Resources get() = context.resources
+    private val context get() = com.hexodus.HexodusApplication.context
+    
+    
+    
+    
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
@@ -54,8 +54,8 @@ object ThemeManager {
     suspend fun createTheme(hexColor: String, themeName: String, themedComponents: Map<String, Boolean>) = withContext(Dispatchers.IO) {
                 try {
             // Compile the theme to an APK in memory
-            val packageName = "com.hexodus.theme.${themeName.replace(" ", "_").lowercase()}.${System.currentTimeMillis()}"
-            val themeData = themeCompiler.compileTheme(hexColor, packageName, themeName, themedComponents)
+            val targetPackageName = "com.hexodus.theme.${themeName.replace(" ", "_").lowercase()}.${System.currentTimeMillis()}"
+            val themeData = themeCompiler.compileTheme(hexColor, targetPackageName, themeName, themedComponents)
             
             // Save the theme to internal storage
             val themeFile = File(context.filesDir, "${themeName}_${System.currentTimeMillis()}.apk")

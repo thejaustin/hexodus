@@ -13,11 +13,11 @@ import java.io.File
  * Inspired by AppLock, Amarok-Hider, and PrivacyFlip projects from awesome-shizuku
  */
 object PrivacySecurityService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName_: String get() = context.packageName
-    private val cacheDir_: java.io.File get() = context.cacheDir
-    private val filesDir_: java.io.File get() = context.filesDir
-    private val resources_: android.content.res.Resources get() = context.resources
+    private val context get() = com.hexodus.HexodusApplication.context
+    
+    
+    
+    
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
@@ -66,18 +66,18 @@ object PrivacySecurityService {
         
         when (action) {
             ACTION_LOCK_APP -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val lockMethod = intent.getStringExtra(EXTRA_LOCK_METHOD) ?: "pin"
                 
-                if (!packageName.isNullOrEmpty()) {
-                    lockApp(packageName, lockMethod)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    lockApp(targetPackageName, lockMethod)
                 }
             }
             ACTION_UNLOCK_APP -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 
-                if (!packageName.isNullOrEmpty()) {
-                    unlockApp(packageName)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    unlockApp(targetPackageName)
                 }
             }
             ACTION_HIDE_FILE -> {
@@ -95,17 +95,17 @@ object PrivacySecurityService {
                 }
             }
             ACTION_HIDE_APP -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 
-                if (!packageName.isNullOrEmpty()) {
-                    hideApp(packageName)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    hideApp(targetPackageName)
                 }
             }
             ACTION_UNHIDE_APP -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 
-                if (!packageName.isNullOrEmpty()) {
-                    unhideApp(packageName)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    unhideApp(targetPackageName)
                 }
             }
             ACTION_MANAGE_PRIVACY -> {
@@ -125,12 +125,12 @@ object PrivacySecurityService {
     /**
      * Locks an app with PIN/biometric
      */
-    private fun lockApp(packageName: String, lockMethod: String) {
+    private fun lockApp(targetPackageName: String, lockMethod: String) {
         try {
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // Add to locked apps list
@@ -139,7 +139,7 @@ object PrivacySecurityService {
             Log.d(TAG, "App locked: $sanitizedPackageName using method: $lockMethod")
             
             // Store in preferences
-            val prefs = getSharedPreferences("app_locks", 0)
+            val prefs = context.getSharedPreferences("app_locks", 0)
             val editor = prefs.edit()
             val currentLocked = prefs.getStringSet("locked_apps", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
             currentLocked.add(sanitizedPackageName)
@@ -164,12 +164,12 @@ object PrivacySecurityService {
     /**
      * Unlocks an app
      */
-    private fun unlockApp(packageName: String) {
+    private fun unlockApp(targetPackageName: String) {
         try {
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // Remove from locked apps list
@@ -178,7 +178,7 @@ object PrivacySecurityService {
             Log.d(TAG, "App unlocked: $sanitizedPackageName")
             
             // Update preferences
-            val prefs = getSharedPreferences("app_locks", 0)
+            val prefs = context.getSharedPreferences("app_locks", 0)
             val editor = prefs.edit()
             val currentLocked = prefs.getStringSet("locked_apps", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
             currentLocked.remove(sanitizedPackageName)
@@ -233,7 +233,7 @@ object PrivacySecurityService {
             }
             
             // Store in preferences
-            val prefs = getSharedPreferences("hidden_files", 0)
+            val prefs = context.getSharedPreferences("hidden_files", 0)
             val editor = prefs.edit()
             val currentHidden = prefs.getStringSet("hidden_files", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
             currentHidden.add(filePath)
@@ -282,7 +282,7 @@ object PrivacySecurityService {
             hiddenFiles.remove(filePath)
             
             // Update preferences
-            val prefs = getSharedPreferences("hidden_files", 0)
+            val prefs = context.getSharedPreferences("hidden_files", 0)
             val editor = prefs.edit()
             val currentHidden = prefs.getStringSet("hidden_files", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
             currentHidden.remove(filePath)
@@ -306,7 +306,7 @@ object PrivacySecurityService {
     /**
      * Hides an app icon from launcher
      */
-    private fun hideApp(packageName: String) {
+    private fun hideApp(targetPackageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -314,9 +314,9 @@ object PrivacySecurityService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // Use pm to hide the app
@@ -352,7 +352,7 @@ object PrivacySecurityService {
     /**
      * Unhides an app icon from launcher
      */
-    private fun unhideApp(packageName: String) {
+    private fun unhideApp(targetPackageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -360,9 +360,9 @@ object PrivacySecurityService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // Use pm to unhide the app
@@ -469,7 +469,7 @@ object PrivacySecurityService {
      * Gets list of locked apps
      */
     fun getLockedApps(): Set<String> {
-        val prefs = getSharedPreferences("app_locks", 0)
+        val prefs = context.getSharedPreferences("app_locks", 0)
         return prefs.getStringSet("locked_apps", mutableSetOf()) ?: mutableSetOf()
     }
     
@@ -477,7 +477,7 @@ object PrivacySecurityService {
      * Gets list of hidden files
      */
     fun getHiddenFiles(): Set<String> {
-        val prefs = getSharedPreferences("hidden_files", 0)
+        val prefs = context.getSharedPreferences("hidden_files", 0)
         return prefs.getStringSet("hidden_files", mutableSetOf()) ?: mutableSetOf()
     }
 }

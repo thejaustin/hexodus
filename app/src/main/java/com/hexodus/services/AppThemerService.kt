@@ -12,11 +12,11 @@ import com.hexodus.utils.SecurityUtils
  * Inspired by DarQ project from awesome-shizuku for per-app dark mode
  */
 object AppThemerService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName_: String get() = context.packageName
-    private val cacheDir_: java.io.File get() = context.cacheDir
-    private val filesDir_: java.io.File get() = context.filesDir
-    private val resources_: android.content.res.Resources get() = context.resources
+    private val context get() = com.hexodus.HexodusApplication.context
+    
+    
+    
+    
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
@@ -55,26 +55,26 @@ object AppThemerService {
         
         when (action) {
             ACTION_FORCE_DARK_MODE -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val forceDark = intent.getBooleanExtra(EXTRA_FORCE_DARK, false)
                 
-                if (!packageName.isNullOrEmpty()) {
-                    setAppDarkMode(packageName, forceDark)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    setAppDarkMode(targetPackageName, forceDark)
                 }
             }
             ACTION_SET_APP_THEME -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val themeConfig = intent.getStringExtra(EXTRA_THEME_CONFIG)
                 
-                if (!packageName.isNullOrEmpty() && !themeConfig.isNullOrEmpty()) {
-                    setAppTheme(packageName, themeConfig)
+                if (!targetPackageName.isNullOrEmpty() && !themeConfig.isNullOrEmpty()) {
+                    setAppTheme(targetPackageName, themeConfig)
                 }
             }
             ACTION_GET_APP_THEME -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 
-                if (!packageName.isNullOrEmpty()) {
-                    getAppTheme(packageName)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    getAppTheme(targetPackageName)
                 }
             }
         }
@@ -85,7 +85,7 @@ object AppThemerService {
     /**
      * Sets force dark mode for a specific app using Shizuku
      */
-    private fun setAppDarkMode(packageName: String, forceDark: Boolean) {
+    private fun setAppDarkMode(targetPackageName: String, forceDark: Boolean) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -93,9 +93,9 @@ object AppThemerService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // Use Android's force dark API via shell command
@@ -137,7 +137,7 @@ object AppThemerService {
     /**
      * Sets a custom theme for a specific app using Shizuku
      */
-    private fun setAppTheme(packageName: String, themeConfig: String) {
+    private fun setAppTheme(targetPackageName: String, themeConfig: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -145,9 +145,9 @@ object AppThemerService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, context would create and apply an app-specific overlay
@@ -172,7 +172,7 @@ object AppThemerService {
     /**
      * Gets the current theme for a specific app
      */
-    private fun getAppTheme(packageName: String) {
+    private fun getAppTheme(targetPackageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -180,9 +180,9 @@ object AppThemerService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, context would query the system for the app's current theme

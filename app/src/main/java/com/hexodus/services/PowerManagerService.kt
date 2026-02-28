@@ -12,11 +12,11 @@ import com.hexodus.utils.SecurityUtils
  * Inspired by BatStats and EnforceDoze projects from awesome-shizuku
  */
 object PowerManagerService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName_: String get() = context.packageName
-    private val cacheDir_: java.io.File get() = context.cacheDir
-    private val filesDir_: java.io.File get() = context.filesDir
-    private val resources_: android.content.res.Resources get() = context.resources
+    private val context get() = com.hexodus.HexodusApplication.context
+    
+    
+    
+    
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
@@ -78,18 +78,18 @@ object PowerManagerService {
                 }
             }
             ACTION_OPTIMIZE_APP_BATTERY -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val level = intent.getStringExtra(EXTRA_OPTIMIZATION_LEVEL) ?: "moderate"
                 
-                if (!packageName.isNullOrEmpty()) {
-                    optimizeAppBattery(packageName, level)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    optimizeAppBattery(targetPackageName, level)
                 }
             }
             ACTION_GET_POWER_USAGE -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 
-                if (!packageName.isNullOrEmpty()) {
-                    getPowerUsage(packageName)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    getPowerUsage(targetPackageName)
                 }
             }
             ACTION_SCHEDULE_POWER_OPTIMIZATION -> {
@@ -280,7 +280,7 @@ object PowerManagerService {
     /**
      * Optimizes battery usage for an app using Shizuku
      */
-    private fun optimizeAppBattery(packageName: String, level: String) {
+    private fun optimizeAppBattery(targetPackageName: String, level: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -288,9 +288,9 @@ object PowerManagerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // Apply optimization based on level
@@ -333,7 +333,7 @@ object PowerManagerService {
     /**
      * Gets power usage for an app using Shizuku
      */
-    private fun getPowerUsage(packageName: String) {
+    private fun getPowerUsage(targetPackageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -341,9 +341,9 @@ object PowerManagerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             val command = "dumpsys batterystats $sanitizedPackageName"

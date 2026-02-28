@@ -22,11 +22,11 @@ import com.hexodus.MainActivity
  * Inspired by firewall projects from awesome-shizuku
  */
 object NetworkFirewallService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName_: String get() = context.packageName
-    private val cacheDir_: java.io.File get() = context.cacheDir
-    private val filesDir_: java.io.File get() = context.filesDir
-    private val resources_: android.content.res.Resources get() = context.resources
+    private val context get() = com.hexodus.HexodusApplication.context
+    
+    
+    
+    
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
@@ -76,26 +76,26 @@ object NetworkFirewallService {
         
         when (action) {
             ACTION_BLOCK_APP_NETWORK -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val networkType = intent.getStringExtra(EXTRA_NETWORK_TYPE) ?: "all"
                 
-                if (!packageName.isNullOrEmpty()) {
-                    blockAppNetwork(packageName, networkType)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    blockAppNetwork(targetPackageName, networkType)
                 }
             }
             ACTION_ALLOW_APP_NETWORK -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val networkType = intent.getStringExtra(EXTRA_NETWORK_TYPE) ?: "all"
                 
-                if (!packageName.isNullOrEmpty()) {
-                    allowAppNetwork(packageName, networkType)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    allowAppNetwork(targetPackageName, networkType)
                 }
             }
             ACTION_GET_APP_NETWORK_ACCESS -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 
-                if (!packageName.isNullOrEmpty()) {
-                    getAppNetworkAccess(packageName)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    getAppNetworkAccess(targetPackageName)
                 }
             }
             ACTION_GET_NETWORK_ACTIVITY -> {
@@ -120,7 +120,7 @@ object NetworkFirewallService {
     /**
      * Blocks network access for an app using Shizuku
      */
-    private fun blockAppNetwork(packageName: String, networkType: String) {
+    private fun blockAppNetwork(targetPackageName: String, networkType: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -128,9 +128,9 @@ object NetworkFirewallService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             val validNetworkTypes = listOf("wifi", "mobile", "all")
@@ -161,7 +161,7 @@ object NetworkFirewallService {
     /**
      * Allows network access for an app using Shizuku
      */
-    private fun allowAppNetwork(packageName: String, networkType: String) {
+    private fun allowAppNetwork(targetPackageName: String, networkType: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -169,9 +169,9 @@ object NetworkFirewallService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             val validNetworkTypes = listOf("wifi", "mobile", "all")
@@ -202,7 +202,7 @@ object NetworkFirewallService {
     /**
      * Gets network access status for an app
      */
-    private fun getAppNetworkAccess(packageName: String) {
+    private fun getAppNetworkAccess(targetPackageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -210,9 +210,9 @@ object NetworkFirewallService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, context would query network access status
@@ -369,7 +369,7 @@ object NetworkFirewallService {
         
         // In a real implementation, context would start monitoring network activity
         // For context example, we'll create a foreground service notification
-        // startForeground not supported in object
+        // context.startForeground not supported in object
     }
     
     /**
@@ -381,7 +381,7 @@ object NetworkFirewallService {
         isMonitoring = false
         Log.d(TAG, "Stopped network monitoring")
         
-        // stopForeground not supported in object
+        // context.stopForeground not supported in object
     }
     
     /**

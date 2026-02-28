@@ -12,11 +12,11 @@ import com.hexodus.utils.SecurityUtils
  * Inspired by TapTap project from awesome-shizuku for back gesture features
  */
 object GestureManagerService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName_: String get() = context.packageName
-    private val cacheDir_: java.io.File get() = context.cacheDir
-    private val filesDir_: java.io.File get() = context.filesDir
-    private val resources_: android.content.res.Resources get() = context.resources
+    private val context get() = com.hexodus.HexodusApplication.context
+    
+    
+    
+    
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
@@ -99,7 +99,7 @@ object GestureManagerService {
             Log.d(TAG, "Gesture registered: $gestureType -> $gestureAction")
             
             // Store in persistent storage
-            val prefs = getSharedPreferences("gestures", 0)
+            val prefs = context.getSharedPreferences("gestures", 0)
             val editor = prefs.edit()
             editor.putString(gestureType, gestureAction)
             if (gestureParams != null) {
@@ -166,7 +166,7 @@ object GestureManagerService {
     /**
      * Launches an app using Shizuku
      */
-    private fun launchApp(packageName: String) {
+    private fun launchApp(targetPackageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -174,9 +174,9 @@ object GestureManagerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             val command = "monkey -p $sanitizedPackageName -c android.intent.category.LAUNCHER 1"
@@ -349,7 +349,7 @@ object GestureManagerService {
      */
     private fun listRegisteredGestures() {
         try {
-            val prefs = getSharedPreferences("gestures", 0)
+            val prefs = context.getSharedPreferences("gestures", 0)
             val allGestures = prefs.all.mapKeys { it.key }.toMutableMap()
             
             // Remove parameter entries from the list

@@ -1,43 +1,23 @@
 package com.hexodus.services
-import com.hexodus.HexodusApplication
 
 import android.app.Service
-
 import android.content.Intent
+import android.os.IBinder
 import android.util.Log
+import com.hexodus.HexodusApplication
 
 /**
  * OverlayActivationService - Service that wraps OverlayManager to handle Intents
  */
 object OverlayActivationService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName_: String get() = context.packageName
-    private val cacheDir_: java.io.File get() = context.cacheDir
-    private val filesDir_: java.io.File get() = context.filesDir
-    private val resources_: android.content.res.Resources get() = context.resources
+    private val context get() = com.hexodus.HexodusApplication.context
+    
+    
+    
+    
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-    
-
-    
     private const val TAG = "OverlayActivationService"
     const val ACTION_ACTIVATE_OVERLAY = "com.hexodus.ACTIVATE_OVERLAY"
     const val ACTION_DEACTIVATE_OVERLAY = "com.hexodus.DEACTIVATE_OVERLAY"
@@ -52,36 +32,36 @@ object OverlayActivationService {
         
         when (action) {
             ACTION_ACTIVATE_OVERLAY -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackage = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val apkPath = intent.getStringExtra(EXTRA_APK_PATH)
                 val validateSignature = intent.getBooleanExtra(EXTRA_VALIDATE_SIGNATURE, true)
                 
-                if (!packageName.isNullOrEmpty() && !apkPath.isNullOrEmpty()) {
-                    val success = OverlayManager.activateOverlay(HexodusApplication.context, packageName, apkPath, validateSignature)
+                if (!targetPackage.isNullOrEmpty() && !apkPath.isNullOrEmpty()) {
+                    val success = OverlayManager.activateOverlay(targetPackage, apkPath, validateSignature)
                     val resultIntent = Intent(if (success) "OVERLAY_ACTIVATION_SUCCESS" else "OVERLAY_ACTIVATION_FAILURE")
-                    resultIntent.putExtra("package_name", packageName)
+                    resultIntent.putExtra("package_name", targetPackage)
                     context.sendBroadcast(resultIntent)
                 }
             }
             ACTION_DEACTIVATE_OVERLAY -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
-                if (!packageName.isNullOrEmpty()) {
-                    val success = OverlayManager.deactivateOverlay(HexodusApplication.context, packageName)
+                val targetPackage = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                if (!targetPackage.isNullOrEmpty()) {
+                    val success = OverlayManager.deactivateOverlay(targetPackage)
                     val resultIntent = Intent(if (success) "OVERLAY_DEACTIVATION_SUCCESS" else "OVERLAY_DEACTIVATION_FAILURE")
-                    resultIntent.putExtra("package_name", packageName)
+                    resultIntent.putExtra("package_name", targetPackage)
                     context.sendBroadcast(resultIntent)
                 }
             }
             ACTION_REFRESH_OVERLAYS -> {
-                OverlayManager.refreshSystemUI(HexodusApplication.context)
+                OverlayManager.refreshSystemUI()
             }
         }
         
         return android.app.Service.START_STICKY
     }
 
-    // Still providing context for legacy/direct callers, though they should use OverlayManager directly
+    // Still providing this for legacy/direct callers, though they should use OverlayManager directly
     fun applyTheme(themeData: ByteArray, themeName: String) {
-        OverlayManager.applyTheme(HexodusApplication.context, themeData, themeName)
+        OverlayManager.applyTheme(themeData, themeName)
     }
 }

@@ -12,11 +12,11 @@ import com.hexodus.utils.SecurityUtils
  * Ensures all operations comply with security best practices
  */
 object SecurityValidationService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName_: String get() = context.packageName
-    private val cacheDir_: java.io.File get() = context.cacheDir
-    private val filesDir_: java.io.File get() = context.filesDir
-    private val resources_: android.content.res.Resources get() = context.resources
+    private val context get() = com.hexodus.HexodusApplication.context
+    
+    
+    
+    
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
@@ -79,9 +79,9 @@ object SecurityValidationService {
                 }
             }
             ACTION_VALIDATE_PACKAGE_NAME -> {
-                val packageName = intent?.getStringExtra(EXTRA_PACKAGE_NAME)
-                if (!packageName.isNullOrEmpty()) {
-                    validatePackageName(packageName)
+                val targetPackageName = intent?.getStringExtra(EXTRA_PACKAGE_NAME)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    validatePackageName(targetPackageName)
                 }
             }
             ACTION_SANITIZE_INPUT -> {
@@ -209,21 +209,21 @@ object SecurityValidationService {
     /**
      * Validates a package name for security compliance
      */
-    private fun validatePackageName(packageName: String) {
+    private fun validatePackageName(targetPackageName: String) {
         try {
             val results = mutableMapOf<String, Any>()
             
             // Validate package name format
-            results["valid_format"] = SecurityUtils.isValidPackageName(packageName)
+            results["valid_format"] = SecurityUtils.isValidPackageName(targetPackageName)
             
             // Check for dangerous characters
-            results["contains_dangerous_chars"] = !SecurityUtils.containsDangerousChars(packageName)
+            results["contains_dangerous_chars"] = !SecurityUtils.containsDangerousChars(targetPackageName)
             
-            Log.d(TAG, "Package name validation completed for: $packageName")
+            Log.d(TAG, "Package name validation completed for: $targetPackageName")
             
             // Broadcast results
             val intent = Intent("PACKAGE_NAME_VALIDATION_COMPLETED")
-            intent.putExtra("package_name", packageName)
+            intent.putExtra("package_name", targetPackageName)
             intent.putExtra("validation_results", HashMap(results))
             context.sendBroadcast(intent)
             
@@ -232,7 +232,7 @@ object SecurityValidationService {
             
             // Broadcast error
             val errorIntent = Intent("PACKAGE_NAME_VALIDATION_ERROR")
-            errorIntent.putExtra("package_name", packageName)
+            errorIntent.putExtra("package_name", targetPackageName)
             errorIntent.putExtra("error_message", e.message)
             context.sendBroadcast(errorIntent)
         }
@@ -318,7 +318,7 @@ object SecurityValidationService {
     /**
      * Sanitizes a package name
      */
-    fun sanitizePackageName(packageName: String): String {
-        return SecurityUtils.sanitizePackageName(packageName)
+    fun sanitizePackageName(targetPackageName: String): String {
+        return SecurityUtils.sanitizePackageName(targetPackageName)
     }
 }

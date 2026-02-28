@@ -16,11 +16,11 @@ import android.Manifest
  * Inspired by privacy-focused projects from awesome-shizuku
  */
 object PrivacyManagerService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName_: String get() = context.packageName
-    private val cacheDir_: java.io.File get() = context.cacheDir
-    private val filesDir_: java.io.File get() = context.filesDir
-    private val resources_: android.content.res.Resources get() = context.resources
+    private val context get() = com.hexodus.HexodusApplication.context
+    
+    
+    
+    
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
@@ -63,41 +63,41 @@ object PrivacyManagerService {
         
         when (action) {
             ACTION_GET_APP_PERMISSIONS -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
-                if (!packageName.isNullOrEmpty()) {
-                    getAppPermissions(packageName)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    getAppPermissions(targetPackageName)
                 }
             }
             ACTION_SET_APP_PERMISSION -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val permissionName = intent.getStringExtra(EXTRA_PERMISSION_NAME)
                 val granted = intent.getBooleanExtra(EXTRA_PERMISSION_GRANTED, false)
                 
-                if (!packageName.isNullOrEmpty() && !permissionName.isNullOrEmpty()) {
-                    setAppPermission(packageName, permissionName, granted)
+                if (!targetPackageName.isNullOrEmpty() && !permissionName.isNullOrEmpty()) {
+                    setAppPermission(targetPackageName, permissionName, granted)
                 }
             }
             ACTION_GET_USAGE_STATS -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val timeRange = intent.getLongExtra(EXTRA_TIME_RANGE, 0L)
                 
-                if (!packageName.isNullOrEmpty()) {
-                    getUsageStats(packageName, timeRange)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    getUsageStats(targetPackageName, timeRange)
                 }
             }
             ACTION_MANAGE_APP_TRACKING -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val trackingLevel = intent.getStringExtra(EXTRA_TRACKING_LEVEL)
                 
-                if (!packageName.isNullOrEmpty() && !trackingLevel.isNullOrEmpty()) {
-                    manageAppTracking(packageName, trackingLevel)
+                if (!targetPackageName.isNullOrEmpty() && !trackingLevel.isNullOrEmpty()) {
+                    manageAppTracking(targetPackageName, trackingLevel)
                 }
             }
             ACTION_GET_PRIVACY_SCORE -> {
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 
-                if (!packageName.isNullOrEmpty()) {
-                    getPrivacyScore(packageName)
+                if (!targetPackageName.isNullOrEmpty()) {
+                    getPrivacyScore(targetPackageName)
                 }
             }
         }
@@ -108,7 +108,7 @@ object PrivacyManagerService {
     /**
      * Gets permissions for an app using Shizuku
      */
-    private fun getAppPermissions(packageName: String) {
+    private fun getAppPermissions(targetPackageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -116,9 +116,9 @@ object PrivacyManagerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, context would query the package manager for permissions
@@ -166,7 +166,7 @@ object PrivacyManagerService {
     /**
      * Sets a permission for an app using Shizuku
      */
-    private fun setAppPermission(packageName: String, permissionName: String, granted: Boolean) {
+    private fun setAppPermission(targetPackageName: String, permissionName: String, granted: Boolean) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -174,9 +174,9 @@ object PrivacyManagerService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             if (!SecurityUtils.isValidPermission(permissionName)) {
@@ -207,7 +207,7 @@ object PrivacyManagerService {
     /**
      * Gets usage statistics for an app
      */
-    private fun getUsageStats(packageName: String, timeRange: Long) {
+    private fun getUsageStats(targetPackageName: String, timeRange: Long) {
         try {
             val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
             
@@ -219,11 +219,11 @@ object PrivacyManagerService {
                 "usage_count" to 15
             )
             
-            Log.d(TAG, "Retrieved usage stats for: $packageName")
+            Log.d(TAG, "Retrieved usage stats for: $targetPackageName")
             
             // Broadcast results
             val successIntent = Intent("USAGE_STATS_RETRIEVED")
-            successIntent.putExtra("package_name", packageName)
+            successIntent.putExtra("package_name", targetPackageName)
             successIntent.putExtra("usage_stats", HashMap(usageStats))
             context.sendBroadcast(successIntent)
         } catch (e: Exception) {
@@ -239,7 +239,7 @@ object PrivacyManagerService {
     /**
      * Manages app tracking settings
      */
-    private fun manageAppTracking(packageName: String, trackingLevel: String) {
+    private fun manageAppTracking(targetPackageName: String, trackingLevel: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -247,9 +247,9 @@ object PrivacyManagerService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             val validLevels = listOf("minimal", "standard", "aggressive", "none")
@@ -280,7 +280,7 @@ object PrivacyManagerService {
     /**
      * Calculates a privacy score for an app
      */
-    private fun getPrivacyScore(packageName: String) {
+    private fun getPrivacyScore(targetPackageName: String) {
         try {
             // In a real implementation, context would analyze app permissions, behavior, etc.
             // For context example, we'll simulate the process
@@ -297,11 +297,11 @@ object PrivacyManagerService {
                 )
             )
             
-            Log.d(TAG, "Calculated privacy score for: $packageName (Score: 75/100)")
+            Log.d(TAG, "Calculated privacy score for: $targetPackageName (Score: 75/100)")
             
             // Broadcast results
             val successIntent = Intent("PRIVACY_SCORE_CALCULATED")
-            successIntent.putExtra("package_name", packageName)
+            successIntent.putExtra("package_name", targetPackageName)
             successIntent.putExtra("privacy_score", HashMap(privacyScore))
             context.sendBroadcast(successIntent)
         } catch (e: Exception) {
@@ -355,7 +355,7 @@ object PrivacyManagerService {
     /**
      * Revokes all dangerous permissions for an app
      */
-    fun revokeDangerousPermissions(packageName: String): Boolean {
+    fun revokeDangerousPermissions(targetPackageName: String): Boolean {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -363,9 +363,9 @@ object PrivacyManagerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, context would revoke dangerous permissions

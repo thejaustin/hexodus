@@ -18,11 +18,11 @@ import java.util.TimerTask
  * Inspired by automation projects from awesome-shizuku like MacroDroid, Tasker, and AutoJs6
  */
 object AutomationService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName_: String get() = context.packageName
-    private val cacheDir_: java.io.File get() = context.cacheDir
-    private val filesDir_: java.io.File get() = context.filesDir
-    private val resources_: android.content.res.Resources get() = context.resources
+    private val context get() = com.hexodus.HexodusApplication.context
+    
+    
+    
+    
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
@@ -380,9 +380,9 @@ object AutomationService {
                     }
                 }
                 "launch_app" -> {
-                    val packageName = conditions.find { it.startsWith("package:") }?.substringAfter(":")
-                    if (!packageName.isNullOrEmpty()) {
-                        launchApp(packageName)
+                    val targetPackageName = conditions.find { it.startsWith("package:") }?.substringAfter(":")
+                    if (!targetPackageName.isNullOrEmpty()) {
+                        launchApp(targetPackageName)
                     }
                 }
                 "set_brightness" -> {
@@ -434,7 +434,7 @@ object AutomationService {
     /**
      * Launches an app using Shizuku
      */
-    private fun launchApp(packageName: String) {
+    private fun launchApp(targetPackageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -442,9 +442,9 @@ object AutomationService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
+            if (sanitizedPackageName != targetPackageName) {
+                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
             }
             
             val command = "monkey -p $sanitizedPackageName -c android.intent.category.LAUNCHER 1"

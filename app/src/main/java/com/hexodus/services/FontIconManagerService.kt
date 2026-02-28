@@ -19,11 +19,11 @@ import java.io.OutputStream
  * Inspired by font and icon customization projects from awesome-shizuku
  */
 object FontIconManagerService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName_: String get() = context.packageName
-    private val cacheDir_: java.io.File get() = context.cacheDir
-    private val filesDir_: java.io.File get() = context.filesDir
-    private val resources_: android.content.res.Resources get() = context.resources
+    private val context get() = com.hexodus.HexodusApplication.context
+    
+    
+    
+    
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
@@ -66,7 +66,7 @@ object FontIconManagerService {
     const val EXTRA_ICON_PACK_PACKAGE = "icon_pack_package"
     
     private val fontsDir = File("/system/fonts")
-    private val iconPacksDir = File(getExternalFilesDir(null), "icon_packs")
+    private val iconPacksDir = File(context.getExternalFilesDir(null), "icon_packs")
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action

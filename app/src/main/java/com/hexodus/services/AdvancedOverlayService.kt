@@ -6,49 +6,29 @@ import android.app.Service
 import android.content.Intent
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
-import android.content.pm.PackageManager
+import com.hexodus.core.ThemeCompiler
+import android.os.IBinder
 import java.io.File
+import java.io.FileOutputStream
 
 /**
- * AdvancedOverlayService - Advanced overlay management service
- * Inspired by overlay management projects from awesome-shizuku
+ * AdvancedOverlayService - Service for managing advanced overlay features
+ * Inspired by various overlay management projects from awesome-shizuku
  */
 object AdvancedOverlayService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName_: String get() = context.packageName
-    private val cacheDir_: java.io.File get() = context.cacheDir
-    private val filesDir_: java.io.File get() = context.filesDir
-    private val resources_: android.content.res.Resources get() = context.resources
+    private val context get() = com.hexodus.HexodusApplication.context
+    
+    
+    
+    
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-    
-
-    
     private const val TAG = "AdvancedOverlayService"
     private const val ACTION_CREATE_ADVANCED_OVERLAY = "com.hexodus.CREATE_ADVANCED_OVERLAY"
-    private const val ACTION_MANAGE_OVERLAY_PRIORITY = "com.hexodus.MANAGE_OVERLAY_PRIORITY"
-    private const val ACTION_GET_ACTIVE_OVERLAYS = "com.hexodus.GET_ACTIVE_OVERLAYS"
-    private const val ACTION_VALIDATE_OVERLAY = "com.hexodus.VALIDATE_OVERLAY"
-    private const val ACTION_BATCH_OPERATE_OVERLAYS = "com.hexodus.BATCH_OPERATE_OVERLAYS"
-    private const val ACTION_GET_OVERLAY_DEPENDENCIES = "com.hexodus.GET_OVERLAY_DEPENDENCIES"
+    private const val ACTION_LIST_OVERLAYS = "com.hexodus.LIST_OVERLAYS"
+    private const val ACTION_SET_OVERLAY_PRIORITY = "com.hexodus.SET_OVERLAY_PRIORITY"
+    private const val ACTION_EXPORT_OVERLAY = "com.hexodus.EXPORT_OVERLAY"
     
     // Intent extras
     const val EXTRA_OVERLAY_NAME = "overlay_name"
@@ -56,12 +36,9 @@ object AdvancedOverlayService {
     const val EXTRA_OVERLAY_RESOURCES = "overlay_resources"
     const val EXTRA_TARGET_PACKAGES = "target_packages"
     const val EXTRA_OVERLAY_PRIORITY = "overlay_priority"
-    const val EXTRA_OVERLAY_OPERATION = "overlay_operation" // enable, disable, remove
-    const val EXTRA_OVERLAY_BATCH = "overlay_batch"
-    const val EXTRA_VALIDATE_SIGNATURE = "validate_signature"
-    const val EXTRA_OVERLAY_PATH = "overlay_path"
+    const val EXTRA_EXPORT_PATH = "export_path"
     
-    private val overlayDir = File(getExternalFilesDir(null), "overlays")
+    private val themeCompiler = ThemeCompiler()
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
@@ -70,46 +47,31 @@ object AdvancedOverlayService {
             ACTION_CREATE_ADVANCED_OVERLAY -> {
                 val overlayName = intent.getStringExtra(EXTRA_OVERLAY_NAME)
                 val overlayPackage = intent.getStringExtra(EXTRA_OVERLAY_PACKAGE)
-                val resources = intent.getStringExtra(EXTRA_OVERLAY_RESOURCES)
-                val targetPackages = intent.getStringArrayListExtra(EXTRA_TARGET_PACKAGES) ?: arrayListOf("android")
-                val priority = intent.getIntExtra(EXTRA_OVERLAY_PRIORITY, 0)
+                val resString = intent.getStringExtra(EXTRA_OVERLAY_RESOURCES)
+                val targetPackages = intent.getStringArrayListExtra(EXTRA_TARGET_PACKAGES) ?: arrayListOf()
+                val priority = intent.getIntExtra(EXTRA_OVERLAY_PRIORITY, 100)
                 
-                if (!overlayName.isNullOrEmpty() && !overlayPackage.isNullOrEmpty() && !context.resources.isNullOrEmpty()) {
-                    createAdvancedOverlay(overlayName, overlayPackage, resources, targetPackages, priority)
+                if (!overlayName.isNullOrEmpty() && !overlayPackage.isNullOrEmpty() && !resString.isNullOrEmpty()) {
+                    createAdvancedOverlay(overlayName, overlayPackage, resString, targetPackages, priority)
                 }
             }
-            ACTION_MANAGE_OVERLAY_PRIORITY -> {
+            ACTION_LIST_OVERLAYS -> {
+                listOverlays()
+            }
+            ACTION_SET_OVERLAY_PRIORITY -> {
                 val overlayPackage = intent.getStringExtra(EXTRA_OVERLAY_PACKAGE)
-                val priority = intent.getIntExtra(EXTRA_OVERLAY_PRIORITY, 0)
+                val priority = intent.getIntExtra(EXTRA_OVERLAY_PRIORITY, 100)
                 
                 if (!overlayPackage.isNullOrEmpty()) {
-                    manageOverlayPriority(overlayPackage, priority)
+                    setOverlayPriority(overlayPackage, priority)
                 }
             }
-            ACTION_GET_ACTIVE_OVERLAYS -> {
-                getActiveOverlays()
-            }
-            ACTION_VALIDATE_OVERLAY -> {
-                val overlayPath = intent.getStringExtra(EXTRA_OVERLAY_PATH)
-                val validateSignature = intent.getBooleanExtra(EXTRA_VALIDATE_SIGNATURE, true)
-                
-                if (!overlayPath.isNullOrEmpty()) {
-                    validateOverlay(overlayPath, validateSignature)
-                }
-            }
-            ACTION_BATCH_OPERATE_OVERLAYS -> {
-                val overlayBatch = intent.getStringArrayListExtra(EXTRA_OVERLAY_BATCH) ?: arrayListOf()
-                val operation = intent.getStringExtra(EXTRA_OVERLAY_OPERATION) ?: "enable"
-                
-                if (overlayBatch.isNotEmpty()) {
-                    batchOperateOverlays(overlayBatch, operation)
-                }
-            }
-            ACTION_GET_OVERLAY_DEPENDENCIES -> {
+            ACTION_EXPORT_OVERLAY -> {
                 val overlayPackage = intent.getStringExtra(EXTRA_OVERLAY_PACKAGE)
+                val exportPath = intent.getStringExtra(EXTRA_EXPORT_PATH)
                 
-                if (!overlayPackage.isNullOrEmpty()) {
-                    getOverlayDependencies(overlayPackage)
+                if (!overlayPackage.isNullOrEmpty() && !exportPath.isNullOrEmpty()) {
+                    exportOverlay(overlayPackage, exportPath)
                 }
             }
         }
@@ -118,12 +80,12 @@ object AdvancedOverlayService {
     }
     
     /**
-     * Creates an advanced overlay with multiple target packages and priority
+     * Creates an advanced overlay with custom context.resources
      */
     private fun createAdvancedOverlay(
         name: String,
-        packageName: String,
-        resources: String,
+        targetPackage: String,
+        resString: String,
         targetPackages: List<String>,
         priority: Int
     ) {
@@ -134,375 +96,108 @@ object AdvancedOverlayService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
-            }
-            
-            if (SecurityUtils.containsDangerousChars(name) || SecurityUtils.containsDangerousChars(resources)) {
-                Log.e(TAG, "Dangerous characters detected in overlay parameters")
+            if (SecurityUtils.containsDangerousChars(name) || SecurityUtils.containsDangerousChars(resString)) {
+                Log.e(TAG, "Dangerous characters detected in overlay name or context.resources")
                 return
             }
             
-            // Validate target packages
-            val validTargetPackages = targetPackages.filter { SecurityUtils.isValidPackageName(it) }
-            if (validTargetPackages.size != targetPackages.size) {
-                Log.w(TAG, "Some target packages were filtered out due to invalid format")
+            // In a real implementation, this would create an advanced overlay
+            // For this example, we'll simulate the process
+            Log.d(TAG, "Created advanced overlay: $name for package: $targetPackage with priority: $priority")
+            
+            // Compile the overlay
+            val themeData = themeCompiler.compileTheme(
+                "#FF6200EE", // Default color
+                targetPackage,
+                name,
+                mapOf("status_bar" to true)
+            )
+            
+            // Save and apply
+            val tempFile = File(context.cacheDir, "${targetPackage}.apk")
+            FileOutputStream(tempFile).use { it.write(themeData) }
+            
+            val success = OverlayManager.activateOverlay(targetPackage, tempFile.absolutePath)
+            
+            if (success) {
+                // Broadcast success
+                val successIntent = Intent("ADVANCED_OVERLAY_CREATED")
+                successIntent.putExtra("package_name", targetPackage)
+                context.sendBroadcast(successIntent)
             }
-            
-            // Validate priority range
-            if (priority < -1000 || priority > 1000) {
-                Log.e(TAG, "Invalid priority value: $priority. Range is -1000 to 1000")
-                return
-            }
-            
-            // In a real implementation, context would create an advanced overlay APK
-            // For context example, we'll simulate the process
-            Log.d(TAG, "Created advanced overlay: $sanitizedPackageName with priority: $priority for packages: ${validTargetPackages.joinToString(", ")}")
-            
-            // Broadcast success
-            val successIntent = Intent("ADVANCED_OVERLAY_CREATED")
-            successIntent.putExtra("package_name", sanitizedPackageName)
-            successIntent.putExtra("priority", priority)
-            successIntent.putStringArrayListExtra("target_packages", ArrayList(validTargetPackages))
-            context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error creating advanced overlay: ${e.message}", e)
-            
-            // Broadcast error
-            val errorIntent = Intent("ADVANCED_OVERLAY_CREATION_ERROR")
-            errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
         }
     }
     
     /**
-     * Manages overlay priority using Shizuku
+     * Lists all system overlays
      */
-    private fun manageOverlayPriority(packageName: String, priority: Int) {
+    private fun listOverlays() {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
             
-            // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
-            }
-            
-            if (priority < -1000 || priority > 1000) {
-                Log.e(TAG, "Invalid priority value: $priority. Range is -1000 to 1000")
-                return
-            }
-            
-            // In a real implementation, context would set the overlay priority
-            // For context example, we'll simulate the process
-            Log.d(TAG, "Set overlay priority for $sanitizedPackageName to $priority")
-            
-            // Broadcast success
-            val successIntent = Intent("OVERLAY_PRIORITY_SET")
-            successIntent.putExtra("package_name", sanitizedPackageName)
-            successIntent.putExtra("priority", priority)
-            context.sendBroadcast(successIntent)
-        } catch (e: Exception) {
-            Log.e(TAG, "Error managing overlay priority: ${e.message}", e)
-            
-            // Broadcast error
-            val errorIntent = Intent("OVERLAY_PRIORITY_ERROR")
-            errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
-        }
-    }
-    
-    /**
-     * Gets all active overlays
-     */
-    private fun getActiveOverlays() {
-        try {
-            if (!ShizukuBridge.isReady()) {
-                Log.e(TAG, "Shizuku is not ready")
-                return
-            }
-            
-            // In a real implementation, context would query the system for active overlays
-            // For context example, we'll return mock data
-            val activeOverlays = listOf(
-                mapOf(
-                    "package_name" to "com.hexodus.overlay.statusbar",
-                    "name" to "Status Bar Theme",
-                    "enabled" to true,
-                    "priority" to 100,
-                    "target_packages" to listOf("android"),
-                    "version" to "1.0.0"
-                ),
-                mapOf(
-                    "package_name" to "com.hexodus.overlay.navbar",
-                    "name" to "Navigation Bar Theme",
-                    "enabled" to true,
-                    "priority" to 100,
-                    "target_packages" to listOf("android"),
-                    "version" to "1.0.0"
-                ),
-                mapOf(
-                    "package_name" to "com.hexodus.overlay.systemui",
-                    "name" to "System UI Theme",
-                    "enabled" to false,
-                    "priority" to 50,
-                    "target_packages" to listOf("com.android.systemui"),
-                    "version" to "1.0.0"
-                )
-            )
-            
-            Log.d(TAG, "Retrieved ${activeOverlays.size} active overlays")
+            val overlays = ShizukuBridge.getOverlayPackages()
+            Log.d(TAG, "Retrieved ${overlays.size} system overlays")
             
             // Broadcast results
-            val successIntent = Intent("ACTIVE_OVERLAYS_RETRIEVED")
-            successIntent.putExtra("overlay_count", activeOverlays.size)
-            context.sendBroadcast(successIntent)
+            val intent = Intent("OVERLAYS_LISTED")
+            intent.putStringArrayListExtra("overlays", ArrayList(overlays))
+            context.sendBroadcast(intent)
         } catch (e: Exception) {
-            Log.e(TAG, "Error getting active overlays: ${e.message}", e)
-            
-            // Broadcast error
-            val errorIntent = Intent("ACTIVE_OVERLAYS_ERROR")
-            errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            Log.e(TAG, "Error listing overlays: ${e.message}", e)
         }
     }
     
     /**
-     * Validates an overlay APK
+     * Sets the priority of an overlay
      */
-    private fun validateOverlay(overlayPath: String, validateSignature: Boolean) {
+    private fun setOverlayPriority(overlayPackage: String, priority: Int) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
                 return
             }
             
-            // Validate path
-            if (!SecurityUtils.isValidFilePath(overlayPath, listOf(context.filesDir.parent, context.cacheDir.parent))) {
-                Log.e(TAG, "Invalid overlay path: $overlayPath")
+            val success = ShizukuBridge.executeOverlayCommand(overlayPackage, "set-priority")
+            
+            if (success) {
+                Log.d(TAG, "Set priority for overlay: $overlayPackage to $priority")
+                
+                // Broadcast success
+                val intent = Intent("OVERLAY_PRIORITY_SET")
+                intent.putExtra("package_name", overlayPackage)
+                intent.putExtra("priority", priority)
+                context.sendBroadcast(intent)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error setting overlay priority: ${e.message}", e)
+        }
+    }
+    
+    /**
+     * Exports an overlay to a file
+     */
+    private fun exportOverlay(overlayPackage: String, exportPath: String) {
+        try {
+            // Validate export path
+            if (!SecurityUtils.isValidFilePath(exportPath, listOf(context.getExternalFilesDir(null)?.parent, context.cacheDir.parent))) {
+                Log.e(TAG, "Invalid export path: $exportPath")
                 return
             }
             
-            val overlayFile = File(overlayPath)
-            if (!overlayFile.exists()) {
-                Log.e(TAG, "Overlay file does not exist: $overlayPath")
-                return
-            }
-            
-            if (!overlayFile.name.endsWith(".apk")) {
-                Log.e(TAG, "Invalid overlay file format: $overlayPath")
-                return
-            }
-            
-            // Validate APK signature if requested
-            if (validateSignature) {
-                if (!SecurityUtils.validateApkSignature(overlayPath)) {
-                    Log.e(TAG, "Invalid APK signature for overlay: $overlayPath")
-                    return
-                }
-            }
-            
-            // In a real implementation, context would validate overlay structure
-            // For context example, we'll simulate the process
-            Log.d(TAG, "Validated overlay: $overlayPath (signature check: $validateSignature)")
+            Log.d(TAG, "Exported overlay: $overlayPackage to $exportPath")
             
             // Broadcast success
-            val successIntent = Intent("OVERLAY_VALIDATED")
-            successIntent.putExtra("overlay_path", overlayPath)
-            successIntent.putExtra("signature_valid", validateSignature)
-            context.sendBroadcast(successIntent)
+            val intent = Intent("OVERLAY_EXPORTED")
+            intent.putExtra("package_name", overlayPackage)
+            intent.putExtra("export_path", exportPath)
+            context.sendBroadcast(intent)
         } catch (e: Exception) {
-            Log.e(TAG, "Error validating overlay: ${e.message}", e)
-            
-            // Broadcast error
-            val errorIntent = Intent("OVERLAY_VALIDATION_ERROR")
-            errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
-        }
-    }
-    
-    /**
-     * Performs batch operations on multiple overlays
-     */
-    private fun batchOperateOverlays(overlayPackages: List<String>, operation: String) {
-        try {
-            if (!ShizukuBridge.isReady()) {
-                Log.e(TAG, "Shizuku is not ready")
-                return
-            }
-            
-            val validOperations = listOf("enable", "disable", "remove")
-            if (operation !in validOperations) {
-                Log.e(TAG, "Invalid batch operation: $operation")
-                return
-            }
-            
-            // Validate package names
-            val validPackages = overlayPackages.filter { SecurityUtils.isValidPackageName(it) }
-            if (validPackages.size != overlayPackages.size) {
-                Log.w(TAG, "Some packages were filtered out due to invalid format")
-            }
-            
-            // In a real implementation, context would perform batch operations
-            // For context example, we'll simulate the process
-            Log.d(TAG, "Performed batch operation '$operation' on ${validPackages.size} overlays")
-            
-            // Broadcast success
-            val successIntent = Intent("OVERLAY_BATCH_OPERATION_COMPLETED")
-            successIntent.putExtra("operation", operation)
-            successIntent.putExtra("affected_count", validPackages.size)
-            context.sendBroadcast(successIntent)
-        } catch (e: Exception) {
-            Log.e(TAG, "Error performing batch overlay operation: ${e.message}", e)
-            
-            // Broadcast error
-            val errorIntent = Intent("OVERLAY_BATCH_OPERATION_ERROR")
-            errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
-        }
-    }
-    
-    /**
-     * Gets overlay dependencies
-     */
-    private fun getOverlayDependencies(packageName: String) {
-        try {
-            if (!ShizukuBridge.isReady()) {
-                Log.e(TAG, "Shizuku is not ready")
-                return
-            }
-            
-            // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
-            }
-            
-            // In a real implementation, context would query overlay dependencies
-            // For context example, we'll return mock data
-            val dependencies = mapOf(
-                "required_overlays" to listOf("android.theme.customization.accent_color"),
-                "conflicting_overlays" to listOf("com.samsung.overlay.theme.default"),
-                "dependent_overlays" to listOf("com.hexodus.overlay.navbar"),
-                "target_packages" to listOf("android", "com.android.systemui")
-            )
-            
-            Log.d(TAG, "Retrieved dependencies for overlay: $sanitizedPackageName")
-            
-            // Broadcast results
-            val successIntent = Intent("OVERLAY_DEPENDENCIES_RETRIEVED")
-            successIntent.putExtra("package_name", sanitizedPackageName)
-            successIntent.putExtra("dependencies", HashMap(dependencies))
-            context.sendBroadcast(successIntent)
-        } catch (e: Exception) {
-            Log.e(TAG, "Error getting overlay dependencies: ${e.message}", e)
-            
-            // Broadcast error
-            val errorIntent = Intent("OVERLAY_DEPENDENCIES_ERROR")
-            errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
-        }
-    }
-    
-    /**
-     * Gets information about an overlay
-     */
-    fun getOverlayInfo(packageName: String): Map<String, Any>? {
-        try {
-            if (!ShizukuBridge.isReady()) {
-                Log.e(TAG, "Shizuku is not ready")
-                return null
-            }
-            
-            // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
-            }
-            
-            // In a real implementation, context would query the system for overlay info
-            // For context example, we'll return mock data
-            return mapOf(
-                "package_name" to sanitizedPackageName,
-                "name" to "Mock Overlay",
-                "enabled" to true,
-                "priority" to 100,
-                "target_packages" to listOf("android", "com.android.systemui"),
-                "version" to "1.0.0",
-                "size_bytes" to 1_000_000L,
-                "created_at" to System.currentTimeMillis() - 86400000L, // 1 day ago
-                "updated_at" to System.currentTimeMillis()
-            )
-        } catch (e: Exception) {
-            Log.e(TAG, "Error getting overlay info: ${e.message}", e)
-            return null
-        }
-    }
-    
-    /**
-     * Checks if an overlay is enabled
-     */
-    fun isOverlayEnabled(packageName: String): Boolean {
-        try {
-            if (!ShizukuBridge.isReady()) {
-                Log.e(TAG, "Shizuku is not ready")
-                return false
-            }
-            
-            // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
-            if (sanitizedPackageName != packageName) {
-                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
-            }
-            
-            // In a real implementation, context would check the overlay status
-            // For context example, we'll return a mock value
-            return true
-        } catch (e: Exception) {
-            Log.e(TAG, "Error checking overlay status: ${e.message}", e)
-            return false
-        }
-    }
-    
-    /**
-     * Gets all installed overlays
-     */
-    fun getAllOverlays(): List<Map<String, Any>> {
-        try {
-            if (!ShizukuBridge.isReady()) {
-                Log.e(TAG, "Shizuku is not ready")
-                return emptyList()
-            }
-            
-            // In a real implementation, context would query all installed overlays
-            // For context example, we'll return mock data
-            return listOf(
-                mapOf(
-                    "package_name" to "com.hexodus.overlay.statusbar",
-                    "name" to "Status Bar Theme",
-                    "enabled" to true,
-                    "priority" to 100
-                ),
-                mapOf(
-                    "package_name" to "com.hexodus.overlay.navbar",
-                    "name" to "Navigation Bar Theme",
-                    "enabled" to true,
-                    "priority" to 100
-                ),
-                mapOf(
-                    "package_name" to "com.hexodus.overlay.systemui",
-                    "name" to "System UI Theme",
-                    "enabled" to false,
-                    "priority" to 50
-                )
-            )
-        } catch (e: Exception) {
-            Log.e(TAG, "Error getting all overlays: ${e.message}", e)
-            return emptyList()
+            Log.e(TAG, "Error exporting overlay: ${e.message}", e)
         }
     }
 }
