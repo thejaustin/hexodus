@@ -14,14 +14,8 @@ import rikka.shizuku.ShizukuRemoteProcess
  * Refactored from Service to Singleton for stability and easier access.
  */
 object ShizukuBridge {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName: String get() = targetPackageName
-    private val context.cacheDir: java.io.File get() = context.cacheDir
-    private val context.filesDir: java.io.File get() = context.filesDir
-    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
-    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
-    private val applicationContext: android.content.Context get() = context
-
+    private val context get() = com.hexodus.HexodusApplication.context
+    
     private const val TAG = "ShizukuBridge"
     private const val REQUEST_CODE_PERMISSION = 1001
     

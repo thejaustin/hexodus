@@ -17,45 +17,17 @@ import java.io.FileOutputStream
  */
 object ThemeManager {
     private val context get() = com.hexodus.HexodusApplication.context
-    
-    
-    
-    
-    
-    private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
-
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-    
-
-    
     private const val TAG = "ThemeManager"
-    
     private val themeCompiler = ThemeCompiler()
     
     /**
      * Creates a theme from hex color and component preferences
      */
     suspend fun createTheme(hexColor: String, themeName: String, themedComponents: Map<String, Boolean>) = withContext(Dispatchers.IO) {
-                try {
+        try {
             // Compile the theme to an APK in memory
-            val targetPackageName = "com.hexodus.theme.${themeName.replace(" ", "_").lowercase()}.${System.currentTimeMillis()}"
-            val themeData = themeCompiler.compileTheme(hexColor, targetPackageName, themeName, themedComponents)
+            val themePackageName = "com.hexodus.theme.${themeName.replace(" ", "_").lowercase()}.${System.currentTimeMillis()}"
+            val themeData = themeCompiler.compileTheme(hexColor, themePackageName, themeName, themedComponents)
             
             // Save the theme to internal storage
             val themeFile = File(context.filesDir, "${themeName}_${System.currentTimeMillis()}.apk")
@@ -63,8 +35,6 @@ object ThemeManager {
             
             Log.d(TAG, "Theme created: ${themeFile.absolutePath}")
             
-            // We can still use broadcasts for UI if we want to keep it simple, or flow.
-            // For now, let's just stick to the existing architecture's broadcast, or return a result.
             val completeIntent = Intent("THEME_CREATION_COMPLETE")
             completeIntent.putExtra("theme_path", themeFile.absolutePath)
             completeIntent.putExtra("theme_name", themeName)
@@ -83,16 +53,10 @@ object ThemeManager {
      * Applies a theme to the system using Shizuku
      */
     suspend fun applyTheme(themeFilePath: String) = withContext(Dispatchers.IO) {
-                try {
+        try {
             Log.d(TAG, "Applying theme from: $themeFilePath")
             
-            // Replace Thread.sleep with Coroutines delay
             delay(1000) 
-            
-            // Simulate the process
-            // 1. Install the APK using Shizuku
-            // 2. Enable the overlay using Shizuku
-            // 3. Refresh the system UI
             
             val completeIntent = Intent("THEME_APPLICATION_COMPLETE")
             completeIntent.putExtra("theme_path", themeFilePath)

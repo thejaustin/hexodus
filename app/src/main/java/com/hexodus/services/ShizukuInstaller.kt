@@ -22,30 +22,6 @@ import com.hexodus.utils.PrefsManager
  */
 object ShizukuInstaller {
     private val context get() = com.hexodus.HexodusApplication.context
-    
-    
-    
-    
-    
-    private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
-
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-
     private const val TAG = "ShizukuInstaller"
 
     suspend fun downloadAndInstall(apkUrl: String, appName: String) = withContext(Dispatchers.IO) {

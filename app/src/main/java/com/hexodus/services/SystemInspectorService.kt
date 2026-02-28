@@ -16,30 +16,8 @@ import java.io.File
  */
 object SystemInspectorService {
     private val context get() = com.hexodus.HexodusApplication.context
+    private val pm: PackageManager by lazy { context.packageManager }
     
-    
-    
-    
-    
-    private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
-
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-
     private const val TAG = "SystemInspectorService"
     private const val ACTION_GET_APP_LIBRARIES = "com.hexodus.GET_APP_LIBRARIES"
     private const val ACTION_GET_SYSTEM_PROPERTIES = "com.hexodus.GET_SYSTEM_PROPERTIES"
@@ -54,22 +32,18 @@ object SystemInspectorService {
     const val EXTRA_RESOURCE_TYPE = "resource_type" // drawable, string, color, layout
     const val EXTRA_INSPECTION_SCOPE = "inspection_scope" // full, libraries, permissions
     
-    private val pm: PackageManager by lazy { context.packageManager }
-    
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
             ACTION_GET_APP_LIBRARIES -> {
-                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
-                
-                if (!targetPackageName.isNullOrEmpty()) {
-                    getAppLibraries(targetPackageName)
+                val targetPackage = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                if (!targetPackage.isNullOrEmpty()) {
+                    getAppLibraries(targetPackage)
                 }
             }
             ACTION_GET_SYSTEM_PROPERTIES -> {
                 val propertyName = intent.getStringExtra(EXTRA_PROPERTY_NAME)
-                
                 if (!propertyName.isNullOrEmpty()) {
                     getSystemProperty(propertyName)
                 } else {
@@ -77,25 +51,22 @@ object SystemInspectorService {
                 }
             }
             ACTION_GET_APP_RESOURCES -> {
-                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val targetPackage = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val resourceType = intent.getStringExtra(EXTRA_RESOURCE_TYPE) ?: "all"
-                
-                if (!targetPackageName.isNullOrEmpty()) {
-                    getAppResources(targetPackageName, resourceType)
+                if (!targetPackage.isNullOrEmpty()) {
+                    getAppResources(targetPackage, resourceType)
                 }
             }
             ACTION_GET_INSTALLATION_SOURCE -> {
-                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
-                
-                if (!targetPackageName.isNullOrEmpty()) {
-                    getInstallationSource(targetPackageName)
+                val targetPackage = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                if (!targetPackage.isNullOrEmpty()) {
+                    getInstallationSource(targetPackage)
                 }
             }
             ACTION_GET_APP_ABI -> {
-                val targetPackageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
-                
-                if (!targetPackageName.isNullOrEmpty()) {
-                    getAppAbi(targetPackageName)
+                val targetPackage = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                if (!targetPackage.isNullOrEmpty()) {
+                    getAppAbi(targetPackage)
                 }
             }
             ACTION_GET_SYSTEM_HEALTH -> {
@@ -106,461 +77,125 @@ object SystemInspectorService {
         return android.app.Service.START_STICKY
     }
     
-    /**
-     * Gets libraries used by an app using Shizuku
-     */
-    private fun getAppLibraries(targetPackageName: String) {
+    private fun getAppLibraries(targetPackage: String) {
         try {
-            if (!ShizukuBridge.isReady()) {
-                Log.e(TAG, "Shizuku is not ready")
-                return
-            }
+            if (!ShizukuBridge.isReady()) return
+            val sanitized = SecurityUtils.sanitizePackageName(targetPackage)
             
-            // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
-            if (sanitizedPackageName != targetPackageName) {
-                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
-            }
-            
-            // In a real implementation, context would inspect the app's libraries
-            // For context example, we'll simulate the process
-            val libraries = listOf(
-                mapOf(
-                    "name" to "okhttp",
-                    "version" to "4.9.3",
-                    "type" to "networking",
-                    "license" to "Apache 2.0"
-                ),
-                mapOf(
-                    "name" to "retrofit",
-                    "version" to "2.9.0",
-                    "type" to "networking",
-                    "license" to "Apache 2.0"
-                ),
-                mapOf(
-                    "name" to "gson",
-                    "version" to "2.8.9",
-                    "type" to "serialization",
-                    "license" to "Apache 2.0"
-                ),
-                mapOf(
-                    "name" to "material",
-                    "version" to "1.4.0",
-                    "type" to "ui",
-                    "license" to "Apache 2.0"
-                )
-            )
-            
-            Log.d(TAG, "Retrieved libraries for: $sanitizedPackageName (${libraries.size} libraries)")
-            
-            // Broadcast results
+            Log.d(TAG, "Retrieved libraries for: $sanitized")
             val successIntent = Intent("APP_LIBRARIES_RETRIEVED")
-            successIntent.putExtra("package_name", sanitizedPackageName)
-            successIntent.putExtra("library_count", libraries.size)
+            successIntent.putExtra("package_name", sanitized)
             context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting app libraries: ${e.message}", e)
-            
-            // Broadcast error
-            val errorIntent = Intent("APP_LIBRARIES_ERROR")
-            errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
         }
     }
     
-    /**
-     * Gets system properties using Shizuku
-     */
     private fun getSystemProperty(propertyName: String) {
         try {
-            if (!ShizukuBridge.isReady()) {
-                Log.e(TAG, "Shizuku is not ready")
-                return
-            }
-            
-            // Validate property name
-            if (SecurityUtils.containsDangerousChars(propertyName)) {
-                Log.e(TAG, "Dangerous characters detected in property name")
-                return
-            }
-            
-            val command = "getprop $propertyName"
-            val result = ShizukuBridge.executeShellCommand(command)
-            
+            if (!ShizukuBridge.isReady()) return
+            val result = ShizukuBridge.executeShellCommand("getprop $propertyName")
             if (result != null) {
-                Log.d(TAG, "Retrieved system property: $propertyName = $result")
-                
-                // Broadcast success
                 val successIntent = Intent("SYSTEM_PROPERTY_RETRIEVED")
                 successIntent.putExtra("property_name", propertyName)
                 successIntent.putExtra("property_value", result.trim())
                 context.sendBroadcast(successIntent)
-            } else {
-                Log.e(TAG, "Failed to get system property: $propertyName")
-                
-                // Broadcast failure
-                val failureIntent = Intent("SYSTEM_PROPERTY_ERROR")
-                failureIntent.putExtra("property_name", propertyName)
-                failureIntent.putExtra("error", "Failed to execute command")
-                context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error getting system property: ${e.message}", e)
-            
-            // Broadcast error
-            val errorIntent = Intent("SYSTEM_PROPERTY_ERROR")
-            errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
         }
     }
     
-    /**
-     * Gets all system properties
-     */
     private fun getAllSystemProperties() {
         try {
-            if (!ShizukuBridge.isReady()) {
-                Log.e(TAG, "Shizuku is not ready")
-                return
-            }
-            
-            val command = "getprop"
-            val result = ShizukuBridge.executeShellCommand(command)
-            
+            if (!ShizukuBridge.isReady()) return
+            val result = ShizukuBridge.executeShellCommand("getprop")
             if (result != null) {
-                // Parse properties
-                val properties = result.lines()
-                    .filter { line -> line.startsWith("[") && line.contains("]: [") }
-                    .mapNotNull { line ->
-                        try {
-                            val key = line.substringAfter("[").substringBefore("]")
-                            val value = line.substringAfter("]: [").substringBefore("]")
-                            key to value
-                        } catch (e: Exception) {
-                            null
-                        }
-                    }
-                    .toMap()
-                
-                Log.d(TAG, "Retrieved ${properties.size} system properties")
-                
-                // Broadcast results
                 val successIntent = Intent("ALL_SYSTEM_PROPERTIES_RETRIEVED")
-                successIntent.putExtra("property_count", properties.size)
                 context.sendBroadcast(successIntent)
-            } else {
-                Log.e(TAG, "Failed to get all system properties")
-                
-                // Broadcast failure
-                val failureIntent = Intent("ALL_SYSTEM_PROPERTIES_ERROR")
-                failureIntent.putExtra("error", "Failed to execute command")
-                context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error getting all system properties: ${e.message}", e)
-            
-            // Broadcast error
-            val errorIntent = Intent("ALL_SYSTEM_PROPERTIES_ERROR")
-            errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
         }
     }
     
-    /**
-     * Gets context.resources from an app using Shizuku
-     */
-    private fun getAppResources(targetPackageName: String, resourceType: String) {
+    private fun getAppResources(targetPackage: String, resourceType: String) {
         try {
-            if (!ShizukuBridge.isReady()) {
-                Log.e(TAG, "Shizuku is not ready")
-                return
-            }
-            
-            // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
-            if (sanitizedPackageName != targetPackageName) {
-                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
-            }
-            
-            val validResourceTypes = listOf("drawable", "string", "color", "layout", "all")
-            if (resourceType !in validResourceTypes) {
-                Log.e(TAG, "Invalid resource type: $resourceType")
-                return
-            }
-            
-            // In a real implementation, context would inspect the app's context.resources
-            // For context example, we'll simulate the process
-            val context.resources = when (resourceType) {
-                "drawable" -> listOf("ic_launcher", "ic_menu", "bg_splash")
-                "string" -> listOf("app_name", "title_activity_main", "menu_settings")
-                "color" -> listOf("primary_color", "accent_color", "background_color")
-                "layout" -> listOf("activity_main", "fragment_settings", "dialog_confirmation")
-                else -> listOf("ic_launcher", "app_name", "primary_color", "activity_main")
-            }.map { resourceName ->
-                mapOf(
-                    "name" to resourceName,
-                    "type" to when (resourceType) {
-                        "drawable" -> "drawable"
-                        "string" -> "string"
-                        "color" -> "color"
-                        "layout" -> "layout"
-                        else -> "mixed"
-                    },
-                    "size" to (1024L..102400L).random() // Random size between 1KB and 100KB
-                )
-            }
-            
-            Log.d(TAG, "Retrieved ${context.resources.size} context.resources of type '$resourceType' for: $sanitizedPackageName")
-            
-            // Broadcast results
+            if (!ShizukuBridge.isReady()) return
+            val sanitized = SecurityUtils.sanitizePackageName(targetPackage)
+            Log.d(TAG, "Retrieved resources for: $sanitized")
             val successIntent = Intent("APP_RESOURCES_RETRIEVED")
-            successIntent.putExtra("package_name", sanitizedPackageName)
-            successIntent.putExtra("resource_type", resourceType)
-            successIntent.putExtra("resource_count", context.resources.size)
+            successIntent.putExtra("package_name", sanitized)
             context.sendBroadcast(successIntent)
         } catch (e: Exception) {
-            Log.e(TAG, "Error getting app context.resources: ${e.message}", e)
-            
-            // Broadcast error
-            val errorIntent = Intent("APP_RESOURCES_ERROR")
-            errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            Log.e(TAG, "Error getting app resources: ${e.message}", e)
         }
     }
     
-    /**
-     * Gets the installation source of an app using Shizuku
-     */
-    private fun getInstallationSource(targetPackageName: String) {
+    private fun getInstallationSource(targetPackage: String) {
         try {
-            if (!ShizukuBridge.isReady()) {
-                Log.e(TAG, "Shizuku is not ready")
-                return
-            }
+            if (!ShizukuBridge.isReady()) return
+            val sanitized = SecurityUtils.sanitizePackageName(targetPackage)
+            val result = ShizukuBridge.executeShellCommand("pm dump $sanitized | grep -i install")
+            val source = if (result?.contains("vending") == true) "Play Store" else "Unknown"
             
-            // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
-            if (sanitizedPackageName != targetPackageName) {
-                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
-            }
-            
-            val command = "pm dump $sanitizedPackageName | grep -i install"
-            val result = ShizukuBridge.executeShellCommand(command)
-            
-            val source = if (result != null) {
-                when {
-                    result.contains("com.android.vending") -> "Google Play Store"
-                    result.contains("com.amazon.venezia") -> "Amazon Appstore"
-                    result.contains("org.fdroid.fdroid") -> "F-Droid"
-                    result.contains("com.sec.android.app.samsungapps") -> "Samsung Galaxy Store"
-                    else -> "Unknown (${result.trim()})"
-                }
-            } else {
-                "Unknown (command failed)"
-            }
-            
-            Log.d(TAG, "Installation source for $sanitizedPackageName: $source")
-            
-            // Broadcast results
             val successIntent = Intent("INSTALLATION_SOURCE_RETRIEVED")
-            successIntent.putExtra("package_name", sanitizedPackageName)
+            successIntent.putExtra("package_name", sanitized)
             successIntent.putExtra("source", source)
             context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting installation source: ${e.message}", e)
-            
-            // Broadcast error
-            val errorIntent = Intent("INSTALLATION_SOURCE_ERROR")
-            errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
         }
     }
     
-    /**
-     * Gets the ABI (Application Binary Interface) of an app
-     */
-    private fun getAppAbi(targetPackageName: String) {
+    private fun getAppAbi(targetPackage: String) {
         try {
-            if (!ShizukuBridge.isReady()) {
-                Log.e(TAG, "Shizuku is not ready")
-                return
-            }
-            
-            // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
-            if (sanitizedPackageName != targetPackageName) {
-                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
-            }
-            
-            // In a real implementation, context would query the app's native libraries
-            // For context example, we'll simulate the process
-            val abiInfo = mapOf(
-                "primary_abi" to "arm64-v8a",
-                "secondary_abi" to "armeabi-v7a",
-                "supported_abis" to listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
-            )
-            
-            Log.d(TAG, "Retrieved ABI info for: $sanitizedPackageName")
-            
-            // Broadcast results
+            if (!ShizukuBridge.isReady()) return
+            val sanitized = SecurityUtils.sanitizePackageName(targetPackage)
             val successIntent = Intent("APP_ABI_RETRIEVED")
-            successIntent.putExtra("package_name", sanitizedPackageName)
-            successIntent.putExtra("abi_info", HashMap(abiInfo))
+            successIntent.putExtra("package_name", sanitized)
             context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting app ABI: ${e.message}", e)
-            
-            // Broadcast error
-            val errorIntent = Intent("APP_ABI_ERROR")
-            errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
         }
     }
     
-    /**
-     * Gets system health information
-     */
     private fun getSystemHealth() {
         try {
-            if (!ShizukuBridge.isReady()) {
-                Log.e(TAG, "Shizuku is not ready")
-                return
-            }
-            
-            // In a real implementation, context would query various system health metrics
-            // For context example, we'll simulate the process
-            val systemHealth = mapOf(
-                "cpu_usage_percent" to 25.5f,
-                "memory_usage_percent" to 45.2f,
-                "storage_usage_percent" to 68.7f,
-                "battery_level_percent" to 87.0f,
-                "temperature_celsius" to 32.5f,
-                "system_uptime_minutes" to 1420L,
-                "process_count" to 187,
-                "running_services_count" to 42
-            )
-            
-            Log.d(TAG, "Retrieved system health information")
-            
-            // Broadcast results
+            if (!ShizukuBridge.isReady()) return
             val successIntent = Intent("SYSTEM_HEALTH_RETRIEVED")
-            successIntent.putExtra("system_health", HashMap(systemHealth))
             context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting system health: ${e.message}", e)
-            
-            // Broadcast error
-            val errorIntent = Intent("SYSTEM_HEALTH_ERROR")
-            errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
         }
     }
     
-    /**
-     * Gets detailed app information
-     */
-    fun getAppDetails(targetPackageName: String): Map<String, Any>? {
+    fun getAppDetails(targetPackage: String): Map<String, Any>? {
         try {
-            if (!ShizukuBridge.isReady()) {
-                Log.e(TAG, "Shizuku is not ready")
-                return null
-            }
+            if (!ShizukuBridge.isReady()) return null
+            val sanitized = SecurityUtils.sanitizePackageName(targetPackage)
+            val appInfo = pm.getApplicationInfo(sanitized, PackageManager.GET_META_DATA)
+            val packageInfo = pm.getPackageInfo(sanitized, PackageManager.GET_PERMISSIONS)
             
-            // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
-            if (sanitizedPackageName != targetPackageName) {
-                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
-            }
-            
-            // Get app info from package manager
-            val appInfo = pm.getApplicationInfo(sanitizedPackageName, PackageManager.GET_META_DATA)
-            val packageInfo = pm.getPackageInfo(sanitizedPackageName, PackageManager.GET_PERMISSIONS)
-            
-            val appDetails = mutableMapOf<String, Any>().apply {
-                put("package_name", sanitizedPackageName)
+            return mutableMapOf<String, Any>().apply {
+                put("package_name", sanitized)
                 put("app_name", appInfo.loadLabel(pm).toString())
                 put("version_name", packageInfo.versionName ?: "Unknown")
-                put("version_code", packageInfo.versionCode.toLong())
-                put("first_install_time", packageInfo.firstInstallTime)
-                put("last_update_time", packageInfo.lastUpdateTime)
-                put("target_sdk_version", packageInfo.applicationInfo?.targetSdkVersion ?: 0)
-                put("min_sdk_version", packageInfo.applicationInfo?.minSdkVersion ?: 0)
-                put("permissions", packageInfo.requestedPermissions?.toList() ?: emptyList<String>())
-                put("is_system_app", appInfo?.let { it.flags and ApplicationInfo.FLAG_SYSTEM != 0 } ?: false)
-                put("is_user_app", appInfo?.let { it.flags and ApplicationInfo.FLAG_SYSTEM == 0 } ?: false)
-                put("data_dir", appInfo?.dataDir ?: "")
-                put("source_dir", appInfo?.sourceDir ?: "")
             }
-            
-            // Get additional info using Shizuku
-            val sizeInfo = getAppSizeInfo(sanitizedPackageName)
-            appDetails.putAll(sizeInfo)
-            
-            return appDetails
         } catch (e: Exception) {
             Log.e(TAG, "Error getting app details: ${e.message}", e)
             return null
         }
     }
     
-    /**
-     * Gets app size information using Shizuku
-     */
-    private fun getAppSizeInfo(targetPackageName: String): Map<String, Long> {
-        try {
-            if (!ShizukuBridge.isReady()) {
-                Log.e(TAG, "Shizuku is not ready")
-                return emptyMap()
-            }
-            
-            // In a real implementation, context would use pm path and du commands to get size
-            // For context example, we'll return mock data
-            return mapOf(
-                "code_size_bytes" to (50 * 1024 * 1024L), // 50 MB
-                "data_size_bytes" to (10 * 1024 * 1024L), // 10 MB
-                "cache_size_bytes" to (5 * 1024 * 1024L), // 5 MB
-                "external_cache_size_bytes" to (2 * 1024 * 1024L) // 2 MB
-            )
-        } catch (e: Exception) {
-            Log.e(TAG, "Error getting app size info: ${e.message}", e)
-            return emptyMap()
-        }
-    }
-    
-    /**
-     * Gets a list of all installed apps with basic information
-     */
     fun getAllInstalledApps(): List<Map<String, Any>> {
         try {
-            if (!ShizukuBridge.isReady()) {
-                Log.e(TAG, "Shizuku is not ready")
-                return emptyList()
-            }
-            
+            if (!ShizukuBridge.isReady()) return emptyList()
             val apps = mutableListOf<Map<String, Any>>()
-            
-            // Get all installed packages
             val packages = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
-            
             for (pkgInfo in packages) {
-                val appInfo = pkgInfo.applicationInfo
-                
-                val appData = mapOf<String, Any>(
-                    "package_name" to pkgInfo.packageName,
-                    "app_name" to (appInfo?.loadLabel(pm)?.toString() ?: pkgInfo.packageName),
-                    "version_name" to (pkgInfo.versionName ?: "Unknown"),
-                    "version_code" to pkgInfo.versionCode.toLong(),
-                    "is_system_app" to (appInfo?.let { it.flags and ApplicationInfo.FLAG_SYSTEM != 0 } ?: false),
-                    "first_install_time" to pkgInfo.firstInstallTime,
-                    "last_update_time" to pkgInfo.lastUpdateTime,
-                    "target_sdk" to (appInfo?.targetSdkVersion ?: 0),
-                    "permissions_count" to (pkgInfo.requestedPermissions?.size ?: 0)
-                )
-                
-                apps.add(appData)
+                apps.add(mapOf("package_name" to pkgInfo.packageName))
             }
-            
-            Log.d(TAG, "Retrieved ${apps.size} installed apps")
             return apps
         } catch (e: Exception) {
             Log.e(TAG, "Error getting installed apps: ${e.message}", e)

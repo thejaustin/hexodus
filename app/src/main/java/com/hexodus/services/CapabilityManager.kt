@@ -65,11 +65,9 @@ class CapabilityManager(private val context: Context) {
 
     private fun checkVector(): Boolean {
         return try {
-            // Vector framework detection - checking for the core service class or manager package
             Class.forName("org.jingmatrix.vector.VectorBridge")
             true
         } catch (e: Exception) {
-            // Also check for the manager app
             val intent = context.packageManager.getLaunchIntentForPackage("org.jingmatrix.vector")
             intent != null
         }
@@ -101,14 +99,12 @@ class CapabilityManager(private val context: Context) {
     }
 
     private fun checkDhizuku(isShizukuPlusReady: Boolean): Boolean {
-        // First check for native Shizuku+ Dhizuku borrowing
         if (isShizukuPlusReady) {
             try {
                 if (ShizukuPlusAPI.Dhizuku.isAvailable()) return true
             } catch (e: Exception) {}
         }
 
-        // Fallback to standalone Dhizuku app
         return try {
             val intent = context.packageManager.getLaunchIntentForPackage("com.iamr0s.dhizuku")
             intent != null
@@ -119,7 +115,6 @@ class CapabilityManager(private val context: Context) {
 
     private fun checkXposed(): Boolean {
         return try {
-            // Standard Xposed detection
             Class.forName("de.robv.android.xposed.XposedBridge")
             true
         } catch (e: ClassNotFoundException) {
@@ -127,9 +122,6 @@ class CapabilityManager(private val context: Context) {
         }
     }
 
-    /**
-     * Determines if an app/feature is compatible with the current capabilities.
-     */
     fun isCompatible(requirements: List<String>, current: DeviceCapabilities): Boolean {
         if (requirements.isEmpty()) return true
         
@@ -138,7 +130,6 @@ class CapabilityManager(private val context: Context) {
         if (reqs.contains("SAMSUNG") && !Build.MANUFACTURER.lowercase().contains("samsung")) return false
         if (reqs.contains("S22ULTRA") && !current.isS22Ultra) return false
 
-        // Check permission levels
         var hasBaseRequirement = false
         if (reqs.contains("ROOT") && current.isRooted) hasBaseRequirement = true
         if (reqs.contains("SHIZUKU") && current.isShizukuReady) hasBaseRequirement = true
@@ -150,7 +141,6 @@ class CapabilityManager(private val context: Context) {
         if (reqs.contains("VECTOR") && current.isVectorActive) hasBaseRequirement = true
         if (reqs.contains("ADB") && current.isADBEnabled) hasBaseRequirement = true
 
-        // If no permission tags are found, assume it's a general app
         val permissionTags = listOf("ROOT", "SHIZUKU", "SHIZUKU+", "DHIZUKU", "ADB", "LSPATCH", "XPOSED", "VECTOR")
         if (reqs.none { it in permissionTags }) hasBaseRequirement = true
 

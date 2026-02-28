@@ -13,30 +13,6 @@ import java.io.File
  */
 object OverlayManager {
     private val context get() = com.hexodus.HexodusApplication.context
-    
-    
-    
-    
-    
-    private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
-
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-
     private const val TAG = "OverlayManager"
 
     private fun useEnhancedApi(): Boolean {
@@ -44,7 +20,7 @@ object OverlayManager {
         return prefsManager.preferShizukuPlus && ShizukuPlusAPI.isEnhancedApiSupported()
     }
 
-    fun activateOverlay(targetPackageName: String, apkPath: String, validateSignature: Boolean = true): Boolean {
+    fun activateOverlay(targetPackage: String, apkPath: String, validateSignature: Boolean = true): Boolean {
         try {
             if (validateSignature && !SecurityUtils.validateApkSignature(apkPath)) {
                 Log.e(TAG, "APK signature validation failed: $apkPath")
@@ -60,16 +36,16 @@ object OverlayManager {
             if (!installSuccess) return false
 
             val enableSuccess = if (useEnhancedApi()) {
-                ShizukuPlusAPI.OverlayManager.enableOverlay(targetPackageName)
+                ShizukuPlusAPI.OverlayManager.enableOverlay(targetPackage)
             } else {
-                ShizukuBridge.executeOverlayCommand(targetPackageName, "enable")
+                ShizukuBridge.executeOverlayCommand(targetPackage, "enable")
             }
 
             if (enableSuccess) {
                 if (useEnhancedApi()) {
-                    ShizukuPlusAPI.Shell.executeCommand("cmd overlay set-priority $targetPackageName 100")
+                    ShizukuPlusAPI.Shell.executeCommand("cmd overlay set-priority $targetPackage 100")
                 } else {
-                    ShizukuBridge.executeOverlayCommand(targetPackageName, "set-priority")
+                    ShizukuBridge.executeOverlayCommand(targetPackage, "set-priority")
                 }
                 refreshSystemUI()
                 return true
@@ -81,12 +57,12 @@ object OverlayManager {
         }
     }
 
-    fun deactivateOverlay(targetPackageName: String): Boolean {
+    fun deactivateOverlay(targetPackage: String): Boolean {
         try {
             val success = if (useEnhancedApi()) {
-                ShizukuPlusAPI.OverlayManager.disableOverlay(targetPackageName)
+                ShizukuPlusAPI.OverlayManager.disableOverlay(targetPackage)
             } else {
-                ShizukuBridge.executeOverlayCommand(targetPackageName, "disable")
+                ShizukuBridge.executeOverlayCommand(targetPackage, "disable")
             }
             if (success) refreshSystemUI()
             return success
