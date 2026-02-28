@@ -35,8 +35,7 @@ object ThemeManager {
      * Creates a theme from hex color and component preferences
      */
     suspend fun createTheme(hexColor: String, themeName: String, themedComponents: Map<String, Boolean>) = withContext(Dispatchers.IO) {
-        val context = HexodusApplication.context
-        try {
+                try {
             // Compile the theme to an APK in memory
             val packageName = "com.hexodus.theme.${themeName.replace(" ", "_").lowercase()}.${System.currentTimeMillis()}"
             val themeData = themeCompiler.compileTheme(hexColor, packageName, themeName, themedComponents)
@@ -67,8 +66,7 @@ object ThemeManager {
      * Applies a theme to the system using Shizuku
      */
     suspend fun applyTheme(themeFilePath: String) = withContext(Dispatchers.IO) {
-        val context = HexodusApplication.context
-        try {
+                try {
             Log.d(TAG, "Applying theme from: $themeFilePath")
             
             // Replace Thread.sleep with Coroutines delay

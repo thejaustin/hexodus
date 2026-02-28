@@ -31,8 +31,6 @@ object NetworkFirewallService {
     private val applicationContext: android.content.Context get() = context
 
     
-
-    
     companion object {
         private const val TAG = "NetworkFirewallService"
         private const val ACTION_BLOCK_APP_NETWORK = "com.hexodus.BLOCK_APP_NETWORK"
@@ -356,7 +354,7 @@ object NetworkFirewallService {
         
         // In a real implementation, this would start monitoring network activity
         // For this example, we'll create a foreground service notification
-        // startForeground not supported in object)
+        // startForeground not supported in object
     }
     
     /**
@@ -375,10 +373,10 @@ object NetworkFirewallService {
      * Creates a notification for the foreground service
      */
     private fun createNotification(): android.app.Notification {
-        val notificationIntent = Intent(HexodusApplication.context, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(HexodusApplication.context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
+        val notificationIntent = Intent(context, MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
         
-        return NotificationCompat.Builder(HexodusApplication.context, NOTIFICATION_CHANNEL_ID)
+        return NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setContentTitle("Network Firewall Active")
             .setContentText("Protecting your network privacy")
             .setSmallIcon(android.R.drawable.stat_notify_sync) // Use system icon
@@ -433,7 +431,5 @@ object NetworkFirewallService {
             Log.e(TAG, "Error getting active network info: ${e.message}", e)
             return null
         }
-    }
-        Log.d(TAG, "NetworkFirewallService destroyed")
     }
 }
