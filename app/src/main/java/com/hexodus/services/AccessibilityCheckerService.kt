@@ -34,7 +34,7 @@ object AccessibilityCheckerService {
         const val EXTRA_CONTENT_DESCRIPTION = "content_description"
     }
     
-    private lateinit var accessibilityManager: AccessibilityManager
+    private val accessibilityManager by lazy { HexodusApplication.context.getSystemService(android.content.Context.ACCESSIBILITY_SERVICE) as android.view.accessibility.AccessibilityManager }
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action

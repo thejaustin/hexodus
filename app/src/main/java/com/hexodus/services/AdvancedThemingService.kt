@@ -53,7 +53,7 @@ class AdvancedThemingService : LifecycleService() {
         const val EXTRA_TO_THEME = "to_theme"
     }
     
-    private lateinit var themeCompiler: ThemeCompiler
+    private val themeCompiler = com.hexodus.core.ThemeCompiler()
     
     override fun onCreate() {
         super.onCreate()

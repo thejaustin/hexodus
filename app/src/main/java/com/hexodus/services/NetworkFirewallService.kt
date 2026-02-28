@@ -45,7 +45,7 @@ object NetworkFirewallService {
         private const val NOTIFICATION_ID = 1001
     }
     
-    private lateinit var connectivityManager: ConnectivityManager
+    private val connectivityManager by lazy { HexodusApplication.context.getSystemService(android.content.Context.CONNECTIVITY_SERVICE) as android.net.ConnectivityManager }
     private var isMonitoring = false
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

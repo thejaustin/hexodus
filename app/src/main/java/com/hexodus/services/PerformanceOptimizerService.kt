@@ -35,7 +35,7 @@ object PerformanceOptimizerService {
         const val EXTRA_CLEAN_SCOPE = "clean_scope" // cache, temp, all
     }
     
-    private lateinit var powerManager: PowerManager
+    private val powerManager by lazy { HexodusApplication.context.getSystemService(android.content.Context.POWER_SERVICE) as android.os.PowerManager }
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action

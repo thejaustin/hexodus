@@ -39,7 +39,7 @@ object ResourceManagerService {
         const val EXTRA_OVERLAY_PRIORITY = "overlay_priority"
     }
     
-    private lateinit var themeCompiler: ThemeCompiler
+    private val themeCompiler = com.hexodus.core.ThemeCompiler()
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action

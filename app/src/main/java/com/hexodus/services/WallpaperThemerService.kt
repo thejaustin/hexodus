@@ -34,7 +34,7 @@ object WallpaperThemerService {
         const val EXTRA_PALETTE_TYPE = "palette_type" // vibrant, muted, dominant, all
     }
     
-    private lateinit var wallpaperManager: WallpaperManager
+    private val wallpaperManager by lazy { android.app.WallpaperManager.getInstance(HexodusApplication.context) }
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action

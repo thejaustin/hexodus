@@ -41,7 +41,7 @@ object FeatureFlagsService {
         const val EXTRA_FLAG_STATE = "flag_state"
     }
 
-    private lateinit var prefsManager: PrefsManager
+    private val prefsManager by lazy { PrefsManager.getInstance(HexodusApplication.context) }
     private val scope = CoroutineScope(Dispatchers.IO)
 
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

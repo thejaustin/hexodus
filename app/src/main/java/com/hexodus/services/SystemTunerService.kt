@@ -31,7 +31,7 @@ object SystemTunerService {
         const val EXTRA_SETTING_TYPE = "setting_type"
     }
     
-    private lateinit var prefsManager: PrefsManager
+    private val prefsManager by lazy { PrefsManager.getInstance(HexodusApplication.context) }
     private val scope = CoroutineScope(Dispatchers.IO)
 
     private fun useEnhancedApi(): Boolean {

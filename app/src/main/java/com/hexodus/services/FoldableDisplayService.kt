@@ -32,7 +32,7 @@ object FoldableDisplayService {
         const val EXTRA_MAIN_SCREEN_LAYOUT = "main_screen_layout"
     }
 
-    private lateinit var windowInfoTracker: WindowInfoTracker
+    private val windowInfoTracker by lazy { androidx.window.layout.WindowInfoTracker.getOrCreate(HexodusApplication.context) }
     private var isCoverScreen = false
     private var isMainScreen = true
     private var isTabletopMode = false

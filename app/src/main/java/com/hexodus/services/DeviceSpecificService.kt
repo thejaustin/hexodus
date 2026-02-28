@@ -39,7 +39,7 @@ object DeviceSpecificService {
         const val EXTRA_FEATURE_ENABLED = "feature_enabled"
     }
     
-    private lateinit var windowInfoTracker: WindowInfoTracker
+    private val windowInfoTracker by lazy { androidx.window.layout.WindowInfoTracker.getOrCreate(HexodusApplication.context) }
     private var isMonitoringDisplays = false
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
