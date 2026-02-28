@@ -62,13 +62,10 @@ android {
 }
 
 dependencies {
-    // Shizuku API (real artifact from maven.dev.rikka.app)
+    // Shizuku API (Standard artifacts)
     implementation 'dev.rikka.shizuku:api:13.1.5'
     implementation 'dev.rikka.shizuku:provider:13.1.5'
     
-    // ShizukuPlus API (Enhanced features)
-    implementation 'com.github.thejaustin:ShizukuPlus-API:13.2.0-plus'
-
     // Core Android libraries
     implementation 'androidx.core:core-ktx:1.17.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.9.0'
