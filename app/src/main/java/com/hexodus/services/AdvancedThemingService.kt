@@ -80,8 +80,6 @@ object AdvancedThemingService {
     private val themeCompiler = com.hexodus.core.ThemeCompiler()
     
     fun onCreate() {
-        
-        val themeCompiler = ThemeCompiler()
         Log.d(TAG, "AdvancedThemingService created")
     }
     

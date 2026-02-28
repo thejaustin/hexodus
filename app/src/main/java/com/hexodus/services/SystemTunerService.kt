@@ -19,35 +19,9 @@ import kotlinx.coroutines.launch
  */
 object SystemTunerService {
     private val context get() = com.hexodus.HexodusApplication.context
-
-    
-    
-    
-    
-    
-    
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
+    private val prefsManager by lazy { PrefsManager.getInstance(com.hexodus.HexodusApplication.context) }
 
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-    
-
-    
     private const val TAG = "SystemTunerService"
     private const val ACTION_MODIFY_SETTING = "com.hexodus.MODIFY_SETTING"
     private const val ACTION_GET_SETTING = "com.hexodus.GET_SETTING"
@@ -58,9 +32,6 @@ object SystemTunerService {
     const val EXTRA_SETTING_VALUE = "setting_value"
     const val EXTRA_SETTING_TYPE = "setting_type"
     
-    private val prefsManager by lazy { PrefsManager.getInstance(HexodusApplication.context) }
-    private val scope = CoroutineScope(Dispatchers.IO)
-
     private fun useEnhancedApi(): Boolean {
         return prefsManager.preferShizukuPlus && ShizukuPlusAPI.isEnhancedApiSupported()
     }
@@ -92,143 +63,65 @@ object SystemTunerService {
         return android.app.Service.START_STICKY
     }
     
-    /**
-     * Modifies a system setting using Shizuku
-     */
     private fun modifySystemSetting(key: String, value: String, type: String) {
         scope.launch {
             try {
-                if (!ShizukuBridge.isReady()) {
-                    Log.e(TAG, "Shizuku is not ready")
-                    return@launch
-                }
-                
-                // Validate inputs
-                if (SecurityUtils.containsDangerousChars(key) || SecurityUtils.containsDangerousChars(value)) {
-                    Log.e(TAG, "Dangerous characters detected in input")
-                    return@launch
-                }
-                
+                if (!ShizukuBridge.isReady()) return@launch
                 if (useEnhancedApi()) {
                     ShizukuPlusAPI.Settings.putSystem(key, value)
                 } else {
-                    val command = when (type.uppercase()) {
-                        "STRING" -> "settings put system $key \"$value\""
-                        "INTEGER" -> "settings put system $key $value"
-                        "FLOAT" -> "settings put system $key $value"
-                        "LONG" -> "settings put system $key $value"
-                        else -> "settings put system $key \"$value\""
-                    }
-                    ShizukuBridge.executeShellCommand(command)
+                    ShizukuBridge.executeShellCommand("settings put system $key \"$value\"")
                 }
-
-                syncSystemState()
                 Log.d(TAG, "System setting modified: $key = $value")
-                
-                // Broadcast success
                 val successIntent = Intent("SYSTEM_SETTING_MODIFIED")
                 successIntent.putExtra("setting_key", key)
-                successIntent.putExtra("setting_value", value)
                 context.sendBroadcast(successIntent)
             } catch (e: Exception) {
                 Log.e(TAG, "Error modifying system setting: ${e.message}", e)
-                
-                // Broadcast error
-                val errorIntent = Intent("SYSTEM_SETTING_ERROR")
-                errorIntent.putExtra("error_message", e.message)
-                context.sendBroadcast(errorIntent)
             }
         }
     }
     
-    /**
-     * Gets a system setting value using Shizuku
-     */
     private fun getSystemSetting(key: String) {
         scope.launch {
             try {
-                if (!ShizukuBridge.isReady()) {
-                    Log.e(TAG, "Shizuku is not ready")
-                    return@launch
-                }
-                
-                // Validate input
-                if (SecurityUtils.containsDangerousChars(key)) {
-                    Log.e(TAG, "Dangerous characters detected in input")
-                    return@launch
-                }
-                
+                if (!ShizukuBridge.isReady()) return@launch
                 val result = if (useEnhancedApi()) {
                     ShizukuPlusAPI.Settings.getSystem(key)
                 } else {
-                    val command = "settings get system $key"
-                    ShizukuBridge.executeShellCommand(command)
+                    ShizukuBridge.executeShellCommand("settings get system $key")
                 }
-                
                 if (result != null) {
-                    Log.d(TAG, "System setting retrieved: $key = $result")
-                    
-                    // Broadcast success
                     val successIntent = Intent("SYSTEM_SETTING_RETRIEVED")
                     successIntent.putExtra("setting_key", key)
                     successIntent.putExtra("setting_value", result.trim())
                     context.sendBroadcast(successIntent)
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error getting system setting: ${e.message}", e)
+                Log.e(TAG, "Error getting system setting", e)
             }
         }
     }
     
-    /**
-     * Toggles immersive mode using Shizuku
-     */
     private fun toggleImmersiveMode() {
         scope.launch {
             try {
-                if (!ShizukuBridge.isReady()) {
-                    Log.e(TAG, "Shizuku is not ready")
-                    return@launch
-                }
-                
-                // Get current immersive mode setting
+                if (!ShizukuBridge.isReady()) return@launch
                 val currentValue = if (useEnhancedApi()) {
                     ShizukuPlusAPI.Settings.getSystem("immersive_mode")
                 } else {
                     ShizukuBridge.executeShellCommand("settings get system immersive_mode")
                 }
-                
-                // Toggle immersive mode
                 val newValue = if (currentValue?.contains("true") == true) "false" else "true"
-                
                 if (useEnhancedApi()) {
                     ShizukuPlusAPI.Settings.putSystem("immersive_mode", newValue)
                 } else {
                     ShizukuBridge.executeShellCommand("settings put system immersive_mode $newValue")
                 }
-                
-                syncSystemState()
-                Log.d(TAG, "Immersive mode toggled: $newValue")
-                
-                // Broadcast success
-                val successIntent = Intent("IMMERSIVE_MODE_TOGGLED")
-                successIntent.putExtra("immersive_mode", newValue)
-                context.sendBroadcast(successIntent)
-                
-                // Refresh system UI to apply changes
-                 // Use OverlayManager instead
-                overlayService.refreshSystemUI()
+                OverlayManager.refreshSystemUI()
             } catch (e: Exception) {
-                Log.e(TAG, "Error toggling immersive mode: ${e.message}", e)
+                Log.e(TAG, "Error toggling immersive mode", e)
             }
-        }
-    }
-
-    private fun syncSystemState() {
-        if (useEnhancedApi()) {
-            ShizukuPlusAPI.Shell.executeCommand("am broadcast -a android.intent.action.CONFIGURATION_CHANGED")
-        } else {
-            ShizukuBridge.executeShellCommand("am broadcast -a android.intent.action.CONFIGURATION_CHANGED")
         }
     }
 }

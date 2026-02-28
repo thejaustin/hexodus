@@ -17,14 +17,8 @@ import java.io.FileOutputStream
  */
 object AdvancedOverlayService {
     private val context get() = com.hexodus.HexodusApplication.context
-
-    
-    
-    
-    
-    
-    
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
+    private val themeCompiler = com.hexodus.core.ThemeCompiler()
 
     private const val TAG = "AdvancedOverlayService"
     private const val ACTION_CREATE_ADVANCED_OVERLAY = "com.hexodus.CREATE_ADVANCED_OVERLAY"
@@ -40,8 +34,6 @@ object AdvancedOverlayService {
     const val EXTRA_OVERLAY_PRIORITY = "overlay_priority"
     const val EXTRA_EXPORT_PATH = "export_path"
     
-    private val themeCompiler = ThemeCompiler()
-    
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
@@ -50,11 +42,11 @@ object AdvancedOverlayService {
                 val overlayName = intent.getStringExtra(EXTRA_OVERLAY_NAME)
                 val overlayPackage = intent.getStringExtra(EXTRA_OVERLAY_PACKAGE)
                 val resString = intent.getStringExtra(EXTRA_OVERLAY_RESOURCES)
-                val targetPackages = intent.getStringArrayListExtra(EXTRA_TARGET_PACKAGES) ?: arrayListOf()
+                val targetPackages = intent.getStringArrayListExtra(EXTRA_TARGET_PACKAGES) ?: arrayListOf<String>()
                 val priority = intent.getIntExtra(EXTRA_OVERLAY_PRIORITY, 100)
                 
                 if (!overlayName.isNullOrEmpty() && !overlayPackage.isNullOrEmpty() && !resString.isNullOrEmpty()) {
-                    createAdvancedOverlay(overlayName, overlayPackage, resString, targetPackages, priority)
+                    createAdvancedOverlay(overlayName, overlayPackage, resString, targetPackages.filterNotNull(), priority)
                 }
             }
             ACTION_LIST_OVERLAYS -> {
@@ -82,7 +74,7 @@ object AdvancedOverlayService {
     }
     
     /**
-     * Creates an advanced overlay with custom context.resources
+     * Creates an advanced overlay with custom resources
      */
     private fun createAdvancedOverlay(
         name: String,
@@ -99,7 +91,7 @@ object AdvancedOverlayService {
             
             // Validate inputs
             if (SecurityUtils.containsDangerousChars(name) || SecurityUtils.containsDangerousChars(resString)) {
-                Log.e(TAG, "Dangerous characters detected in overlay name or context.resources")
+                Log.e(TAG, "Dangerous characters detected in overlay name or resources")
                 return
             }
             

@@ -667,11 +667,13 @@ object AutomationService {
         
         return removed
     }
+    fun stopAllAutomations() {
+        scheduledTasks.values.forEach { it.cancel() }
         scheduledTasks.clear()
         
         // Shutdown executor
         automationExecutor.shutdown()
         
-        Log.d(TAG, "AutomationService destroyed")
+        Log.d(TAG, "AutomationService stopped")
     }
 }
