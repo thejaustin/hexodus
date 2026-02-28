@@ -47,7 +47,7 @@ class CapabilityManager(private val context: Context) {
             false
         }
 
-        val caps = Capabilities(
+        val caps = DeviceCapabilities(
             isRooted = checkRootMethod1() || checkRootMethod2(),
             isShizukuReady = isShizukuReady,
             isShizukuPlusReady = isShizukuPlusReady,
