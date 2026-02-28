@@ -42,14 +42,14 @@ object ThemeManager {
             val completeIntent = Intent("THEME_CREATION_COMPLETE")
             completeIntent.putExtra("theme_path", themeFile.absolutePath)
             completeIntent.putExtra("theme_name", themeName)
-            context.HexodusApplication.context.sendBroadcast(completeIntent)
+            HexodusApplication.context.sendBroadcast(completeIntent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error creating theme: ${e.message}", e)
             
             val errorIntent = Intent("THEME_CREATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.HexodusApplication.context.sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -71,14 +71,14 @@ object ThemeManager {
             
             val completeIntent = Intent("THEME_APPLICATION_COMPLETE")
             completeIntent.putExtra("theme_path", themeFilePath)
-            context.HexodusApplication.context.sendBroadcast(completeIntent)
+            HexodusApplication.context.sendBroadcast(completeIntent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error applying theme: ${e.message}", e)
             
             val errorIntent = Intent("THEME_APPLICATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.HexodusApplication.context.sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
 }

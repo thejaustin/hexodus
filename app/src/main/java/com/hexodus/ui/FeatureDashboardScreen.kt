@@ -51,7 +51,7 @@ fun FeatureDashboardScreen(navController: NavController? = null) {
 
     var showAllFeatures by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
-    var caps by remember { mutableStateOf<CapabilityManager.Capabilities?>(null) }
+    var caps by remember { mutableStateOf<CapabilityManager.DeviceCapabilities?>(null) }
 
     // Check capabilities
     LaunchedEffect(Unit) {

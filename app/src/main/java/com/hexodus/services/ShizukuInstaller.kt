@@ -70,7 +70,7 @@ object ShizukuInstaller {
                             val progressIntent = Intent("APK_INSTALLATION_PROGRESS")
                             progressIntent.putExtra("app_name", appName)
                             progressIntent.putExtra("progress", progress)
-                            context.HexodusApplication.context.sendBroadcast(progressIntent)
+                            HexodusApplication.context.sendBroadcast(progressIntent)
                         }
                     }
                 }
@@ -81,7 +81,7 @@ object ShizukuInstaller {
             installingIntent.putExtra("app_name", appName)
             installingIntent.putExtra("progress", 100)
             installingIntent.putExtra("status", "Installing...")
-            context.HexodusApplication.context.sendBroadcast(installingIntent)
+            HexodusApplication.context.sendBroadcast(installingIntent)
 
             // 2. Install the APK
             if (ShizukuBridge.isReady()) {
@@ -95,7 +95,7 @@ object ShizukuInstaller {
             errorIntent.putExtra("success", false)
             errorIntent.putExtra("app_name", appName)
             errorIntent.putExtra("error", e.message)
-            context.HexodusApplication.context.sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
 
@@ -153,12 +153,12 @@ object ShizukuInstaller {
         
         val intent = Intent("APK_INSTALLATION_RESULT")
         intent.putExtra("success", success)
-        context.HexodusApplication.context.sendBroadcast(intent)
+        HexodusApplication.context.sendBroadcast(intent)
     }
 
     private fun installLegacy(apkFile: File): Boolean {
         // Using 'pm install' via Shizuku shell
-        val command = "pm install -r "${apkFile.absolutePath}""
+        val command = "pm install -r \"${apkFile.absolutePath}\""
         val result = ShizukuBridge.executeShellCommand(command) ?: "Error"
         Log.d(TAG, "Legacy Shizuku installation result: $result")
         return result.contains("Success", ignoreCase = true)
