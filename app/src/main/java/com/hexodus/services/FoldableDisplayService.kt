@@ -57,7 +57,7 @@ object FoldableDisplayService {
     private fun startMonitoringDisplays() {
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                windowInfoTracker.windowLayoutInfo(this@FoldableDisplayService).collect { layoutInfo ->
+                // windowInfoTracker.windowLayoutInfo(HexodusApplication.context as android.app.Activity).collect { layoutInfo ->
                     handleWindowLayoutInfo(layoutInfo)
                 }
             } catch (e: Exception) {

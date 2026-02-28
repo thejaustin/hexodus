@@ -48,7 +48,7 @@ object OverlayActivationService {
                 }
             }
             ACTION_REFRESH_OVERLAYS -> {
-                OverlayManager.refreshSystemUI(this)
+                OverlayManager.refreshSystemUI(HexodusApplication.context)
             }
         }
         

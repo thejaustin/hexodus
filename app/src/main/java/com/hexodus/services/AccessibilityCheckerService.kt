@@ -185,7 +185,7 @@ object AccessibilityCheckerService {
             status["is_high_contrast_enabled"] = getHighTextContrastEnabled()
             status["is_touch_exploration_enabled"] = accessibilityManager.isTouchExplorationEnabled
             status["font_scale"] = resources.configuration.fontScale
-            status["should_reduce_animations"] = AccessibilityUtils.shouldReduceAnimations(this)
+            status["should_reduce_animations"] = AccessibilityUtils.shouldReduceAnimations(HexodusApplication.context)
             
             Log.d(TAG, "Accessibility status retrieved")
             

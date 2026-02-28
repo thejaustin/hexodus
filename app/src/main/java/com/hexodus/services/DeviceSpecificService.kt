@@ -426,7 +426,7 @@ object DeviceSpecificService {
         // For this example, we'll simulate the process
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                windowInfoTracker.windowLayoutInfo(this@DeviceSpecificService).collect { layoutInfo ->
+                // windowInfoTracker.windowLayoutInfo(HexodusApplication.context as android.app.Activity).collect { layoutInfo ->
                     handleWindowLayoutInfo(layoutInfo)
                 }
             } catch (e: Exception) {
