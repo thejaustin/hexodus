@@ -20,13 +20,21 @@ import java.io.OutputStream
  */
 object FontIconManagerService {
     private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName: String get() = context.packageName
-    private val cacheDir: java.io.File get() = context.cacheDir
-    private val filesDir: java.io.File get() = context.filesDir
-    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
-    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
-    private val applicationContext: android.content.Context get() = context
-    private val resources: android.content.res.Resources get() = context.resources
+    private val packageName_: String get() = context.packageName
+    private val cacheDir_: java.io.File get() = context.cacheDir
+    private val filesDir_: java.io.File get() = context.filesDir
+    private val resources_: android.content.res.Resources get() = context.resources
+    
+    private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
+
+    
+    
+    
+    
+    
+    
+    
+    
 
     
     
@@ -127,7 +135,7 @@ object FontIconManagerService {
                 return
             }
             
-            if (!SecurityUtils.isValidFilePath(fontPath, listOf(filesDir.parent, cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(fontPath, listOf(context.filesDir.parent, context.cacheDir.parent))) {
                 Log.e(TAG, "Invalid font path: $fontPath")
                 return
             }
@@ -174,7 +182,7 @@ object FontIconManagerService {
                 return
             }
             
-            if (!SecurityUtils.isValidFilePath(iconPackPath, listOf(filesDir.parent, cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(iconPackPath, listOf(context.filesDir.parent, context.cacheDir.parent))) {
                 Log.e(TAG, "Invalid icon pack path: $iconPackPath")
                 return
             }

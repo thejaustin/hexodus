@@ -16,13 +16,21 @@ import com.hexodus.utils.AccessibilityUtils
  */
 object AccessibilityCheckerService {
     private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName: String get() = context.packageName
-    private val cacheDir: java.io.File get() = context.cacheDir
-    private val filesDir: java.io.File get() = context.filesDir
-    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
-    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
-    private val applicationContext: android.content.Context get() = context
-    private val resources: android.content.res.Resources get() = context.resources
+    private val packageName_: String get() = context.packageName
+    private val cacheDir_: java.io.File get() = context.cacheDir
+    private val filesDir_: java.io.File get() = context.filesDir
+    private val resources_: android.content.res.Resources get() = context.resources
+    
+    private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
+
+    
+    
+    
+    
+    
+    
+    
+    
 
     
     
@@ -110,7 +118,7 @@ object AccessibilityCheckerService {
             results["touch_exploration_enabled"] = accessibilityManager.isTouchExplorationEnabled
             
             // Check font scale
-            results["font_scale"] = resources.configuration.fontScale
+            results["font_scale"] = context.resources.configuration.fontScale
             
             // Check if reduce motion should be considered
             results["reduce_motion_enabled"] = false // Simplified check
@@ -201,7 +209,7 @@ object AccessibilityCheckerService {
             status["is_accessibility_enabled"] = accessibilityManager.isEnabled
             status["is_high_contrast_enabled"] = getHighTextContrastEnabled()
             status["is_touch_exploration_enabled"] = accessibilityManager.isTouchExplorationEnabled
-            status["font_scale"] = resources.configuration.fontScale
+            status["font_scale"] = context.resources.configuration.fontScale
             status["should_reduce_animations"] = AccessibilityUtils.shouldReduceAnimations(HexodusApplication.context)
             
             Log.d(TAG, "Accessibility status retrieved")
@@ -227,7 +235,7 @@ object AccessibilityCheckerService {
     fun isAccessibilityFriendly(): Boolean {
         return accessibilityManager.isEnabled ||
                getHighTextContrastEnabled() ||
-               resources.configuration.fontScale > 1.0f
+               context.resources.configuration.fontScale > 1.0f
     }
     
     /**
@@ -236,7 +244,7 @@ object AccessibilityCheckerService {
     fun getAccessibilityRecommendations(): List<String> {
         val recommendations = mutableListOf<String>()
 
-        if (resources.configuration.fontScale < 1.2f) {
+        if (context.resources.configuration.fontScale < 1.2f) {
             recommendations.add("Consider increasing text size for better readability")
         }
 

@@ -16,13 +16,21 @@ import java.io.File
  */
 object SystemInspectorService {
     private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName: String get() = context.packageName
-    private val cacheDir: java.io.File get() = context.cacheDir
-    private val filesDir: java.io.File get() = context.filesDir
-    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
-    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
-    private val applicationContext: android.content.Context get() = context
-    private val resources: android.content.res.Resources get() = context.resources
+    private val packageName_: String get() = context.packageName
+    private val cacheDir_: java.io.File get() = context.cacheDir
+    private val filesDir_: java.io.File get() = context.filesDir
+    private val resources_: android.content.res.Resources get() = context.resources
+    
+    private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
+
+    
+    
+    
+    
+    
+    
+    
+    
 
     
     
@@ -302,13 +310,13 @@ object SystemInspectorService {
                 )
             }
             
-            Log.d(TAG, "Retrieved ${resources.size} resources of type '$resourceType' for: $sanitizedPackageName")
+            Log.d(TAG, "Retrieved ${context.resources.size} resources of type '$resourceType' for: $sanitizedPackageName")
             
             // Broadcast results
             val successIntent = Intent("APP_RESOURCES_RETRIEVED")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("resource_type", resourceType)
-            successIntent.putExtra("resource_count", resources.size)
+            successIntent.putExtra("resource_count", context.resources.size)
             context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting app resources: ${e.message}", e)

@@ -24,13 +24,21 @@ import com.hexodus.core.ThemeCompiler
  */
 object BackupRestoreService {
     private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName: String get() = context.packageName
-    private val cacheDir: java.io.File get() = context.cacheDir
-    private val filesDir: java.io.File get() = context.filesDir
-    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
-    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
-    private val applicationContext: android.content.Context get() = context
-    private val resources: android.content.res.Resources get() = context.resources
+    private val packageName_: String get() = context.packageName
+    private val cacheDir_: java.io.File get() = context.cacheDir
+    private val filesDir_: java.io.File get() = context.filesDir
+    private val resources_: android.content.res.Resources get() = context.resources
+    
+    private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
+
+    
+    
+    
+    
+    
+    
+    
+    
 
     
     
@@ -314,7 +322,7 @@ object BackupRestoreService {
                 )
                 
                 // Save and install the theme overlay
-                val tempFile = File(cacheDir, "${theme.name.replace(" ", "_")}.apk")
+                val tempFile = File(context.cacheDir, "${theme.name.replace(" ", "_")}.apk")
                 FileOutputStream(tempFile).use { it.write(themeData) }
                 
                 val installSuccess = ShizukuBridge.installApk(tempFile.absolutePath)
@@ -458,7 +466,7 @@ object BackupRestoreService {
                 return
             }
             
-            if (!SecurityUtils.isValidFilePath(exportPath, listOf(filesDir.parent, cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(exportPath, listOf(context.filesDir.parent, context.cacheDir.parent))) {
                 Log.e(TAG, "Invalid export path: $exportPath")
                 return
             }
@@ -523,7 +531,7 @@ object BackupRestoreService {
             }
             
             // Validate theme path
-            if (!SecurityUtils.isValidFilePath(themePath, listOf(filesDir.parent, cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(themePath, listOf(context.filesDir.parent, context.cacheDir.parent))) {
                 Log.e(TAG, "Invalid theme path: $themePath")
                 return
             }

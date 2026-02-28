@@ -16,7 +16,6 @@ import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
 import androidx.palette.graphics.Palette
 import androidx.lifecycle.LifecycleService
-import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -31,13 +30,21 @@ import java.util.zip.ZipOutputStream
  */
 object AdvancedThemingService {
     private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName: String get() = context.packageName
-    private val cacheDir: java.io.File get() = context.cacheDir
-    private val filesDir: java.io.File get() = context.filesDir
-    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
-    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
-    private val applicationContext: android.content.Context get() = context
-    private val resources: android.content.res.Resources get() = context.resources
+    private val packageName_: String get() = context.packageName
+    private val cacheDir_: java.io.File get() = context.cacheDir
+    private val filesDir_: java.io.File get() = context.filesDir
+    private val resources_: android.content.res.Resources get() = context.resources
+    
+    private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
+
+    
+    
+    
+    
+    
+    
+    
+    
 
     
     
@@ -68,16 +75,16 @@ object AdvancedThemingService {
     const val EXTRA_FROM_THEME = "from_theme"
     const val EXTRA_TO_THEME = "to_theme"
     
-    private themeCompiler = com.hexodus.core.ThemeCompiler()
+    private val themeCompiler = com.hexodus.core.ThemeCompiler()
     
     fun onCreate() {
-        super.onCreate()
+        
         themeCompiler = ThemeCompiler()
         Log.d(TAG, "AdvancedThemingService created")
     }
     
     fun onBind(intent: Intent): IBinder? {
-        super.onBind(intent)
+        
         return null
     }
     
@@ -130,7 +137,7 @@ object AdvancedThemingService {
      * Creates a gradient theme using multiple colors
      */
     private fun createGradientTheme(colors: List<String>, componentName: String) {
-        lifecycleScope.launch(Dispatchers.IO) {
+        scope.launch(Dispatchers.IO) {
             try {
                 if (!ShizukuBridge.isReady()) {
                     Log.e(TAG, "Shizuku is not ready")
@@ -177,7 +184,7 @@ object AdvancedThemingService {
                 )
                 
                 // Save the theme to internal storage temporarily
-                val tempFile = File(cacheDir, "${packageName}.apk")
+                val tempFile = File(context.cacheDir, "${packageName}.apk")
                 FileOutputStream(tempFile).use { it.write(themeData) }
                 
                 // Install the overlay using Shizuku
@@ -269,7 +276,7 @@ object AdvancedThemingService {
             )
             
             // Save the theme to internal storage temporarily
-            val tempFile = File(cacheDir, "${packageName}.apk")
+            val tempFile = File(context.cacheDir, "${packageName}.apk")
             FileOutputStream(tempFile).use { it.write(themeData) }
             
             // Install the overlay using Shizuku
@@ -338,7 +345,7 @@ object AdvancedThemingService {
                 return
             }
             
-            if (!SecurityUtils.isValidFilePath(texturePath, listOf(filesDir.parent, cacheDir.parent, "/sdcard"))) {
+            if (!SecurityUtils.isValidFilePath(texturePath, listOf(context.filesDir.parent, context.cacheDir.parent, "/sdcard"))) {
                 Log.e(TAG, "Invalid texture path: $texturePath")
                 return
             }
@@ -365,7 +372,7 @@ object AdvancedThemingService {
             )
             
             // Save the theme to internal storage temporarily
-            val tempFile = File(cacheDir, "${packageName}.apk")
+            val tempFile = File(context.cacheDir, "${packageName}.apk")
             FileOutputStream(tempFile).use { it.write(themeData) }
             
             // Install the overlay using Shizuku
@@ -558,7 +565,7 @@ object AdvancedThemingService {
             )
             
             // Save the theme to internal storage temporarily
-            val tempFile = File(cacheDir, "${packageName}.apk")
+            val tempFile = File(context.cacheDir, "${packageName}.apk")
             FileOutputStream(tempFile).use { it.write(themeData) }
             
             // Install the overlay using Shizuku
@@ -711,7 +718,7 @@ object AdvancedThemingService {
     }
     
     fun onDestroy() {
-        super.onDestroy()
+        
         Log.d(TAG, "AdvancedThemingService destroyed")
     }
 }

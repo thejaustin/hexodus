@@ -21,13 +21,21 @@ import java.util.zip.ZipOutputStream
  */
 object ResourceManagerService {
     private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName: String get() = context.packageName
-    private val cacheDir: java.io.File get() = context.cacheDir
-    private val filesDir: java.io.File get() = context.filesDir
-    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
-    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
-    private val applicationContext: android.content.Context get() = context
-    private val resources: android.content.res.Resources get() = context.resources
+    private val packageName_: String get() = context.packageName
+    private val cacheDir_: java.io.File get() = context.cacheDir
+    private val filesDir_: java.io.File get() = context.filesDir
+    private val resources_: android.content.res.Resources get() = context.resources
+    
+    private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
+
+    
+    
+    
+    
+    
+    
+    
+    
 
     
     
@@ -56,7 +64,7 @@ object ResourceManagerService {
     const val EXTRA_TARGET_PACKAGES = "target_packages"
     const val EXTRA_OVERLAY_PRIORITY = "overlay_priority"
     
-    private themeCompiler = com.hexodus.core.ThemeCompiler()
+    private val themeCompiler = com.hexodus.core.ThemeCompiler()
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
@@ -69,7 +77,7 @@ object ResourceManagerService {
                 val targetPackages = intent.getStringArrayListExtra(EXTRA_TARGET_PACKAGES) ?: arrayListOf("android")
                 val priority = intent.getIntExtra(EXTRA_OVERLAY_PRIORITY, 0)
                 
-                if (!overlayName.isNullOrEmpty() && !overlayPackage.isNullOrEmpty() && !resources.isNullOrEmpty()) {
+                if (!overlayName.isNullOrEmpty() && !overlayPackage.isNullOrEmpty() && !context.resources.isNullOrEmpty()) {
                     createOverlay(overlayName, overlayPackage, resources, targetPackages, priority)
                 }
             }
@@ -77,7 +85,7 @@ object ResourceManagerService {
                 val overlayPackage = intent.getStringExtra(EXTRA_OVERLAY_PACKAGE)
                 val resources = intent.getStringExtra(EXTRA_OVERLAY_RESOURCES)
                 
-                if (!overlayPackage.isNullOrEmpty() && !resources.isNullOrEmpty()) {
+                if (!overlayPackage.isNullOrEmpty() && !context.resources.isNullOrEmpty()) {
                     updateOverlay(overlayPackage, resources)
                 }
             }
@@ -153,7 +161,7 @@ object ResourceManagerService {
             )
             
             // Save overlay to internal storage temporarily
-            val tempFile = File(cacheDir, "${sanitizedPackageName}.apk")
+            val tempFile = File(context.cacheDir, "${sanitizedPackageName}.apk")
             FileOutputStream(tempFile).use { it.write(overlayData) }
             
             // Install the overlay using Shizuku
@@ -399,7 +407,7 @@ object ResourceManagerService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            if (!SecurityUtils.isValidFilePath(exportPath, listOf(filesDir.parent, cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(exportPath, listOf(context.filesDir.parent, context.cacheDir.parent))) {
                 Log.e(TAG, "Invalid export path: $exportPath")
                 return
             }
@@ -434,7 +442,7 @@ object ResourceManagerService {
             }
             
             // Validate inputs
-            if (!SecurityUtils.isValidFilePath(importPath, listOf(filesDir.parent, cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(importPath, listOf(context.filesDir.parent, context.cacheDir.parent))) {
                 Log.e(TAG, "Invalid import path: $importPath")
                 return
             }

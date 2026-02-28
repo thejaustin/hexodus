@@ -18,13 +18,21 @@ import java.security.MessageDigest
  */
 object HighContrastInjectorService {
     private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName: String get() = context.packageName
-    private val cacheDir: java.io.File get() = context.cacheDir
-    private val filesDir: java.io.File get() = context.filesDir
-    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
-    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
-    private val applicationContext: android.content.Context get() = context
-    private val resources: android.content.res.Resources get() = context.resources
+    private val packageName_: String get() = context.packageName
+    private val cacheDir_: java.io.File get() = context.cacheDir
+    private val filesDir_: java.io.File get() = context.filesDir
+    private val resources_: android.content.res.Resources get() = context.resources
+    
+    private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
+
+    
+    
+    
+    
+    
+    
+    
+    
 
     
     
@@ -150,7 +158,7 @@ object HighContrastInjectorService {
     private fun generateFakeHighContrastPackage(hexColor: String, themeName: String, components: List<String>): String? {
         try {
             // Create a temporary directory for the fake package
-            val tempDir = File(applicationContext.cacheDir, "hc_temp_${System.currentTimeMillis()}")
+            val tempDir = File(applicationContext.context.cacheDir, "hc_temp_${System.currentTimeMillis()}")
             tempDir.mkdirs()
             
             // Generate the fake package name
@@ -361,7 +369,7 @@ $componentXml
             // This would normally execute: cmd overlay disable <package_name>
             
             // Clean up temporary files
-            val tempDirs = applicationContext.cacheDir.listFiles()?.filter { file ->
+            val tempDirs = applicationContext.context.cacheDir.listFiles()?.filter { file ->
                 file.isDirectory && file.name.startsWith("hc_temp_")
             }
 

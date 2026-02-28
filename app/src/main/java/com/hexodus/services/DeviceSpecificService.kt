@@ -24,13 +24,21 @@ import kotlinx.coroutines.launch
  */
 object DeviceSpecificService {
     private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
-    private val packageName: String get() = context.packageName
-    private val cacheDir: java.io.File get() = context.cacheDir
-    private val filesDir: java.io.File get() = context.filesDir
-    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
-    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
-    private val applicationContext: android.content.Context get() = context
-    private val resources: android.content.res.Resources get() = context.resources
+    private val packageName_: String get() = context.packageName
+    private val cacheDir_: java.io.File get() = context.cacheDir
+    private val filesDir_: java.io.File get() = context.filesDir
+    private val resources_: android.content.res.Resources get() = context.resources
+    
+    private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
+
+    
+    
+    
+    
+    
+    
+    
+    
 
     
     
@@ -389,8 +397,8 @@ object DeviceSpecificService {
             val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as android.view.WindowManager
             val windowMetrics = windowManager.currentWindowMetrics
             val bounds = windowMetrics.bounds
-            val xdpi = resources.displayMetrics.xdpi
-            val ydpi = resources.displayMetrics.ydpi
+            val xdpi = context.resources.displayMetrics.xdpi
+            val ydpi = context.resources.displayMetrics.ydpi
             if (xdpi <= 0f || ydpi <= 0f) return 0f
             val widthInches = bounds.width() / xdpi
             val heightInches = bounds.height() / ydpi
