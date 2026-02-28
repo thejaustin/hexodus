@@ -137,7 +137,7 @@ object FontIconManagerService {
                 return
             }
             
-            if (!SecurityUtils.isValidFilePath(fontPath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent).filter { it != null })) {
+            if (!SecurityUtils.isValidFilePath(fontPath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent).mapNotNull { it })) {
                 Log.e(TAG, "Invalid font path: $fontPath")
                 return
             }
@@ -184,7 +184,7 @@ object FontIconManagerService {
                 return
             }
             
-            if (!SecurityUtils.isValidFilePath(iconPackPath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent).filter { it != null })) {
+            if (!SecurityUtils.isValidFilePath(iconPackPath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent).mapNotNull { it })) {
                 Log.e(TAG, "Invalid icon pack path: $iconPackPath")
                 return
             }

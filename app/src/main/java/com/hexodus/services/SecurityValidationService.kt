@@ -284,7 +284,7 @@ object SecurityValidationService {
     fun validateThemePackage(apkPath: String): Boolean {
         try {
             // Validate file path
-            if (!SecurityUtils.isValidFilePath(apkPath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent).filter { it != null })) {
+            if (!SecurityUtils.isValidFilePath(apkPath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent).mapNotNull { it })) {
                 Log.e(TAG, "Invalid APK path: $apkPath")
                 return false
             }

@@ -167,7 +167,7 @@ object ResourceManagerService {
     
     private fun exportOverlay(targetPackage: String, exportPath: String) {
         try {
-            if (!SecurityUtils.isValidFilePath(exportPath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent).filter { it != null })) return
+            if (!SecurityUtils.isValidFilePath(exportPath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent).mapNotNull { it })) return
             val successIntent = Intent("OVERLAY_EXPORTED")
             successIntent.putExtra("package_name", targetPackage)
             HexodusApplication.context.sendBroadcast(successIntent)
@@ -179,7 +179,7 @@ object ResourceManagerService {
     private fun importOverlay(importPath: String) {
         try {
             if (!ShizukuBridge.isReady()) return
-            if (!SecurityUtils.isValidFilePath(importPath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent).filter { it != null })) return
+            if (!SecurityUtils.isValidFilePath(importPath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent).mapNotNull { it })) return
             
             val installSuccess = ShizukuBridge.installApk(importPath)
             if (installSuccess) {

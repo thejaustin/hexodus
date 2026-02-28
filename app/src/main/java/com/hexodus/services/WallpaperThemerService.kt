@@ -84,7 +84,7 @@ object WallpaperThemerService {
             allowedPaths.add(HexodusApplication.context.cacheDir.parent)
             allowedPaths.add("/sdcard")
             
-            if (!SecurityUtils.isValidFilePath(imagePath, allowedPaths.filter { it != null })) {
+            if (!SecurityUtils.isValidFilePath(imagePath, allowedPaths.mapNotNull { it })) {
                 Log.e(TAG, "Invalid image path: $imagePath")
                 return
             }

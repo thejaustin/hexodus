@@ -45,7 +45,7 @@ object AdvancedOverlayService {
                 val priority = intent.getIntExtra(EXTRA_OVERLAY_PRIORITY, 100)
                 
                 if (!overlayName.isNullOrEmpty() && !overlayPackage.isNullOrEmpty() && !resString.isNullOrEmpty()) {
-                    createAdvancedOverlay(overlayName, overlayPackage, resString, targetPackages.filter { it != null }, priority)
+                    createAdvancedOverlay(overlayName, overlayPackage, resString, targetPackages.mapNotNull { it }, priority)
                 }
             }
             ACTION_LIST_OVERLAYS -> {
@@ -174,7 +174,7 @@ object AdvancedOverlayService {
             allowedPaths.add(HexodusApplication.context.getExternalFilesDir(null)?.parent)
             allowedPaths.add(HexodusApplication.context.cacheDir.parent)
             
-            if (!SecurityUtils.isValidFilePath(exportPath, allowedPaths.filter { it != null })) {
+            if (!SecurityUtils.isValidFilePath(exportPath, allowedPaths.mapNotNull { it })) {
                 Log.e(TAG, "Invalid export path: $exportPath")
                 return
             }

@@ -100,7 +100,7 @@ object AdvancedFeatureService {
             
             // Validate inputs
             if (SecurityUtils.containsDangerousChars(wallpaperPath) || 
-                !SecurityUtils.isValidFilePath(wallpaperPath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent).filter { it != null })) {
+                !SecurityUtils.isValidFilePath(wallpaperPath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent).mapNotNull { it })) {
                 Log.e(TAG, "Invalid wallpaper path: $wallpaperPath")
                 return
             }

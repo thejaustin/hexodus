@@ -345,7 +345,7 @@ object AdvancedThemingService {
                 return
             }
             
-            if (!SecurityUtils.isValidFilePath(texturePath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent, "/sdcard").filter { it != null })) {
+            if (!SecurityUtils.isValidFilePath(texturePath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent, "/sdcard").mapNotNull { it })) {
                 Log.e(TAG, "Invalid texture path: $texturePath")
                 return
             }
