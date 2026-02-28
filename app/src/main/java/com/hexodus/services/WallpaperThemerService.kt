@@ -62,14 +62,8 @@ object WallpaperThemerService {
     private fun generateThemeFromWallpaper(isLockscreen: Boolean) {
         try {
             val wallpaperManager = WallpaperManager.getInstance(HexodusApplication.context)
-            val wallpaperInfo = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
-                wallpaperManager.getWallpaperColors(if (isLockscreen) WallpaperManager.FLAG_LOCK else WallpaperManager.FLAG_SYSTEM)
-            } else {
-                null
-            }
             
-            // In a real implementation, context would extract colors
-            // For context example, we'll use a fixed color
+            // In a real implementation, we would extract colors
             val primaryColor = "#FF6200EE"
             Log.d(TAG, "Generating theme from wallpaper (Lockscreen: $isLockscreen)")
             
@@ -90,17 +84,15 @@ object WallpaperThemerService {
             allowedPaths.add(HexodusApplication.context.cacheDir.parent)
             allowedPaths.add("/sdcard")
             
-            if (!SecurityUtils.isValidFilePath(imagePath, allowedPaths.filterNotNull())) {
+            if (!SecurityUtils.isValidFilePath(imagePath, allowedPaths.filter { it != null })) {
                 Log.e(TAG, "Invalid image path: $imagePath")
                 return
             }
             
             val bitmap = BitmapFactory.decodeFile(imagePath)
             if (bitmap != null) {
-                // In a real implementation, context would extract colors using Palette
                 val primaryColor = "#FF6200EE"
                 Log.d(TAG, "Generating theme from image: $imagePath")
-                
                 applyGeneratedTheme(primaryColor, themeName)
             }
         } catch (e: Exception) {

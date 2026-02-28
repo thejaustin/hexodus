@@ -21,11 +21,10 @@ import com.hexodus.utils.PrefsManager
  * or silently using Shizuku. Refactored from Service to Singleton.
  */
 object ShizukuInstaller {
-    private val appContext get() = com.hexodus.HexodusApplication.context
     private const val TAG = "ShizukuInstaller"
 
     suspend fun downloadAndInstall(apkUrl: String, appName: String) = withContext(Dispatchers.IO) {
-        val prefsManager = PrefsManager.getInstance(appContext)
+        val prefsManager = PrefsManager.getInstance(HexodusApplication.context)
         
         try {
             var finalUrl = apkUrl
@@ -36,7 +35,7 @@ object ShizukuInstaller {
             }
 
             // 1. Download the APK
-            val file = File(appContext.cacheDir, "${appName.replace(" ", "_")}.apk")
+            val file = File(HexodusApplication.context.cacheDir, "${appName.replace(" ", "_")}.apk")
             Log.d(TAG, "Downloading $appName from $finalUrl to ${file.absolutePath}")
             
             val url = URL(finalUrl)
@@ -71,7 +70,7 @@ object ShizukuInstaller {
                             val progressIntent = Intent("APK_INSTALLATION_PROGRESS")
                             progressIntent.putExtra("app_name", appName)
                             progressIntent.putExtra("progress", progress)
-                            appContext.sendBroadcast(progressIntent)
+                            HexodusApplication.context.sendBroadcast(progressIntent)
                         }
                     }
                 }
@@ -82,7 +81,7 @@ object ShizukuInstaller {
             installingIntent.putExtra("app_name", appName)
             installingIntent.putExtra("progress", 100)
             installingIntent.putExtra("status", "Installing...")
-            appContext.sendBroadcast(installingIntent)
+            HexodusApplication.context.sendBroadcast(installingIntent)
 
             // 2. Install the APK
             if (ShizukuBridge.isReady()) {
@@ -96,7 +95,7 @@ object ShizukuInstaller {
             errorIntent.putExtra("success", false)
             errorIntent.putExtra("app_name", appName)
             errorIntent.putExtra("error", e.message)
-            appContext.sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
 
@@ -148,7 +147,7 @@ object ShizukuInstaller {
         
         val intent = Intent("APK_INSTALLATION_RESULT")
         intent.putExtra("success", success)
-        appContext.sendBroadcast(intent)
+        HexodusApplication.context.sendBroadcast(intent)
     }
 
     private fun installLegacy(apkFile: File): Boolean {
@@ -163,8 +162,8 @@ object ShizukuInstaller {
         Log.d(TAG, "Installing via native intent...")
         try {
             val uri = FileProvider.getUriForFile(
-                appContext,
-                "${appContext.packageName}.provider",
+                HexodusApplication.context,
+                "${HexodusApplication.context.packageName}.provider",
                 apkFile
             )
 
@@ -173,7 +172,7 @@ object ShizukuInstaller {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
             }
             
-            appContext.startActivity(intent)
+            HexodusApplication.context.startActivity(intent)
         } catch (e: Exception) {
             Log.e(TAG, "Error during native installation", e)
         }

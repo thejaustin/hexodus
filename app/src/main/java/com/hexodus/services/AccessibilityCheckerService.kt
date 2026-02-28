@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.accessibility.AccessibilityManager
 import android.content.Context
 import com.hexodus.utils.AccessibilityUtils
+import kotlinx.coroutines.launch
 
 /**
  * AccessibilityCheckerService - Service for verifying accessibility compliance

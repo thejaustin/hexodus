@@ -14,7 +14,7 @@ import rikka.shizuku.ShizukuRemoteProcess
  * Refactored from Service to Singleton for stability and easier access.
  */
 object ShizukuBridge {
-    private val appContext get() = com.hexodus.HexodusApplication.context
+    
     
     private const val TAG = "ShizukuBridge"
     private const val REQUEST_CODE_PERMISSION = 1001

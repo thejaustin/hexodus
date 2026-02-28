@@ -52,7 +52,7 @@ class CapabilityManager(private val appContext: Context) {
             isShizukuReady = isShizukuReady,
             isShizukuPlusReady = isShizukuPlusReady,
             isDhizukuReady = checkDhizuku(isShizukuPlusReady),
-            isADBEnabled = Settings.Global.getInt(appContext.contentResolver, Settings.Global.ADB_ENABLED, 0) > 0,
+            isADBEnabled = Settings.Global.getInt(HexodusApplication.context.contentResolver, Settings.Global.ADB_ENABLED, 0) > 0,
             isXposedActive = checkXposed(),
             isVectorActive = checkVector(),
             isS22Ultra = Build.MODEL.uppercase().contains("S908"),
@@ -68,7 +68,7 @@ class CapabilityManager(private val appContext: Context) {
             Class.forName("org.jingmatrix.vector.VectorBridge")
             true
         } catch (e: Exception) {
-            val intent = appContext.packageManager.getLaunchIntentForPackage("org.jingmatrix.vector")
+            val intent = HexodusApplication.context.packageManager.getLaunchIntentForPackage("org.jingmatrix.vector")
             intent != null
         }
     }
@@ -106,7 +106,7 @@ class CapabilityManager(private val appContext: Context) {
         }
 
         return try {
-            val intent = appContext.packageManager.getLaunchIntentForPackage("com.iamr0s.dhizuku")
+            val intent = HexodusApplication.context.packageManager.getLaunchIntentForPackage("com.iamr0s.dhizuku")
             intent != null
         } catch (e: Exception) {
             false

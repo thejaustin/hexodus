@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.collect
  * Includes wallpaper-based theming, system resource inspection, and more
  */
 object AdvancedFeatureService {
-    private val appContext get() = com.hexodus.HexodusApplication.context
+    
 
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
@@ -100,7 +100,7 @@ object AdvancedFeatureService {
             
             // Validate inputs
             if (SecurityUtils.containsDangerousChars(wallpaperPath) || 
-                !SecurityUtils.isValidFilePath(wallpaperPath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent).filterNotNull())) {
+                !SecurityUtils.isValidFilePath(wallpaperPath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent).filter { it != null })) {
                 Log.e(TAG, "Invalid wallpaper path: $wallpaperPath")
                 return
             }
@@ -133,14 +133,14 @@ object AdvancedFeatureService {
                 val successIntent = Intent("WALLPAPER_THEME_APPLIED")
                 successIntent.putExtra("primary_color", primaryColor)
                 successIntent.putExtra("wallpaper_path", wallpaperPath)
-                appContext.sendBroadcast(successIntent)
+                HexodusApplication.context.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to decode wallpaper: $wallpaperPath")
                 
                 // Broadcast failure
                 val failureIntent = Intent("WALLPAPER_THEME_ERROR")
                 failureIntent.putExtra("error_message", "Failed to decode wallpaper image")
-                appContext.sendBroadcast(failureIntent)
+                HexodusApplication.context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error applying wallpaper theme: ${e.message}", e)
@@ -148,12 +148,12 @@ object AdvancedFeatureService {
             // Broadcast error
             val errorIntent = Intent("WALLPAPER_THEME_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            appContext.sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
     /**
-     * Inspects system appContext.resources using Shizuku
+     * Inspects system HexodusApplication.context.resources using Shizuku
      */
     private fun inspectSystemResources(targetPackage: String) {
         try {
@@ -173,20 +173,20 @@ object AdvancedFeatureService {
                 "strings" to listOf("app_name", "title_activity_main", "menu_settings")
             )
             
-            Log.d(TAG, "Inspected appContext.resources for package: $sanitizedPackageName")
+            Log.d(TAG, "Inspected HexodusApplication.context.resources for package: $sanitizedPackageName")
             
             // Broadcast results
             val successIntent = Intent("SYSTEM_RESOURCES_INSPECTED")
             successIntent.putExtra("package_name", sanitizedPackageName)
-            successIntent.putExtra("appContext.resources", HashMap(resourcesMap))
-            appContext.sendBroadcast(successIntent)
+            successIntent.putExtra("HexodusApplication.context.resources", HashMap(resourcesMap))
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
-            Log.e(TAG, "Error inspecting system appContext.resources: ${e.message}", e)
+            Log.e(TAG, "Error inspecting system HexodusApplication.context.resources: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("SYSTEM_RESOURCES_INSPECTION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            appContext.sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -219,14 +219,14 @@ object AdvancedFeatureService {
             val successIntent = Intent("APP_GROUP_MANAGED")
             successIntent.putExtra("group_name", groupName)
             successIntent.putStringArrayListExtra("apps", ArrayList(apps))
-            appContext.sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error managing app group: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_GROUP_MANAGEMENT_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            appContext.sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -251,14 +251,14 @@ object AdvancedFeatureService {
             // Broadcast success
             val successIntent = Intent("QUICK_SETTINGS_CUSTOMIZED")
             successIntent.putExtra("config", config)
-            appContext.sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error customizing quick settings: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("QUICK_SETTINGS_CUSTOMIZATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            appContext.sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -285,14 +285,14 @@ object AdvancedFeatureService {
             // Broadcast success
             val successIntent = Intent("STATUS_BAR_ICONS_MODIFIED")
             successIntent.putStringArrayListExtra("icons", ArrayList(icons))
-            appContext.sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error modifying status bar icons: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("STATUS_BAR_ICONS_MODIFICATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            appContext.sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -317,14 +317,14 @@ object AdvancedFeatureService {
             // Broadcast success
             val successIntent = Intent("SYSTEM_ANIMATIONS_CONTROLLED")
             successIntent.putExtra("scale", scale)
-            appContext.sendBroadcast(successIntent)
+            HexodusApplication.context.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error controlling system animations: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("SYSTEM_ANIMATIONS_CONTROL_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            appContext.sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     

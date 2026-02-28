@@ -11,7 +11,7 @@ import com.hexodus.HexodusApplication
  * ModExtensionManager - Handles loading and interaction with third-party Hexodus mods
  */
 object ModExtensionManager {
-    private val appContext get() = com.hexodus.HexodusApplication.context
+    
 
     private const val TAG = "ModExtensionManager"
     private const val MOD_PERMISSION = "com.hexodus.permission.MOD_EXTENSION"
@@ -27,7 +27,7 @@ object ModExtensionManager {
 
     fun discoverMods(): List<ModExtension> {
         val mods = mutableListOf<ModExtension>()
-        val packageManager = appContext.packageManager
+        val packageManager = HexodusApplication.context.packageManager
         
         try {
             val intent = Intent(ACTION_MOD_SERVICE)
@@ -44,7 +44,7 @@ object ModExtensionManager {
                     
                     val modVersion = metaData?.getString("mod_version") ?: "1.0.0"
                     val modAuthor = metaData?.getString("mod_author") ?: "Unknown"
-                    val isVerified = SecurityUtils.isPackageSafe(appContext, packageName)
+                    val isVerified = SecurityUtils.isPackageSafe(HexodusApplication.context, packageName)
                     
                     mods.add(ModExtension(packageName, appName, modVersion, modAuthor, isVerified))
                     Log.d(TAG, "Discovered mod: $appName ($packageName) by $modAuthor")
@@ -59,7 +59,7 @@ object ModExtensionManager {
 
     fun executeModCommand(packageName: String, command: String): Boolean {
         try {
-            if (!SecurityUtils.isPackageSafe(appContext, packageName)) {
+            if (!SecurityUtils.isPackageSafe(HexodusApplication.context, packageName)) {
                 Log.e(TAG, "Blocked command execution for unsafe mod: $packageName")
                 return false
             }
@@ -68,7 +68,7 @@ object ModExtensionManager {
                 setPackage(packageName)
                 putExtra("command", command)
             }
-            appContext.startService(intent)
+            HexodusApplication.context.startService(intent)
             Log.d(TAG, "Executed command '$command' on mod '$packageName'")
             return true
         } catch (e: Exception) {

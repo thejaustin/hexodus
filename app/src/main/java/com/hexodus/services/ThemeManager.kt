@@ -16,7 +16,7 @@ import java.io.FileOutputStream
  * Handles theme creation, application, sharing, and persistence
  */
 object ThemeManager {
-    private val appContext get() = com.hexodus.HexodusApplication.context
+    
 
     
     private const val TAG = "ThemeManager"
@@ -32,7 +32,7 @@ object ThemeManager {
             val themeData = themeCompiler.compileTheme(hexColor, themePackageName, themeName, themedComponents)
             
             // Save the theme to internal storage
-            val themeFile = File(appContext.filesDir, "${themeName}_${System.currentTimeMillis()}.apk")
+            val themeFile = File(HexodusApplication.context.filesDir, "${themeName}_${System.currentTimeMillis()}.apk")
             FileOutputStream(themeFile).use { it.write(themeData) }
             
             Log.d(TAG, "Theme created: ${themeFile.absolutePath}")
@@ -40,14 +40,14 @@ object ThemeManager {
             val completeIntent = Intent("THEME_CREATION_COMPLETE")
             completeIntent.putExtra("theme_path", themeFile.absolutePath)
             completeIntent.putExtra("theme_name", themeName)
-            appContext.sendBroadcast(completeIntent)
+            HexodusApplication.context.sendBroadcast(completeIntent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error creating theme: ${e.message}", e)
             
             val errorIntent = Intent("THEME_CREATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            appContext.sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
     
@@ -62,14 +62,14 @@ object ThemeManager {
             
             val completeIntent = Intent("THEME_APPLICATION_COMPLETE")
             completeIntent.putExtra("theme_path", themeFilePath)
-            appContext.sendBroadcast(completeIntent)
+            HexodusApplication.context.sendBroadcast(completeIntent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error applying theme: ${e.message}", e)
             
             val errorIntent = Intent("THEME_APPLICATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            appContext.sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }
 }

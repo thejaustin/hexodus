@@ -17,7 +17,7 @@ import java.security.MessageDigest
  * Based on techniques from awesome-shizuku projects for system-level theming
  */
 object HighContrastInjectorService {
-    private val appContext get() = com.hexodus.HexodusApplication.context
+    
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
     private const val TAG = "HCInjectorService"
@@ -60,7 +60,7 @@ object HighContrastInjectorService {
             if (Build.VERSION.SDK_INT >= 35) {
                 val warningIntent = Intent("HIGH_CONTRAST_INJECTION_WARNING")
                 warningIntent.putExtra("warning", "Limited support on One UI 7/8. Some components may not theme correctly.")
-                appContext.sendBroadcast(warningIntent)
+                HexodusApplication.context.sendBroadcast(warningIntent)
             }
 
             val fakePackageName = generateFakeHighContrastPackage(hexColor, themeName, components)
@@ -73,7 +73,7 @@ object HighContrastInjectorService {
                         val successIntent = Intent("HIGH_CONTRAST_INJECTION_SUCCESS")
                         successIntent.putExtra("package_name", fakePackageName)
                         successIntent.putExtra("theme_name", themeName)
-                        appContext.sendBroadcast(successIntent)
+                        HexodusApplication.context.sendBroadcast(successIntent)
                     }
                 }
             }
@@ -84,7 +84,7 @@ object HighContrastInjectorService {
     
     private fun generateFakeHighContrastPackage(hexColor: String, themeName: String, components: List<String>): String? {
         try {
-            val tempDir = File(appContext.cacheDir, "hc_temp_${System.currentTimeMillis()}")
+            val tempDir = File(HexodusApplication.context.cacheDir, "hc_temp_${System.currentTimeMillis()}")
             tempDir.mkdirs()
             return "com.samsung.fake.hc.${generateRandomString(8)}"
         } catch (e: Exception) {

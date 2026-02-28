@@ -12,13 +12,13 @@ import java.io.File
  * OverlayManager - Singleton utility for managing overlays via Shizuku
  */
 object OverlayManager {
-    private val appContext get() = com.hexodus.HexodusApplication.context
+    
 
     
     private const val TAG = "OverlayManager"
 
     private fun useEnhancedApi(): Boolean {
-        val prefsManager = PrefsManager.getInstance(appContext)
+        val prefsManager = PrefsManager.getInstance(HexodusApplication.context)
         return prefsManager.preferShizukuPlus && ShizukuPlusAPI.isEnhancedApiSupported()
     }
 
@@ -90,7 +90,7 @@ object OverlayManager {
 
     fun applyTheme(themeData: ByteArray, themeName: String) {
         try {
-            val tempFile = File(appContext.cacheDir, "$themeName.apk")
+            val tempFile = File(HexodusApplication.context.cacheDir, "$themeName.apk")
             tempFile.writeBytes(themeData)
             activateOverlay("com.hexodus.theme.$themeName", tempFile.absolutePath, false)
         } catch (e: Exception) {
