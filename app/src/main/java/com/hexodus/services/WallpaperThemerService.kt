@@ -89,7 +89,7 @@ object WallpaperThemerService {
             }
             
             // Validate inputs
-            if (!SecurityUtils.isValidFilePath(imagePath, listOf(filesDir.parent, cacheDir.parent, "/sdcard"))) {
+            if (!SecurityUtils.isValidFilePath(imagePath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent, "/sdcard"))) {
                 Log.e(TAG, "Invalid image path: $imagePath")
                 return
             }
@@ -255,7 +255,7 @@ object WallpaperThemerService {
             }
             
             // Validate inputs
-            if (!SecurityUtils.isValidFilePath(imagePath, listOf(filesDir.parent, cacheDir.parent, "/sdcard"))) {
+            if (!SecurityUtils.isValidFilePath(imagePath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent, "/sdcard"))) {
                 Log.e(TAG, "Invalid image path: $imagePath")
                 return
             }
@@ -295,7 +295,7 @@ object WallpaperThemerService {
             }
             
             // Validate inputs
-            if (!SecurityUtils.isValidFilePath(imagePath, listOf(filesDir.parent, cacheDir.parent, "/sdcard"))) {
+            if (!SecurityUtils.isValidFilePath(imagePath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent, "/sdcard"))) {
                 Log.e(TAG, "Invalid image path: $imagePath")
                 return
             }

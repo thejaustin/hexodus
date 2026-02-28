@@ -297,7 +297,7 @@ object BackupRestoreService {
                 )
                 
                 // Save and install the theme overlay
-                val tempFile = File(cacheDir, "${theme.name.replace(" ", "_")}.apk")
+                val tempFile = File(HexodusApplication.context.cacheDir, "${theme.name.replace(" ", "_")}.apk")
                 FileOutputStream(tempFile).use { it.write(themeData) }
                 
                 val installSuccess = ShizukuBridge.installApk(tempFile.absolutePath)
@@ -441,7 +441,7 @@ object BackupRestoreService {
                 return
             }
             
-            if (!SecurityUtils.isValidFilePath(exportPath, listOf(filesDir.parent, cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(exportPath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent))) {
                 Log.e(TAG, "Invalid export path: $exportPath")
                 return
             }
@@ -506,7 +506,7 @@ object BackupRestoreService {
             }
             
             // Validate theme path
-            if (!SecurityUtils.isValidFilePath(themePath, listOf(filesDir.parent, cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(themePath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent))) {
                 Log.e(TAG, "Invalid theme path: $themePath")
                 return
             }

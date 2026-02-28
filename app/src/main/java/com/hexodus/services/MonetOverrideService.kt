@@ -167,7 +167,7 @@ object MonetOverrideService {
         
         // Simulate the process by storing the palette in shared preferences
         // which can be accessed by other parts of the app
-        val prefs = applicationContext.getSharedPreferences("monet_override", 0)
+        val prefs = HexodusApplication.context.applicationContext.getSharedPreferences("monet_override", 0)
         val editor = prefs.edit()
         
         for ((role, color) in palette) {
@@ -189,7 +189,7 @@ object MonetOverrideService {
      * Restores the original system palette
      */
     private fun restoreOriginalPalette() {
-        val prefs = applicationContext.getSharedPreferences("monet_override", 0)
+        val prefs = HexodusApplication.context.applicationContext.getSharedPreferences("monet_override", 0)
         val editor = prefs.edit()
         editor.clear()
         editor.apply()

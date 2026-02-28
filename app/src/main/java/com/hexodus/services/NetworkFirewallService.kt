@@ -53,26 +53,26 @@ object NetworkFirewallService {
         
         when (action) {
             ACTION_BLOCK_APP_NETWORK -> {
-                val HexodusApplication.context.packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val networkType = intent.getStringExtra(EXTRA_NETWORK_TYPE) ?: "all"
                 
-                if (!HexodusApplication.context.packageName.isNullOrEmpty()) {
-                    blockAppNetwork(HexodusApplication.context.packageName, networkType)
+                if (!packageName.isNullOrEmpty()) {
+                    blockAppNetwork(packageName, networkType)
                 }
             }
             ACTION_ALLOW_APP_NETWORK -> {
-                val HexodusApplication.context.packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 val networkType = intent.getStringExtra(EXTRA_NETWORK_TYPE) ?: "all"
                 
-                if (!HexodusApplication.context.packageName.isNullOrEmpty()) {
-                    allowAppNetwork(HexodusApplication.context.packageName, networkType)
+                if (!packageName.isNullOrEmpty()) {
+                    allowAppNetwork(packageName, networkType)
                 }
             }
             ACTION_GET_APP_NETWORK_ACCESS -> {
-                val HexodusApplication.context.packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
                 
-                if (!HexodusApplication.context.packageName.isNullOrEmpty()) {
-                    getAppNetworkAccess(HexodusApplication.context.packageName)
+                if (!packageName.isNullOrEmpty()) {
+                    getAppNetworkAccess(packageName)
                 }
             }
             ACTION_GET_NETWORK_ACTIVITY -> {
@@ -97,7 +97,7 @@ object NetworkFirewallService {
     /**
      * Blocks network access for an app using Shizuku
      */
-    private fun blockAppNetwork(HexodusApplication.context.packageName: String, networkType: String) {
+    private fun blockAppNetwork(packageName: String, networkType: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -105,9 +105,9 @@ object NetworkFirewallService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(HexodusApplication.context.packageName)
-            if (sanitizedPackageName != HexodusApplication.context.packageName) {
-                Log.w(TAG, "Package name was sanitized: $HexodusApplication.context.packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
+            if (sanitizedPackageName != packageName) {
+                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
             val validNetworkTypes = listOf("wifi", "mobile", "all")
@@ -138,7 +138,7 @@ object NetworkFirewallService {
     /**
      * Allows network access for an app using Shizuku
      */
-    private fun allowAppNetwork(HexodusApplication.context.packageName: String, networkType: String) {
+    private fun allowAppNetwork(packageName: String, networkType: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -146,9 +146,9 @@ object NetworkFirewallService {
             }
             
             // Validate inputs
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(HexodusApplication.context.packageName)
-            if (sanitizedPackageName != HexodusApplication.context.packageName) {
-                Log.w(TAG, "Package name was sanitized: $HexodusApplication.context.packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
+            if (sanitizedPackageName != packageName) {
+                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
             val validNetworkTypes = listOf("wifi", "mobile", "all")
@@ -179,7 +179,7 @@ object NetworkFirewallService {
     /**
      * Gets network access status for an app
      */
-    private fun getAppNetworkAccess(HexodusApplication.context.packageName: String) {
+    private fun getAppNetworkAccess(packageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -187,9 +187,9 @@ object NetworkFirewallService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(HexodusApplication.context.packageName)
-            if (sanitizedPackageName != HexodusApplication.context.packageName) {
-                Log.w(TAG, "Package name was sanitized: $HexodusApplication.context.packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
+            if (sanitizedPackageName != packageName) {
+                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, this would query network access status

@@ -130,9 +130,9 @@ object FoldableDisplayService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val windowMetrics: WindowMetrics = windowManager.currentWindowMetrics
             val bounds = windowMetrics.bounds
-            val resources = resources
-            val xdpi = resources.displayMetrics.xdpi
-            val ydpi = resources.displayMetrics.ydpi
+            val HexodusApplication.context.resources = HexodusApplication.context.resources
+            val xdpi = HexodusApplication.context.resources.displayMetrics.xdpi
+            val ydpi = HexodusApplication.context.resources.displayMetrics.ydpi
             if (xdpi <= 0f || ydpi <= 0f) return 6.0f
             val widthInches = bounds.width() / xdpi
             val heightInches = bounds.height() / ydpi
@@ -160,7 +160,7 @@ object FoldableDisplayService {
      * Updates resource mapping based on current display context
      */
     private fun updateResourceMapping() {
-        val prefs = applicationContext.getSharedPreferences("display_context", 0)
+        val prefs = HexodusApplication.context.applicationContext.getSharedPreferences("display_context", 0)
         val editor = prefs.edit()
 
         editor.putBoolean("is_cover_screen", isCoverScreen)
@@ -209,6 +209,6 @@ object FoldableDisplayService {
      * Gets display metrics for the current context
      */
     fun getCurrentDisplayMetrics(): DisplayMetrics {
-        return resources.displayMetrics
+        return HexodusApplication.context.resources.displayMetrics
     }
 }

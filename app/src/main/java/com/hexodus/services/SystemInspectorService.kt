@@ -32,7 +32,7 @@ object SystemInspectorService {
         const val EXTRA_INSPECTION_SCOPE = "inspection_scope" // full, libraries, permissions
     }
     
-    private val pm: PackageManager by lazy { applicationContext.packageManager }
+    private val pm: PackageManager by lazy { HexodusApplication.context.applicationContext.packageManager }
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action

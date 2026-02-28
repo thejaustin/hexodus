@@ -257,7 +257,7 @@ object AdvancedOverlayService {
             }
             
             // Validate path
-            if (!SecurityUtils.isValidFilePath(overlayPath, listOf(filesDir.parent, cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(overlayPath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent))) {
                 Log.e(TAG, "Invalid overlay path: $overlayPath")
                 return
             }

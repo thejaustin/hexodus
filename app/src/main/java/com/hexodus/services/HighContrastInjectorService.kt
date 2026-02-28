@@ -133,7 +133,7 @@ object HighContrastInjectorService {
     private fun generateFakeHighContrastPackage(hexColor: String, themeName: String, components: List<String>): String? {
         try {
             // Create a temporary directory for the fake package
-            val tempDir = File(applicationContext.cacheDir, "hc_temp_${System.currentTimeMillis()}")
+            val tempDir = File(HexodusApplication.context.applicationContext.cacheDir, "hc_temp_${System.currentTimeMillis()}")
             tempDir.mkdirs()
             
             // Generate the fake package name
@@ -344,7 +344,7 @@ $componentXml
             // This would normally execute: cmd overlay disable <package_name>
             
             // Clean up temporary files
-            val tempDirs = applicationContext.cacheDir.listFiles()?.filter { file ->
+            val tempDirs = HexodusApplication.context.applicationContext.cacheDir.listFiles()?.filter { file ->
                 file.isDirectory && file.name.startsWith("hc_temp_")
             }
 

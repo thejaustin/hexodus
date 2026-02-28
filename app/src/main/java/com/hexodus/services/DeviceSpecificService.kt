@@ -372,8 +372,8 @@ object DeviceSpecificService {
             val windowManager = HexodusApplication.context.getSystemService(Context.WINDOW_SERVICE) as android.view.WindowManager
             val windowMetrics = windowManager.currentWindowMetrics
             val bounds = windowMetrics.bounds
-            val xdpi = resources.displayMetrics.xdpi
-            val ydpi = resources.displayMetrics.ydpi
+            val xdpi = HexodusApplication.context.resources.displayMetrics.xdpi
+            val ydpi = HexodusApplication.context.resources.displayMetrics.ydpi
             if (xdpi <= 0f || ydpi <= 0f) return 0f
             val widthInches = bounds.width() / xdpi
             val heightInches = bounds.height() / ydpi

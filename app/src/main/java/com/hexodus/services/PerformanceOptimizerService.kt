@@ -45,9 +45,9 @@ object PerformanceOptimizerService {
                 getBatteryStats()
             }
             ACTION_OPTIMIZE_APP -> {
-                val HexodusApplication.context.packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
-                if (!HexodusApplication.context.packageName.isNullOrEmpty()) {
-                    optimizeApp(HexodusApplication.context.packageName)
+                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME)
+                if (!packageName.isNullOrEmpty()) {
+                    optimizeApp(packageName)
                 }
             }
             ACTION_MANAGE_POWER_MODE -> {
@@ -115,7 +115,7 @@ object PerformanceOptimizerService {
     /**
      * Optimizes an app using Shizuku
      */
-    private fun optimizeApp(HexodusApplication.context.packageName: String) {
+    private fun optimizeApp(packageName: String) {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -123,9 +123,9 @@ object PerformanceOptimizerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(HexodusApplication.context.packageName)
-            if (sanitizedPackageName != HexodusApplication.context.packageName) {
-                Log.w(TAG, "Package name was sanitized: $HexodusApplication.context.packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
+            if (sanitizedPackageName != packageName) {
+                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, this would optimize the app
@@ -302,7 +302,7 @@ object PerformanceOptimizerService {
     /**
      * Gets app-specific performance statistics
      */
-    fun getAppPerformanceStats(HexodusApplication.context.packageName: String): Map<String, Any>? {
+    fun getAppPerformanceStats(packageName: String): Map<String, Any>? {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -310,9 +310,9 @@ object PerformanceOptimizerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(HexodusApplication.context.packageName)
-            if (sanitizedPackageName != HexodusApplication.context.packageName) {
-                Log.w(TAG, "Package name was sanitized: $HexodusApplication.context.packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
+            if (sanitizedPackageName != packageName) {
+                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, this would query app performance stats
@@ -333,7 +333,7 @@ object PerformanceOptimizerService {
     /**
      * Forces app to be optimized by the system
      */
-    fun forceAppOptimization(HexodusApplication.context.packageName: String): Boolean {
+    fun forceAppOptimization(packageName: String): Boolean {
         try {
             if (!ShizukuBridge.isReady()) {
                 Log.e(TAG, "Shizuku is not ready")
@@ -341,9 +341,9 @@ object PerformanceOptimizerService {
             }
             
             // Validate package name
-            val sanitizedPackageName = SecurityUtils.sanitizePackageName(HexodusApplication.context.packageName)
-            if (sanitizedPackageName != HexodusApplication.context.packageName) {
-                Log.w(TAG, "Package name was sanitized: $HexodusApplication.context.packageName -> $sanitizedPackageName")
+            val sanitizedPackageName = SecurityUtils.sanitizePackageName(packageName)
+            if (sanitizedPackageName != packageName) {
+                Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
             // In a real implementation, this would force app optimization

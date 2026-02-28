@@ -180,7 +180,7 @@ object PrivacySecurityService {
     private fun hideFile(filePath: String) {
         try {
             // Validate file path
-            if (!SecurityUtils.isValidFilePath(filePath, listOf(filesDir.parent, cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(filePath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent))) {
                 Log.e(TAG, "Invalid file path: $filePath")
                 return
             }
@@ -235,7 +235,7 @@ object PrivacySecurityService {
     private fun unhideFile(filePath: String) {
         try {
             // Validate file path
-            if (!SecurityUtils.isValidFilePath(filePath, listOf(filesDir.parent, cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(filePath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent))) {
                 Log.e(TAG, "Invalid file path: $filePath")
                 return
             }

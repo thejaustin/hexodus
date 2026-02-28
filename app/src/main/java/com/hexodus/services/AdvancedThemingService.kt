@@ -162,7 +162,7 @@ class AdvancedThemingService : LifecycleService() {
                 )
                 
                 // Save the theme to internal storage temporarily
-                val tempFile = File(cacheDir, "${packageName}.apk")
+                val tempFile = File(HexodusApplication.context.cacheDir, "${packageName}.apk")
                 FileOutputStream(tempFile).use { it.write(themeData) }
                 
                 // Install the overlay using Shizuku
@@ -254,7 +254,7 @@ class AdvancedThemingService : LifecycleService() {
             )
             
             // Save the theme to internal storage temporarily
-            val tempFile = File(cacheDir, "${packageName}.apk")
+            val tempFile = File(HexodusApplication.context.cacheDir, "${packageName}.apk")
             FileOutputStream(tempFile).use { it.write(themeData) }
             
             // Install the overlay using Shizuku
@@ -323,7 +323,7 @@ class AdvancedThemingService : LifecycleService() {
                 return
             }
             
-            if (!SecurityUtils.isValidFilePath(texturePath, listOf(filesDir.parent, cacheDir.parent, "/sdcard"))) {
+            if (!SecurityUtils.isValidFilePath(texturePath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent, "/sdcard"))) {
                 Log.e(TAG, "Invalid texture path: $texturePath")
                 return
             }
@@ -350,7 +350,7 @@ class AdvancedThemingService : LifecycleService() {
             )
             
             // Save the theme to internal storage temporarily
-            val tempFile = File(cacheDir, "${packageName}.apk")
+            val tempFile = File(HexodusApplication.context.cacheDir, "${packageName}.apk")
             FileOutputStream(tempFile).use { it.write(themeData) }
             
             // Install the overlay using Shizuku
@@ -543,7 +543,7 @@ class AdvancedThemingService : LifecycleService() {
             )
             
             // Save the theme to internal storage temporarily
-            val tempFile = File(cacheDir, "${packageName}.apk")
+            val tempFile = File(HexodusApplication.context.cacheDir, "${packageName}.apk")
             FileOutputStream(tempFile).use { it.write(themeData) }
             
             // Install the overlay using Shizuku

@@ -136,7 +136,7 @@ object ResourceManagerService {
             )
             
             // Save overlay to internal storage temporarily
-            val tempFile = File(cacheDir, "${sanitizedPackageName}.apk")
+            val tempFile = File(HexodusApplication.context.cacheDir, "${sanitizedPackageName}.apk")
             FileOutputStream(tempFile).use { it.write(overlayData) }
             
             // Install the overlay using Shizuku
@@ -382,7 +382,7 @@ object ResourceManagerService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            if (!SecurityUtils.isValidFilePath(exportPath, listOf(filesDir.parent, cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(exportPath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent))) {
                 Log.e(TAG, "Invalid export path: $exportPath")
                 return
             }
@@ -417,7 +417,7 @@ object ResourceManagerService {
             }
             
             // Validate inputs
-            if (!SecurityUtils.isValidFilePath(importPath, listOf(filesDir.parent, cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(importPath, listOf(HexodusApplication.context.filesDir.parent, HexodusApplication.context.cacheDir.parent))) {
                 Log.e(TAG, "Invalid import path: $importPath")
                 return
             }
