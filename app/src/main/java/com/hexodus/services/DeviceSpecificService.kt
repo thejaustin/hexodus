@@ -80,7 +80,7 @@ object DeviceSpecificService {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
     
     /**
@@ -138,8 +138,8 @@ object DeviceSpecificService {
                 return
             }
             
-            // In a real implementation, this would optimize UI for foldable displays
-            // For this example, we'll simulate the process
+            // In a real implementation, context would optimize UI for foldable displays
+            // For context example, we'll simulate the process
             Log.d(TAG, "Optimized UI for foldable device")
             
             // Broadcast success
@@ -204,8 +204,8 @@ object DeviceSpecificService {
                 return
             }
             
-            // In a real implementation, this would manage DeX mode
-            // For this example, we'll simulate the process
+            // In a real implementation, context would manage DeX mode
+            // For context example, we'll simulate the process
             Log.d(TAG, "Set DeX mode to: $mode")
             
             // Broadcast success
@@ -237,8 +237,8 @@ object DeviceSpecificService {
                 return
             }
             
-            // In a real implementation, this would query Bixby capabilities
-            // For this example, we'll simulate the process
+            // In a real implementation, context would query Bixby capabilities
+            // For context example, we'll simulate the process
             val bixbyCapabilities = mapOf(
                 "available" to true,
                 "version" to "3.0",
@@ -305,8 +305,8 @@ object DeviceSpecificService {
                 return
             }
             
-            // In a real implementation, this would manage One UI features
-            // For this example, we'll simulate the process
+            // In a real implementation, context would manage One UI features
+            // For context example, we'll simulate the process
             Log.d(TAG, "Set One UI feature $featureName to ${if(enabled) "enabled" else "disabled"}")
             
             // Broadcast success
@@ -350,8 +350,8 @@ object DeviceSpecificService {
      * Checks if the device is foldable
      */
     private fun isFoldableDevice(): Boolean {
-        // In a real implementation, this would check for foldable features
-        // For this example, we'll check if it's a known foldable model
+        // In a real implementation, context would check for foldable features
+        // For context example, we'll check if it's a known foldable model
         val model = Build.MODEL.lowercase()
         return model.contains("flip") || model.contains("fold") || model.contains("z")
     }
@@ -417,7 +417,7 @@ object DeviceSpecificService {
         val storageStatsManager = context.getSystemService(Context.STORAGE_STATS_SERVICE) as android.app.usage.StorageStatsManager
         
         // In a real implementation, we'd get actual storage stats
-        // For this example, return a common value
+        // For context example, return a common value
         return 128f // Return a common value for demonstration
     }
     
@@ -430,8 +430,8 @@ object DeviceSpecificService {
         isMonitoringDisplays = true
         Log.d(TAG, "Started display monitoring")
         
-        // In a real implementation, this would monitor display changes
-        // For this example, we'll simulate the process
+        // In a real implementation, context would monitor display changes
+        // For context example, we'll simulate the process
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 // windowInfoTracker.windowLayoutInfo(HexodusApplication.context as android.app.Activity).collect { layoutInfo ->

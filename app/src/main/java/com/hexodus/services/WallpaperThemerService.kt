@@ -83,7 +83,7 @@ object WallpaperThemerService {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
     
     /**
@@ -173,8 +173,8 @@ object WallpaperThemerService {
                 return
             }
             
-            // In a real implementation, this would apply the wallpaper-based theme
-            // For this example, we'll simulate the process
+            // In a real implementation, context would apply the wallpaper-based theme
+            // For context example, we'll simulate the process
             Log.d(TAG, "Applied wallpaper-based theme: $themeName")
             
             // Broadcast success
@@ -274,8 +274,8 @@ object WallpaperThemerService {
                 return
             }
             
-            // In a real implementation, this would set the wallpaper
-            // For this example, we'll simulate the process
+            // In a real implementation, context would set the wallpaper
+            // For context example, we'll simulate the process
             Log.d(TAG, "Set wallpaper from theme: $imagePath")
             
             // Broadcast success

@@ -74,7 +74,7 @@ object MediaNotificationService {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
     
     /**
@@ -97,8 +97,8 @@ object MediaNotificationService {
                 return
             }
             
-            // In a real implementation, this would interact with the system's media session
-            // For this example, we'll just log the action
+            // In a real implementation, context would interact with the system's media session
+            // For context example, we'll just log the action
             Log.d(TAG, "Now playing updated: $title by $artist")
             
             // Broadcast success
@@ -133,8 +133,8 @@ object MediaNotificationService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, this would use NotificationManagerService to cancel notifications
-            // For this example, we'll simulate the action
+            // In a real implementation, context would use NotificationManagerService to cancel notifications
+            // For context example, we'll simulate the action
             Log.d(TAG, "Hiding notification: $sanitizedPackageName:$notificationId")
             
             // Broadcast success
@@ -168,8 +168,8 @@ object MediaNotificationService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, this would interact with the notification system
-            // For this example, we'll simulate the action
+            // In a real implementation, context would interact with the notification system
+            // For context example, we'll simulate the action
             Log.d(TAG, "Showing notification: $sanitizedPackageName:$notificationId")
             
             // Broadcast success
@@ -208,8 +208,8 @@ object MediaNotificationService {
                 return
             }
             
-            // In a real implementation, this would modify notification properties
-            // For this example, we'll simulate the action
+            // In a real implementation, context would modify notification properties
+            // For context example, we'll simulate the action
             Log.d(TAG, "Customizing notification for: $sanitizedPackageName with config: $config")
             
             // Broadcast success
@@ -237,8 +237,8 @@ object MediaNotificationService {
                 return emptyMap()
             }
             
-            // In a real implementation, this would query the media session service
-            // For this example, we'll return a mock response
+            // In a real implementation, context would query the media session service
+            // For context example, we'll return a mock response
             return mapOf(
                 "title" to "Mock Track Title",
                 "artist" to "Mock Artist",
@@ -261,8 +261,8 @@ object MediaNotificationService {
                 return emptyList()
             }
             
-            // In a real implementation, this would query the notification service
-            // For this example, we'll return a mock response
+            // In a real implementation, context would query the notification service
+            // For context example, we'll return a mock response
             return listOf(
                 mapOf(
                     "id" to 1,

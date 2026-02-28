@@ -76,7 +76,7 @@ object PerformanceOptimizerService {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
     
     /**
@@ -89,8 +89,8 @@ object PerformanceOptimizerService {
                 return
             }
             
-            // In a real implementation, this would query battery stats using Shizuku
-            // For this example, we'll simulate the process
+            // In a real implementation, context would query battery stats using Shizuku
+            // For context example, we'll simulate the process
             val batteryStats = mapOf(
                 "battery_level" to 85,
                 "battery_temperature" to 32.5f,
@@ -136,8 +136,8 @@ object PerformanceOptimizerService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, this would optimize the app
-            // For this example, we'll simulate the process
+            // In a real implementation, context would optimize the app
+            // For context example, we'll simulate the process
             Log.d(TAG, "Optimized app: $sanitizedPackageName")
             
             // Broadcast success
@@ -170,8 +170,8 @@ object PerformanceOptimizerService {
                 return
             }
             
-            // In a real implementation, this would set the power mode
-            // For this example, we'll simulate the process
+            // In a real implementation, context would set the power mode
+            // For context example, we'll simulate the process
             Log.d(TAG, "Set power mode to: $mode")
             
             // Broadcast success
@@ -202,8 +202,8 @@ object PerformanceOptimizerService {
             val storageManager = context.getSystemService(Context.STORAGE_SERVICE) as StorageManager
             val storageStatsManager = context.getSystemService(Context.STORAGE_STATS_SERVICE) as StorageStatsManager
             
-            // In a real implementation, this would query storage stats
-            // For this example, we'll simulate the process
+            // In a real implementation, context would query storage stats
+            // For context example, we'll simulate the process
             val storageStats = mapOf(
                 "total_space" to 128L * 1024 * 1024 * 1024, // 128 GB
                 "available_space" to 45L * 1024 * 1024 * 1024, // 45 GB
@@ -247,8 +247,8 @@ object PerformanceOptimizerService {
                 return
             }
             
-            // In a real implementation, this would clean storage
-            // For this example, we'll simulate the process
+            // In a real implementation, context would clean storage
+            // For context example, we'll simulate the process
             Log.d(TAG, "Cleaned storage with scope: $scope")
             
             // Calculate freed space (simulated)
@@ -278,8 +278,8 @@ object PerformanceOptimizerService {
      */
     private fun getMemoryInfo() {
         try {
-            // In a real implementation, this would query memory info
-            // For this example, we'll simulate the process
+            // In a real implementation, context would query memory info
+            // For context example, we'll simulate the process
             val memoryInfo = mapOf(
                 "total_ram" to 8L * 1024 * 1024 * 1024, // 8 GB
                 "available_ram" to 2L * 1024 * 1024 * 1024, // 2 GB
@@ -323,8 +323,8 @@ object PerformanceOptimizerService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, this would query app performance stats
-            // For this example, we'll return mock data
+            // In a real implementation, context would query app performance stats
+            // For context example, we'll return mock data
             return mapOf(
                 "cpu_usage_percent" to 12.5f,
                 "memory_usage_bytes" to 150_000_000L,
@@ -354,8 +354,8 @@ object PerformanceOptimizerService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, this would force app optimization
-            // For this example, we'll simulate the process
+            // In a real implementation, context would force app optimization
+            // For context example, we'll simulate the process
             Log.d(TAG, "Forced optimization for app: $sanitizedPackageName")
             return true
         } catch (e: Exception) {

@@ -86,7 +86,7 @@ object SystemInspectorService {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
     
     /**
@@ -105,8 +105,8 @@ object SystemInspectorService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, this would inspect the app's libraries
-            // For this example, we'll simulate the process
+            // In a real implementation, context would inspect the app's libraries
+            // For context example, we'll simulate the process
             val libraries = listOf(
                 mapOf(
                     "name" to "okhttp",
@@ -271,8 +271,8 @@ object SystemInspectorService {
                 return
             }
             
-            // In a real implementation, this would inspect the app's resources
-            // For this example, we'll simulate the process
+            // In a real implementation, context would inspect the app's resources
+            // For context example, we'll simulate the process
             val resources = when (resourceType) {
                 "drawable" -> listOf("ic_launcher", "ic_menu", "bg_splash")
                 "string" -> listOf("app_name", "title_activity_main", "menu_settings")
@@ -375,8 +375,8 @@ object SystemInspectorService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, this would query the app's native libraries
-            // For this example, we'll simulate the process
+            // In a real implementation, context would query the app's native libraries
+            // For context example, we'll simulate the process
             val abiInfo = mapOf(
                 "primary_abi" to "arm64-v8a",
                 "secondary_abi" to "armeabi-v7a",
@@ -410,8 +410,8 @@ object SystemInspectorService {
                 return
             }
             
-            // In a real implementation, this would query various system health metrics
-            // For this example, we'll simulate the process
+            // In a real implementation, context would query various system health metrics
+            // For context example, we'll simulate the process
             val systemHealth = mapOf(
                 "cpu_usage_percent" to 25.5f,
                 "memory_usage_percent" to 45.2f,
@@ -496,8 +496,8 @@ object SystemInspectorService {
                 return emptyMap()
             }
             
-            // In a real implementation, this would use pm path and du commands to get size
-            // For this example, we'll return mock data
+            // In a real implementation, context would use pm path and du commands to get size
+            // For context example, we'll return mock data
             return mapOf(
                 "code_size_bytes" to (50 * 1024 * 1024L), // 50 MB
                 "data_size_bytes" to (10 * 1024 * 1024L), // 10 MB

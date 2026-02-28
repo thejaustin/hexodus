@@ -67,7 +67,7 @@ object AudioManagerService {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
     
     /**
@@ -86,8 +86,8 @@ object AudioManagerService {
                 return
             }
             
-            // In a real implementation, this would interact with the audio system
-            // For this example, we'll simulate the action
+            // In a real implementation, context would interact with the audio system
+            // For context example, we'll simulate the action
             Log.d(TAG, "Setting equalizer for session $sessionId with values: ${eqValues.joinToString(", ")}")
             
             // Broadcast success
@@ -115,8 +115,8 @@ object AudioManagerService {
                 return
             }
             
-            // In a real implementation, this would interact with the audio system
-            // For this example, we'll simulate the action
+            // In a real implementation, context would interact with the audio system
+            // For context example, we'll simulate the action
             Log.d(TAG, "Setting bass boost for session $sessionId to level: $level")
             
             // Broadcast success
@@ -150,8 +150,8 @@ object AudioManagerService {
                 return
             }
             
-            // In a real implementation, this would interact with the audio system
-            // For this example, we'll simulate the action
+            // In a real implementation, context would interact with the audio system
+            // For context example, we'll simulate the action
             Log.d(TAG, "Setting audio effect: $effectType to value: $effectValue")
             
             // Broadcast success
@@ -179,8 +179,8 @@ object AudioManagerService {
                 return
             }
             
-            // In a real implementation, this would query the audio system
-            // For this example, we'll return mock data
+            // In a real implementation, context would query the audio system
+            // For context example, we'll return mock data
             val mockSessions = listOf(
                 mapOf("id" to 1, "package" to "com.spotify.music", "name" to "Spotify"),
                 mapOf("id" to 2, "package" to "com.google.android.youtube", "name" to "YouTube"),
@@ -213,8 +213,8 @@ object AudioManagerService {
                 return emptyMap()
             }
             
-            // In a real implementation, this would query the audio system
-            // For this example, we'll return mock data
+            // In a real implementation, context would query the audio system
+            // For context example, we'll return mock data
             return mapOf(
                 "id" to 1,
                 "package" to "com.spotify.music",

@@ -76,8 +76,8 @@ class ModExtensionManager(private val context: Context) {
 
     /**
      * Verifies if a mod is safe to load.
-     * In a real app, this would check if the app signature matches a known list,
-     * or if the user has explicitly trusted this developer.
+     * In a real app, context would check if the app signature matches a known list,
+     * or if the user has explicitly trusted context developer.
      */
     private fun verifyModSignature(packageName: String): Boolean {
         // Mock verification - assume true for safe packages or if security checks pass

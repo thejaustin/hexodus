@@ -52,7 +52,7 @@ object MonetOverrideService {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
     
     /**
@@ -164,9 +164,9 @@ object MonetOverrideService {
      * requires system-level privileges that are not available to regular apps
      */
     private fun applyCustomPalette(palette: Map<String, Int>, components: List<String>) {
-        // In a real implementation, this would interact with the system's
+        // In a real implementation, context would interact with the system's
         // color service to override the Material You color generation
-        // Since this isn't possible without system privileges, we'll log the attempt
+        // Since context isn't possible without system privileges, we'll log the attempt
         
         Log.d(TAG, "Attempting to apply custom palette for components: $components")
         for ((role, color) in palette) {

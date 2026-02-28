@@ -83,7 +83,7 @@ object PowerManagerService {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
     
     /**
@@ -369,8 +369,8 @@ object PowerManagerService {
         try {
             Log.d(TAG, "Scheduled power optimization at $scheduleTime with threshold $threshold%")
             
-            // In a real implementation, this would schedule a job
-            // For this example, we'll just log the action
+            // In a real implementation, context would schedule a job
+            // For context example, we'll just log the action
             Log.d(TAG, "Power optimization scheduled for $scheduleTime with threshold $threshold%")
             
             // Broadcast success
@@ -441,8 +441,8 @@ object PowerManagerService {
      * Gets current power profile
      */
     fun getCurrentPowerProfile(): String {
-        // In a real implementation, this would query the system
-        // For this example, we'll return a default value
+        // In a real implementation, context would query the system
+        // For context example, we'll return a default value
         return "balanced"
     }
     

@@ -64,7 +64,7 @@ object DynamicColorService {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
     
     /**
@@ -109,8 +109,8 @@ object DynamicColorService {
      */
     private fun applyDynamicColors(baseColor: Int, components: ArrayList<String>) {
         try {
-            // In a real implementation, this would apply the colors to the system
-            // For this example, we'll just log the action
+            // In a real implementation, context would apply the colors to the system
+            // For context example, we'll just log the action
             Log.d(TAG, "Applying dynamic colors to components: ${components.joinToString(", ")}")
             
             // This would typically involve:
@@ -142,8 +142,8 @@ object DynamicColorService {
      */
     private fun updateWallpaperColors() {
         try {
-            // In a real implementation, this would extract colors from the current wallpaper
-            // For this example, we'll simulate the process
+            // In a real implementation, context would extract colors from the current wallpaper
+            // For context example, we'll simulate the process
             Log.d(TAG, "Updating colors based on wallpaper")
             
             // Simulate extracting colors from wallpaper
@@ -247,8 +247,8 @@ object DynamicColorService {
      * Gets the current dynamic color scheme
      */
     fun getCurrentDynamicColorScheme(): Map<String, Int> {
-        // In a real implementation, this would return the current dynamic color scheme
-        // For this example, we'll return a default scheme
+        // In a real implementation, context would return the current dynamic color scheme
+        // For context example, we'll return a default scheme
         return mapOf(
             "primary" to Color(0xFF6200EE).toArgb(),
             "secondary" to Color(0xFF03DAC6).toArgb(),

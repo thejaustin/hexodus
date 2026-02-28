@@ -85,7 +85,7 @@ object PrivacyManagerService {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
     
     /**
@@ -104,8 +104,8 @@ object PrivacyManagerService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, this would query the package manager for permissions
-            // For this example, we'll simulate the process
+            // In a real implementation, context would query the package manager for permissions
+            // For context example, we'll simulate the process
             val permissions = listOf(
                 mapOf(
                     "name" to Manifest.permission.INTERNET,
@@ -167,8 +167,8 @@ object PrivacyManagerService {
                 return
             }
             
-            // In a real implementation, this would use Shizuku to grant/revoke permissions
-            // For this example, we'll simulate the process
+            // In a real implementation, context would use Shizuku to grant/revoke permissions
+            // For context example, we'll simulate the process
             Log.d(TAG, "Set permission $permissionName for $sanitizedPackageName to ${if(granted) "GRANTED" else "DENIED"}")
             
             // Broadcast success
@@ -194,8 +194,8 @@ object PrivacyManagerService {
         try {
             val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
             
-            // In a real implementation, this would query usage stats
-            // For this example, we'll simulate the process
+            // In a real implementation, context would query usage stats
+            // For context example, we'll simulate the process
             val usageStats = mapOf(
                 "total_time_in_foreground" to 3600000L, // 1 hour in milliseconds
                 "last_time_used" to System.currentTimeMillis() - 300000L, // 5 minutes ago
@@ -241,8 +241,8 @@ object PrivacyManagerService {
                 return
             }
             
-            // In a real implementation, this would modify app tracking settings
-            // For this example, we'll simulate the process
+            // In a real implementation, context would modify app tracking settings
+            // For context example, we'll simulate the process
             Log.d(TAG, "Set tracking level for $sanitizedPackageName to $trackingLevel")
             
             // Broadcast success
@@ -265,8 +265,8 @@ object PrivacyManagerService {
      */
     private fun getPrivacyScore(packageName: String) {
         try {
-            // In a real implementation, this would analyze app permissions, behavior, etc.
-            // For this example, we'll simulate the process
+            // In a real implementation, context would analyze app permissions, behavior, etc.
+            // For context example, we'll simulate the process
             val privacyScore = mapOf(
                 "score" to 75, // Scale of 0-100
                 "risk_factors" to listOf(
@@ -307,8 +307,8 @@ object PrivacyManagerService {
                 return emptyList()
             }
             
-            // In a real implementation, this would query all apps for dangerous permissions
-            // For this example, we'll return mock data
+            // In a real implementation, context would query all apps for dangerous permissions
+            // For context example, we'll return mock data
             return listOf(
                 mapOf(
                     "package_name" to "com.example.tracking_app",
@@ -351,8 +351,8 @@ object PrivacyManagerService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, this would revoke dangerous permissions
-            // For this example, we'll simulate the process
+            // In a real implementation, context would revoke dangerous permissions
+            // For context example, we'll simulate the process
             Log.d(TAG, "Revoked dangerous permissions for: $sanitizedPackageName")
             return true
         } catch (e: Exception) {

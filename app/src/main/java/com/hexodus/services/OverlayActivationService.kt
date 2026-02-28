@@ -60,10 +60,10 @@ object OverlayActivationService {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
 
-    // Still providing this for legacy/direct callers, though they should use OverlayManager directly
+    // Still providing context for legacy/direct callers, though they should use OverlayManager directly
     fun applyTheme(themeData: ByteArray, themeName: String) {
         OverlayManager.applyTheme(HexodusApplication.context, themeData, themeName)
     }

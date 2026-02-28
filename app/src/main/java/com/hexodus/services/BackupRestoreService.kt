@@ -113,7 +113,7 @@ object BackupRestoreService {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
     
     /**
@@ -296,7 +296,7 @@ object BackupRestoreService {
             // Apply themes
             for (theme in backupData.themes) {
                 // Create and apply each theme
-                val themeCompiler = ThemeCompiler()
+                themeCompiler = ThemeCompiler()
                 val themeData = themeCompiler.compileTheme(
                     theme.hexColor,
                     "com.hexodus.restored.${theme.name.replace(" ", "_").lowercase()}.${System.currentTimeMillis()}",
@@ -329,7 +329,7 @@ object BackupRestoreService {
             
             // Apply overlays
             for (overlay in backupData.overlays) {
-                // In a real implementation, this would restore overlay configurations
+                // In a real implementation, context would restore overlay configurations
                 Log.d(TAG, "Restored overlay: ${overlay.packageName}")
             }
             
@@ -458,8 +458,8 @@ object BackupRestoreService {
             val exportDir = File(exportPath).parentFile
             exportDir?.mkdirs()
             
-            // In a real implementation, this would export the theme
-            // For this example, we'll simulate the process
+            // In a real implementation, context would export the theme
+            // For context example, we'll simulate the process
             val exportFile = File(exportPath, "${themeName.replace(" ", "_")}.hextheme")
             
             // Create a mock theme export
@@ -480,7 +480,7 @@ object BackupRestoreService {
                 zipOutputStream.write(metadata.toByteArray())
                 zipOutputStream.closeEntry()
                 
-                // Add theme resources (in a real implementation, this would include actual resources)
+                // Add theme resources (in a real implementation, context would include actual resources)
                 val resourcesEntry = ZipEntry("resources/")
                 zipOutputStream.putNextEntry(resourcesEntry)
                 zipOutputStream.closeEntry()
@@ -530,8 +530,8 @@ object BackupRestoreService {
                 return
             }
             
-            // In a real implementation, this would import the theme
-            // For this example, we'll simulate the process
+            // In a real implementation, context would import the theme
+            // For context example, we'll simulate the process
             Log.d(TAG, "Imported theme from: $themePath")
             
             // Broadcast success
@@ -557,8 +557,8 @@ object BackupRestoreService {
         includeAppSettings: Boolean,
         includeSystemSettings: Boolean
     ): BackupData {
-        // In a real implementation, this would gather actual theme and settings data
-        // For this example, we'll return mock data
+        // In a real implementation, context would gather actual theme and settings data
+        // For context example, we'll return mock data
         return BackupData(
             themes = listOf(
                 ThemeData(
@@ -604,8 +604,8 @@ object BackupRestoreService {
                 while (entry != null) {
                     if (entry.name == "metadata.json") {
                         val metadataJson = zipInputStream.bufferedReader().readText()
-                        // In a real implementation, this would parse the JSON
-                        // For this example, we'll return mock data
+                        // In a real implementation, context would parse the JSON
+                        // For context example, we'll return mock data
                         return BackupMetadata(
                             name = "Mock Backup",
                             type = "full",
@@ -644,8 +644,8 @@ object BackupRestoreService {
                     when (entry.name) {
                         "themes.json" -> {
                             val themesJson = zipInputStream.bufferedReader().readText()
-                            // In a real implementation, this would parse the JSON
-                            // For this example, we'll add mock data
+                            // In a real implementation, context would parse the JSON
+                            // For context example, we'll add mock data
                             themes.add(
                                 ThemeData(
                                     name = "Restored Theme",
@@ -658,15 +658,15 @@ object BackupRestoreService {
                         }
                         "settings.json" -> {
                             val settingsJson = zipInputStream.bufferedReader().readText()
-                            // In a real implementation, this would parse the JSON
-                            // For this example, we'll add mock data
+                            // In a real implementation, context would parse the JSON
+                            // For context example, we'll add mock data
                             appSettings["auto_apply_on_boot"] = true
                             systemSettings["immersive_mode"] = false
                         }
                         "overlays.json" -> {
                             val overlaysJson = zipInputStream.bufferedReader().readText()
-                            // In a real implementation, this would parse the JSON
-                            // For this example, we'll add mock data
+                            // In a real implementation, context would parse the JSON
+                            // For context example, we'll add mock data
                             overlays.add(
                                 OverlayData(
                                     packageName = "com.hexodus.overlay.navbar",

@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.util.Log
 import java.io.IOException
 import rikka.shizuku.Shizuku
+import rikka.shizuku.ShizukuRemoteProcess
 
 /**
  * ShizukuBridge - Enhanced bridge for Shizuku communication
@@ -21,9 +22,6 @@ object ShizukuBridge {
     private val packageManager: android.content.pm.PackageManager get() = context.packageManager
     private val applicationContext: android.content.Context get() = context
 
-    
-
-    
     private const val TAG = "ShizukuBridge"
     private const val REQUEST_CODE_PERMISSION = 1001
     
@@ -70,13 +68,11 @@ object ShizukuBridge {
 
         return try {
             // Execute the command using Shizuku's privileged shell access.
-            // Using the public API in Shizuku 13+
-            
             // Use reflection because newProcess is private in some versions
             val newProcessMethod = Shizuku::class.java.getDeclaredMethod("newProcess", Array<String>::class.java, Array<String>::class.java, String::class.java)
             newProcessMethod.isAccessible = true
-            val process = newProcessMethod.invoke(null, arrayOf("sh", "-c", command), null, null) as rikka.shizuku.ShizukuRemoteProcess
-        
+            val process = newProcessMethod.invoke(null, arrayOf("sh", "-c", command), null, null) as ShizukuRemoteProcess
+            
             val output = process.inputStream.bufferedReader().readText()
             val errorOutput = process.errorStream.bufferedReader().readText()
             val exitCode = process.waitFor()

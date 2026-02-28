@@ -1,46 +1,156 @@
 package moe.shizuku.plus
 
+import rikka.shizuku.ShizukuPlusAPI as RealAPI
+import android.os.IBinder
+
 /**
- * Stub implementation of ShizukuPlusAPI.
- * isEnhancedApiSupported() always returns false so all callers fall through
- * to their existing standard-Shizuku fallback paths.
+ * ShizukuPlusAPI Wrapper.
+ * This object provides a bridge to the rikka.shizuku.ShizukuPlusAPI library
+ * while ensuring backward compatibility with standard Shizuku servers.
  */
 object ShizukuPlusAPI {
 
-    fun isEnhancedApiSupported(): Boolean = false
+    /**
+     * Check if the connected server supports Shizuku+ Enhanced API features.
+     */
+    fun isEnhancedApiSupported(): Boolean {
+        return try {
+            RealAPI.isEnhancedApiSupported()
+        } catch (e: Exception) {
+            false
+        }
+    }
 
     object Shell {
-        data class Result(val output: String)
-        fun executeCommand(command: String): Result =
-            throw UnsupportedOperationException("ShizukuPlus not available")
+        data class Result(val output: String, val exitCode: Int = 0) {
+            fun isSuccess() = exitCode == 0
+        }
+        
+        /**
+         * Execute a shell command synchronously.
+         */
+        fun executeCommand(command: String): Result {
+            return try {
+                val res = RealAPI.Shell.executeCommand(command)
+                Result(res.output, res.exitCode)
+            } catch (e: Exception) {
+                // Manual fallback using ShizukuBridge if library fails or not on Shizuku+
+                val output = com.hexodus.services.ShizukuBridge.executeShellCommand(command) ?: ""
+                Result(output, 0)
+            }
+        }
     }
 
     object OverlayManager {
-        fun enableOverlay(packageName: String): Unit =
-            throw UnsupportedOperationException("ShizukuPlus not available")
-        fun disableOverlay(packageName: String): Unit =
-            throw UnsupportedOperationException("ShizukuPlus not available")
+        /**
+         * Enable a system overlay.
+         */
+        fun enableOverlay(packageName: String): Boolean {
+            return try {
+                RealAPI.OverlayManager.enableOverlay(packageName)
+                true
+            } catch (e: Exception) {
+                com.hexodus.services.ShizukuBridge.executeOverlayCommand(packageName, "enable")
+            }
+        }
+
+        /**
+         * Disable a system overlay.
+         */
+        fun disableOverlay(packageName: String): Boolean {
+            return try {
+                RealAPI.OverlayManager.disableOverlay(packageName)
+                true
+            } catch (e: Exception) {
+                com.hexodus.services.ShizukuBridge.executeOverlayCommand(packageName, "disable")
+            }
+        }
     }
 
     object PackageManager {
-        fun installPackage(path: String): Unit =
-            throw UnsupportedOperationException("ShizukuPlus not available")
-        fun uninstallPackage(packageName: String): Unit =
-            throw UnsupportedOperationException("ShizukuPlus not available")
+        /**
+         * Install an APK file.
+         */
+        fun installPackage(path: String): Boolean {
+            return try {
+                RealAPI.PackageManager.installPackage(path)
+                true
+            } catch (e: Exception) {
+                com.hexodus.services.ShizukuBridge.installApk(path)
+            }
+        }
+
+        /**
+         * Uninstall a package.
+         */
+        fun uninstallPackage(packageName: String): Boolean {
+            return try {
+                RealAPI.PackageManager.uninstallPackage(packageName)
+                true
+            } catch (e: Exception) {
+                com.hexodus.services.ShizukuBridge.uninstallPackage(packageName)
+            }
+        }
     }
 
     object Settings {
-        fun putSystem(key: String, value: Any): Unit =
-            throw UnsupportedOperationException("ShizukuPlus not available")
-        fun getSystem(key: String): String? =
-            throw UnsupportedOperationException("ShizukuPlus not available")
-        fun putGlobal(key: String, value: Any): Unit =
-            throw UnsupportedOperationException("ShizukuPlus not available")
-        fun putSecure(key: String, value: Any): Unit =
-            throw UnsupportedOperationException("ShizukuPlus not available")
+        fun putSystem(key: String, value: Any): Boolean {
+            return try {
+                RealAPI.Settings.putSystem(key, value.toString())
+                true
+            } catch (e: Exception) {
+                com.hexodus.services.ShizukuBridge.executeShellCommand("settings put system $key $value") != null
+            }
+        }
+
+        fun getSystem(key: String): String? {
+            return try {
+                RealAPI.Settings.getSystem(key)
+            } catch (e: Exception) {
+                com.hexodus.services.ShizukuBridge.executeShellCommand("settings get system $key")
+            }
+        }
+
+        fun putSecure(key: String, value: Any): Boolean {
+            return try {
+                RealAPI.Settings.putSecure(key, value.toString())
+                true
+            } catch (e: Exception) {
+                com.hexodus.services.ShizukuBridge.executeShellCommand("settings put secure $key $value") != null
+            }
+        }
+
+        fun putGlobal(key: String, value: Any): Boolean {
+            return try {
+                RealAPI.Settings.putGlobal(key, value.toString())
+                true
+            } catch (e: Exception) {
+                com.hexodus.services.ShizukuBridge.executeShellCommand("settings put global $key $value") != null
+            }
+        }
     }
 
     object Dhizuku {
-        fun isAvailable(): Boolean = false
+        /**
+         * Check if Dhizuku mode is active.
+         */
+        fun isAvailable(): Boolean {
+            return try {
+                RealAPI.Dhizuku.isAvailable()
+            } catch (e: Exception) {
+                false
+            }
+        }
+
+        /**
+         * Get the DevicePolicyManager binder.
+         */
+        fun getBinder(): IBinder? {
+            return try {
+                RealAPI.Dhizuku.getBinder()
+            } catch (e: Exception) {
+                null
+            }
+        }
     }
 }

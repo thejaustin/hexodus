@@ -20,43 +20,41 @@ object OverlayManager {
     private val packageManager: android.content.pm.PackageManager get() = context.packageManager
     private val applicationContext: android.content.Context get() = context
 
-    
-
     private const val TAG = "OverlayManager"
 
-    private fun useEnhancedApi(context: Context): Boolean {
+    private fun useEnhancedApi(): Boolean {
         val prefsManager = PrefsManager.getInstance(context)
         return prefsManager.preferShizukuPlus && ShizukuPlusAPI.isEnhancedApiSupported()
     }
 
-    fun activateOverlay(context: Context, packageName: String, apkPath: String, validateSignature: Boolean = true): Boolean {
+    fun activateOverlay(packageName: String, apkPath: String, validateSignature: Boolean = true): Boolean {
         try {
             if (validateSignature && !SecurityUtils.validateApkSignature(apkPath)) {
                 Log.e(TAG, "APK signature validation failed: $apkPath")
                 return false
             }
 
-            val installSuccess = if (useEnhancedApi(context)) {
-                try { ShizukuPlusAPI.PackageManager.installPackage(apkPath); true } catch (e: Exception) { false }
+            val installSuccess = if (useEnhancedApi()) {
+                ShizukuPlusAPI.PackageManager.installPackage(apkPath)
             } else {
                 ShizukuBridge.installApk(apkPath)
             }
 
             if (!installSuccess) return false
 
-            val enableSuccess = if (useEnhancedApi(context)) {
-                try { ShizukuPlusAPI.OverlayManager.enableOverlay(packageName); true } catch (e: Exception) { false }
+            val enableSuccess = if (useEnhancedApi()) {
+                ShizukuPlusAPI.OverlayManager.enableOverlay(packageName)
             } else {
                 ShizukuBridge.executeOverlayCommand(packageName, "enable")
             }
 
             if (enableSuccess) {
-                if (useEnhancedApi(context)) {
+                if (useEnhancedApi()) {
                     ShizukuPlusAPI.Shell.executeCommand("cmd overlay set-priority $packageName 100")
                 } else {
                     ShizukuBridge.executeOverlayCommand(packageName, "set-priority")
                 }
-                refreshSystemUI(context)
+                refreshSystemUI()
                 return true
             }
             return false
@@ -66,14 +64,14 @@ object OverlayManager {
         }
     }
 
-    fun deactivateOverlay(context: Context, packageName: String): Boolean {
+    fun deactivateOverlay(packageName: String): Boolean {
         try {
-            val success = if (useEnhancedApi(context)) {
-                try { ShizukuPlusAPI.OverlayManager.disableOverlay(packageName); true } catch (e: Exception) { false }
+            val success = if (useEnhancedApi()) {
+                ShizukuPlusAPI.OverlayManager.disableOverlay(packageName)
             } else {
                 ShizukuBridge.executeOverlayCommand(packageName, "disable")
             }
-            if (success) refreshSystemUI(context)
+            if (success) refreshSystemUI()
             return success
         } catch (e: Exception) {
             Log.e(TAG, "Error deactivating overlay", e)
@@ -81,9 +79,9 @@ object OverlayManager {
         }
     }
 
-    fun refreshSystemUI(context: Context) {
+    fun refreshSystemUI() {
         try {
-            if (useEnhancedApi(context)) {
+            if (useEnhancedApi()) {
                 ShizukuPlusAPI.Shell.executeCommand("am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS")
                 ShizukuPlusAPI.Shell.executeCommand("killall com.android.systemui")
             } else {
@@ -95,11 +93,11 @@ object OverlayManager {
         }
     }
 
-    fun applyTheme(context: Context, themeData: ByteArray, themeName: String) {
+    fun applyTheme(themeData: ByteArray, themeName: String) {
         try {
-            val tempFile = File(context.cacheDir, "$themeName.apk")
+            val tempFile = File(cacheDir, "$themeName.apk")
             tempFile.writeBytes(themeData)
-            activateOverlay(context, "com.hexodus.theme.$themeName", tempFile.absolutePath, false)
+            activateOverlay("com.hexodus.theme.$themeName", tempFile.absolutePath, false)
         } catch (e: Exception) {
             Log.e(TAG, "Error applying theme", e)
         }

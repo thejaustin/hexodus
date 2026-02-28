@@ -99,7 +99,7 @@ object FontIconManagerService {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
     
     /**
@@ -130,8 +130,8 @@ object FontIconManagerService {
                 return
             }
             
-            // In a real implementation, this would install the font system-wide
-            // For this example, we'll simulate the process
+            // In a real implementation, context would install the font system-wide
+            // For context example, we'll simulate the process
             Log.d(TAG, "Installed font: $fontName from: $fontPath")
             
             // Broadcast success
@@ -183,8 +183,8 @@ object FontIconManagerService {
                 return
             }
             
-            // In a real implementation, this would install the icon pack
-            // For this example, we'll simulate the process
+            // In a real implementation, context would install the icon pack
+            // For context example, we'll simulate the process
             Log.d(TAG, "Installed icon pack: $iconPackName from: $iconPackPath")
             
             // Broadcast success
@@ -207,8 +207,8 @@ object FontIconManagerService {
      */
     private fun getAvailableFonts() {
         try {
-            // In a real implementation, this would scan for available fonts
-            // For this example, we'll return mock data
+            // In a real implementation, context would scan for available fonts
+            // For context example, we'll return mock data
             val availableFonts = listOf(
                 mapOf(
                     "name" to "Roboto",
@@ -257,8 +257,8 @@ object FontIconManagerService {
      */
     private fun getAvailableIconPacks() {
         try {
-            // In a real implementation, this would scan for available icon packs
-            // For this example, we'll return mock data
+            // In a real implementation, context would scan for available icon packs
+            // For context example, we'll return mock data
             val availableIconPacks = listOf(
                 mapOf(
                     "name" to "Samsung Default",
@@ -312,8 +312,8 @@ object FontIconManagerService {
                 return
             }
             
-            // In a real implementation, this would apply the font system-wide
-            // For this example, we'll simulate the process
+            // In a real implementation, context would apply the font system-wide
+            // For context example, we'll simulate the process
             Log.d(TAG, "Applied font: $fontFamily")
             
             // Broadcast success
@@ -346,8 +346,8 @@ object FontIconManagerService {
                 Log.w(TAG, "Package name was sanitized: $iconPackPackage -> $sanitizedPackageName")
             }
             
-            // In a real implementation, this would apply the icon pack
-            // For this example, we'll simulate the process
+            // In a real implementation, context would apply the icon pack
+            // For context example, we'll simulate the process
             Log.d(TAG, "Applied icon pack: $sanitizedPackageName")
             
             // Broadcast success
@@ -369,8 +369,8 @@ object FontIconManagerService {
      */
     private fun getCurrentFont() {
         try {
-            // In a real implementation, this would query the system for the current font
-            // For this example, we'll return mock data
+            // In a real implementation, context would query the system for the current font
+            // For context example, we'll return mock data
             val currentFont = mapOf(
                 "name" to "SamsungOne",
                 "family" to "samsung_one",
@@ -398,8 +398,8 @@ object FontIconManagerService {
      */
     private fun getCurrentIconPack() {
         try {
-            // In a real implementation, this would query the system for the current icon pack
-            // For this example, we'll return mock data
+            // In a real implementation, context would query the system for the current icon pack
+            // For context example, we'll return mock data
             val currentIconPack = mapOf(
                 "name" to "Samsung Default",
                 "package" to "com.sec.android.app.launcher",
@@ -443,8 +443,8 @@ object FontIconManagerService {
                 return false
             }
             
-            // In a real implementation, this would copy the font to system directory
-            // For this example, we'll simulate the process
+            // In a real implementation, context would copy the font to system directory
+            // For context example, we'll simulate the process
             Log.d(TAG, "Copied font to system: ${fontFile.name} -> $destinationName")
             return true
         } catch (e: Exception) {
@@ -475,8 +475,8 @@ object FontIconManagerService {
                 return false
             }
             
-            // In a real implementation, this would validate icon pack structure
-            // For this example, we'll just return true
+            // In a real implementation, context would validate icon pack structure
+            // For context example, we'll just return true
             return true
         } catch (e: Exception) {
             Log.e(TAG, "Error validating icon pack: ${e.message}", e)
@@ -494,8 +494,8 @@ object FontIconManagerService {
                 return emptyList()
             }
             
-            // In a real implementation, this would scan the system fonts directory
-            // For this example, we'll return mock data
+            // In a real implementation, context would scan the system fonts directory
+            // For context example, we'll return mock data
             return listOf(
                 "Roboto-Regular.ttf",
                 "Roboto-Bold.ttf",
@@ -519,8 +519,8 @@ object FontIconManagerService {
                 return emptyList()
             }
             
-            // In a real implementation, this would scan for available icon packs
-            // For this example, we'll return mock data
+            // In a real implementation, context would scan for available icon packs
+            // For context example, we'll return mock data
             return listOf(
                 mapOf(
                     "name" to "Samsung Default",

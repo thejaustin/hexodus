@@ -90,7 +90,7 @@ object AdvancedFeatureService {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
     
     /**
@@ -113,8 +113,8 @@ object AdvancedFeatureService {
             // Extract colors from wallpaper
             val bitmap = BitmapFactory.decodeFile(wallpaperPath)
             if (bitmap != null) {
-                // In a real implementation, this would use Palette API to extract colors
-                // For this example, we'll simulate the process
+                // In a real implementation, context would use Palette API to extract colors
+                // For context example, we'll simulate the process
                 val primaryColor = extractDominantColor(bitmap)
                 
                 Log.d(TAG, "Wallpaper-based theme applied with primary color: #${
@@ -122,7 +122,7 @@ object AdvancedFeatureService {
                 }")
                 
                 // Generate and apply theme based on wallpaper colors
-                val themeCompiler = ThemeCompiler()
+                themeCompiler = ThemeCompiler()
                 val themeData = themeCompiler.compileTheme(
                     "#${Integer.toHexString(primaryColor).substring(2).uppercase()}",
                     "wallpaper_theme_${System.currentTimeMillis()}",
@@ -178,8 +178,8 @@ object AdvancedFeatureService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, this would inspect system resources
-            // For this example, we'll simulate the process
+            // In a real implementation, context would inspect system resources
+            // For context example, we'll simulate the process
             val resources = mapOf(
                 "colors" to listOf("#FF6200EE", "#FF03DAC6", "#FF018786"),
                 "drawables" to listOf("ic_launcher", "ic_settings", "ic_home"),
@@ -227,8 +227,8 @@ object AdvancedFeatureService {
                 }
             }
             
-            // In a real implementation, this would manage app groups
-            // For this example, we'll simulate the process
+            // In a real implementation, context would manage app groups
+            // For context example, we'll simulate the process
             Log.d(TAG, "Managed app group: $groupName with apps: ${apps.joinToString(", ")}")
             
             // Broadcast success
@@ -262,8 +262,8 @@ object AdvancedFeatureService {
                 return
             }
             
-            // In a real implementation, this would customize quick settings
-            // For this example, we'll simulate the process
+            // In a real implementation, context would customize quick settings
+            // For context example, we'll simulate the process
             Log.d(TAG, "Customized quick settings with config: $config")
             
             // Broadcast success
@@ -298,8 +298,8 @@ object AdvancedFeatureService {
                 }
             }
             
-            // In a real implementation, this would modify status bar icons
-            // For this example, we'll simulate the process
+            // In a real implementation, context would modify status bar icons
+            // For context example, we'll simulate the process
             Log.d(TAG, "Modified status bar icons: ${icons.joinToString(", ")}")
             
             // Broadcast success
@@ -332,8 +332,8 @@ object AdvancedFeatureService {
                 return
             }
             
-            // In a real implementation, this would modify system animation scales
-            // For this example, we'll simulate the process
+            // In a real implementation, context would modify system animation scales
+            // For context example, we'll simulate the process
             Log.d(TAG, "Controlled system animations with scale: $scale")
             
             // Broadcast success
@@ -354,8 +354,8 @@ object AdvancedFeatureService {
      * Extracts the dominant color from a bitmap
      */
     private fun extractDominantColor(bitmap: Bitmap): Int {
-        // In a real implementation, this would use Palette API
-        // For this example, we'll return a simulated dominant color
+        // In a real implementation, context would use Palette API
+        // For context example, we'll return a simulated dominant color
         return -0x9efff2 // Simulated dominant color
     }
 }

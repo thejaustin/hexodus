@@ -29,13 +29,10 @@ object ShizukuInstaller {
     private val packageManager: android.content.pm.PackageManager get() = context.packageManager
     private val applicationContext: android.content.Context get() = context
 
-    
-
-
     private const val TAG = "ShizukuInstaller"
 
     suspend fun downloadAndInstall(apkUrl: String, appName: String) = withContext(Dispatchers.IO) {
-                val prefsManager = PrefsManager.getInstance(context)
+        val prefsManager = PrefsManager.getInstance(context)
         
         try {
             var finalUrl = apkUrl
@@ -58,7 +55,9 @@ object ShizukuInstaller {
                 // Handle redirection for GitHub assets
                 if (connection.responseCode == 302 || connection.responseCode == 301) {
                     val newUrl = connection.getHeaderField("Location")
-                    downloadAndInstall(newUrl, appName)
+                    if (newUrl != null) {
+                        downloadAndInstall(newUrl, appName)
+                    }
                     return@withContext
                 }
                 return@withContext
@@ -94,9 +93,9 @@ object ShizukuInstaller {
 
             // 2. Install the APK
             if (ShizukuBridge.isReady()) {
-                installViaShizuku(context, file, prefsManager)
+                installViaShizuku(file, prefsManager)
             } else {
-                installViaNative(context, file)
+                installViaNative(file)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error during download/install of $appName", e)
@@ -144,18 +143,12 @@ object ShizukuInstaller {
         }
     }
 
-    private fun installViaShizuku(context: Context, apkFile: File, prefsManager: PrefsManager) {
+    private fun installViaShizuku(apkFile: File, prefsManager: PrefsManager) {
         Log.d(TAG, "Installing via Shizuku...")
         
         val success: Boolean = if (prefsManager.preferShizukuPlus && ShizukuPlusAPI.isEnhancedApiSupported()) {
             Log.d(TAG, "Using Shizuku+ Enhanced API for installation")
-            try {
-                ShizukuPlusAPI.PackageManager.installPackage(apkFile.absolutePath)
-                true
-            } catch (e: Exception) {
-                Log.e(TAG, "Shizuku+ installation failed, falling back to legacy", e)
-                installLegacy(apkFile)
-            }
+            ShizukuPlusAPI.PackageManager.installPackage(apkFile.absolutePath)
         } else {
             installLegacy(apkFile)
         }
@@ -173,7 +166,7 @@ object ShizukuInstaller {
         return result.contains("Success", ignoreCase = true)
     }
 
-    private fun installViaNative(context: Context, apkFile: File) {
+    private fun installViaNative(apkFile: File) {
         Log.d(TAG, "Installing via native intent...")
         try {
             val uri = FileProvider.getUriForFile(

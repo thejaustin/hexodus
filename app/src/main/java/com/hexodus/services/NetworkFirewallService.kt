@@ -97,7 +97,7 @@ object NetworkFirewallService {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
     
     /**
@@ -122,8 +122,8 @@ object NetworkFirewallService {
                 return
             }
             
-            // In a real implementation, this would use iptables or similar to block network access
-            // For this example, we'll simulate the process
+            // In a real implementation, context would use iptables or similar to block network access
+            // For context example, we'll simulate the process
             Log.d(TAG, "Blocked $networkType network access for: $sanitizedPackageName")
             
             // Broadcast success
@@ -163,8 +163,8 @@ object NetworkFirewallService {
                 return
             }
             
-            // In a real implementation, this would allow network access
-            // For this example, we'll simulate the process
+            // In a real implementation, context would allow network access
+            // For context example, we'll simulate the process
             Log.d(TAG, "Allowed $networkType network access for: $sanitizedPackageName")
             
             // Broadcast success
@@ -198,8 +198,8 @@ object NetworkFirewallService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, this would query network access status
-            // For this example, we'll simulate the process
+            // In a real implementation, context would query network access status
+            // For context example, we'll simulate the process
             val networkAccess = mapOf(
                 "wifi_blocked" to false,
                 "mobile_blocked" to true,
@@ -234,8 +234,8 @@ object NetworkFirewallService {
                 return
             }
             
-            // In a real implementation, this would query network activity
-            // For this example, we'll simulate the process
+            // In a real implementation, context would query network activity
+            // For context example, we'll simulate the process
             val networkActivity = mapOf(
                 "active_connections" to 12,
                 "total_data_sent" to 5_000_000L, // 5MB
@@ -286,8 +286,8 @@ object NetworkFirewallService {
                 return
             }
             
-            // In a real implementation, this would manage firewall rules
-            // For this example, we'll simulate the process
+            // In a real implementation, context would manage firewall rules
+            // For context example, we'll simulate the process
             Log.d(TAG, "Managed firewall rule: $rule with action: $action")
             
             // Broadcast success
@@ -315,8 +315,8 @@ object NetworkFirewallService {
                 return
             }
             
-            // In a real implementation, this would query firewall status
-            // For this example, we'll simulate the process
+            // In a real implementation, context would query firewall status
+            // For context example, we'll simulate the process
             val firewallStatus = mapOf(
                 "enabled" to true,
                 "active_rules" to 15,
@@ -350,8 +350,8 @@ object NetworkFirewallService {
         isMonitoring = true
         Log.d(TAG, "Started network monitoring")
         
-        // In a real implementation, this would start monitoring network activity
-        // For this example, we'll create a foreground service notification
+        // In a real implementation, context would start monitoring network activity
+        // For context example, we'll create a foreground service notification
         // startForeground not supported in object
     }
     

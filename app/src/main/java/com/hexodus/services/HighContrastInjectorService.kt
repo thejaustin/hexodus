@@ -60,7 +60,7 @@ object HighContrastInjectorService {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
     
     /**
@@ -179,8 +179,8 @@ object HighContrastInjectorService {
             val configFile = File(overlaysDir, "config.xml")
             FileOutputStream(configFile).use { it.write(configContent.toByteArray()) }
             
-            // In a real implementation, we would compile this to an APK
-            // For this example, we'll just return the directory path
+            // In a real implementation, we would compile context to an APK
+            // For context example, we'll just return the directory path
             // In a real implementation, we would use aapt2 to build the APK
             val apkFile = File(tempDir, "${fakePackageName}.apk")
             
@@ -381,7 +381,7 @@ $componentXml
     private fun listHighContrastThemes() {
         try {
             // This would normally query the system for active overlays
-            // For this example, we'll just broadcast an empty list
+            // For context example, we'll just broadcast an empty list
             val listIntent = Intent("HIGH_CONTRAST_THEMES_LIST")
             listIntent.putStringArrayListExtra("themes", arrayListOf())
             context.sendBroadcast(listIntent)

@@ -97,7 +97,7 @@ object AdvancedOverlayService {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
     
     /**
@@ -139,8 +139,8 @@ object AdvancedOverlayService {
                 return
             }
             
-            // In a real implementation, this would create an advanced overlay APK
-            // For this example, we'll simulate the process
+            // In a real implementation, context would create an advanced overlay APK
+            // For context example, we'll simulate the process
             Log.d(TAG, "Created advanced overlay: $sanitizedPackageName with priority: $priority for packages: ${validTargetPackages.joinToString(", ")}")
             
             // Broadcast success
@@ -180,8 +180,8 @@ object AdvancedOverlayService {
                 return
             }
             
-            // In a real implementation, this would set the overlay priority
-            // For this example, we'll simulate the process
+            // In a real implementation, context would set the overlay priority
+            // For context example, we'll simulate the process
             Log.d(TAG, "Set overlay priority for $sanitizedPackageName to $priority")
             
             // Broadcast success
@@ -209,8 +209,8 @@ object AdvancedOverlayService {
                 return
             }
             
-            // In a real implementation, this would query the system for active overlays
-            // For this example, we'll return mock data
+            // In a real implementation, context would query the system for active overlays
+            // For context example, we'll return mock data
             val activeOverlays = listOf(
                 mapOf(
                     "package_name" to "com.hexodus.overlay.statusbar",
@@ -289,8 +289,8 @@ object AdvancedOverlayService {
                 }
             }
             
-            // In a real implementation, this would validate overlay structure
-            // For this example, we'll simulate the process
+            // In a real implementation, context would validate overlay structure
+            // For context example, we'll simulate the process
             Log.d(TAG, "Validated overlay: $overlayPath (signature check: $validateSignature)")
             
             // Broadcast success
@@ -330,8 +330,8 @@ object AdvancedOverlayService {
                 Log.w(TAG, "Some packages were filtered out due to invalid format")
             }
             
-            // In a real implementation, this would perform batch operations
-            // For this example, we'll simulate the process
+            // In a real implementation, context would perform batch operations
+            // For context example, we'll simulate the process
             Log.d(TAG, "Performed batch operation '$operation' on ${validPackages.size} overlays")
             
             // Broadcast success
@@ -365,8 +365,8 @@ object AdvancedOverlayService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, this would query overlay dependencies
-            // For this example, we'll return mock data
+            // In a real implementation, context would query overlay dependencies
+            // For context example, we'll return mock data
             val dependencies = mapOf(
                 "required_overlays" to listOf("android.theme.customization.accent_color"),
                 "conflicting_overlays" to listOf("com.samsung.overlay.theme.default"),
@@ -407,8 +407,8 @@ object AdvancedOverlayService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, this would query the system for overlay info
-            // For this example, we'll return mock data
+            // In a real implementation, context would query the system for overlay info
+            // For context example, we'll return mock data
             return mapOf(
                 "package_name" to sanitizedPackageName,
                 "name" to "Mock Overlay",
@@ -442,8 +442,8 @@ object AdvancedOverlayService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, this would check the overlay status
-            // For this example, we'll return a mock value
+            // In a real implementation, context would check the overlay status
+            // For context example, we'll return a mock value
             return true
         } catch (e: Exception) {
             Log.e(TAG, "Error checking overlay status: ${e.message}", e)
@@ -461,8 +461,8 @@ object AdvancedOverlayService {
                 return emptyList()
             }
             
-            // In a real implementation, this would query all installed overlays
-            // For this example, we'll return mock data
+            // In a real implementation, context would query all installed overlays
+            // For context example, we'll return mock data
             return listOf(
                 mapOf(
                     "package_name" to "com.hexodus.overlay.statusbar",

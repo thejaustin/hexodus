@@ -29,7 +29,15 @@ import java.util.zip.ZipOutputStream
  * AdvancedThemingService - Service for advanced theming features
  * Inspired by various theming projects from awesome-shizuku
  */
-class AdvancedThemingService : LifecycleService() {
+object AdvancedThemingService {
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val packageName: String get() = context.packageName
+    private val cacheDir: java.io.File get() = context.cacheDir
+    private val filesDir: java.io.File get() = context.filesDir
+    private val contentResolver: android.content.ContentResolver get() = context.contentResolver
+    private val packageManager: android.content.pm.PackageManager get() = context.packageManager
+    private val applicationContext: android.content.Context get() = context
+
     
     private const val TAG = "AdvancedThemingService"
     private const val ACTION_CREATE_GRADIENT_THEME = "com.hexodus.CREATE_GRADIENT_THEME"
@@ -51,20 +59,20 @@ class AdvancedThemingService : LifecycleService() {
     const val EXTRA_FROM_THEME = "from_theme"
     const val EXTRA_TO_THEME = "to_theme"
     
-    private val themeCompiler = com.hexodus.core.ThemeCompiler()
+    private themeCompiler = com.hexodus.core.ThemeCompiler()
     
-    override fun onCreate() {
+    fun onCreate() {
         super.onCreate()
         themeCompiler = ThemeCompiler()
         Log.d(TAG, "AdvancedThemingService created")
     }
     
-    override fun onBind(intent: Intent): IBinder? {
+    fun onBind(intent: Intent): IBinder? {
         super.onBind(intent)
         return null
     }
     
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         
         when (action) {
@@ -106,7 +114,7 @@ class AdvancedThemingService : LifecycleService() {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
     
     /**
@@ -144,8 +152,8 @@ class AdvancedThemingService : LifecycleService() {
                     return@launch
                 }
                 
-                // In a real implementation, this would create a gradient overlay
-                // For this example, we'll simulate the process
+                // In a real implementation, context would create a gradient overlay
+                // For context example, we'll simulate the process
                 Log.d(TAG, "Created gradient theme with colors: ${colors.joinToString(", ")} for component: $componentName")
                 
                 // Generate a unique package name for the gradient theme
@@ -236,8 +244,8 @@ class AdvancedThemingService : LifecycleService() {
                 return
             }
             
-            // In a real implementation, this would create an animated overlay
-            // For this example, we'll simulate the process
+            // In a real implementation, context would create an animated overlay
+            // For context example, we'll simulate the process
             Log.d(TAG, "Created animated theme with type: $animationType and color: $hexColor")
             
             // Generate a unique package name for the animated theme
@@ -332,8 +340,8 @@ class AdvancedThemingService : LifecycleService() {
                 return
             }
             
-            // In a real implementation, this would create a texture overlay
-            // For this example, we'll simulate the process
+            // In a real implementation, context would create a texture overlay
+            // For context example, we'll simulate the process
             Log.d(TAG, "Created texture theme with texture: $texturePath and color: $hexColor")
             
             // Generate a unique package name for the texture theme
@@ -406,8 +414,8 @@ class AdvancedThemingService : LifecycleService() {
      */
     private fun getThemePresets() {
         try {
-            // In a real implementation, this would query available theme presets
-            // For this example, we'll return mock data
+            // In a real implementation, context would query available theme presets
+            // For context example, we'll return mock data
             val presets = listOf(
                 mapOf(
                     "name" to "Ocean Breeze",
@@ -473,8 +481,8 @@ class AdvancedThemingService : LifecycleService() {
                 return
             }
             
-            // In a real implementation, this would create a smooth transition between themes
-            // For this example, we'll simulate the process
+            // In a real implementation, context would create a smooth transition between themes
+            // For context example, we'll simulate the process
             Log.d(TAG, "Applied theme transition from: $fromTheme to: $toTheme with speed: ${speed}ms")
             
             // This would involve:
@@ -525,8 +533,8 @@ class AdvancedThemingService : LifecycleService() {
                 return
             }
             
-            // In a real implementation, this would create an animated theme overlay
-            // For this example, we'll simulate the process
+            // In a real implementation, context would create an animated theme overlay
+            // For context example, we'll simulate the process
             Log.d(TAG, "Created theme animation with type: $animationType and duration: ${duration}ms")
             
             // Generate a unique package name for the animation
@@ -693,7 +701,7 @@ class AdvancedThemingService : LifecycleService() {
         }
     }
     
-    override fun onDestroy() {
+    fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "AdvancedThemingService destroyed")
     }

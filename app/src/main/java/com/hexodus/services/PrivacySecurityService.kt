@@ -102,7 +102,7 @@ object PrivacySecurityService {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
     
     /**
@@ -204,8 +204,8 @@ object PrivacySecurityService {
                 return
             }
             
-            // In a real implementation, this would use Shizuku to change file attributes
-            // For this example, we'll add to our hidden list
+            // In a real implementation, context would use Shizuku to change file attributes
+            // For context example, we'll add to our hidden list
             hiddenFiles.add(filePath)
             
             // Also try to change file attributes to hidden
@@ -390,8 +390,8 @@ object PrivacySecurityService {
             
             Log.d(TAG, "Managing privacy with device locked: $deviceLocked")
             
-            // In a real implementation, this would apply privacy rules based on lock state
-            // For this example, we'll just log the action
+            // In a real implementation, context would apply privacy rules based on lock state
+            // For context example, we'll just log the action
             if (deviceLocked) {
                 // Apply privacy rules when device is locked
                 Log.d(TAG, "Applying privacy rules for locked state")
@@ -424,8 +424,8 @@ object PrivacySecurityService {
                 return
             }
             
-            // In a real implementation, this would scan for privacy issues
-            // For this example, we'll return mock results
+            // In a real implementation, context would scan for privacy issues
+            // For context example, we'll return mock results
             val privacyIssues = listOf(
                 mapOf("type" to "location_access", "app" to "com.example.tracking_app", "severity" to "high"),
                 mapOf("type" to "camera_access", "app" to "com.example.camera_app", "severity" to "medium"),

@@ -47,7 +47,7 @@ object ResourceManagerService {
     const val EXTRA_TARGET_PACKAGES = "target_packages"
     const val EXTRA_OVERLAY_PRIORITY = "overlay_priority"
     
-    private val themeCompiler = com.hexodus.core.ThemeCompiler()
+    private themeCompiler = com.hexodus.core.ThemeCompiler()
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
@@ -99,7 +99,7 @@ object ResourceManagerService {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
     
     /**
@@ -233,8 +233,8 @@ object ResourceManagerService {
             }
             
             // Create updated overlay (same as create but with updated resources)
-            // In a real implementation, this would update the existing overlay
-            // For this example, we'll simulate the process
+            // In a real implementation, context would update the existing overlay
+            // For context example, we'll simulate the process
             Log.d(TAG, "Updated overlay: $sanitizedPackageName")
             
             // Re-enable the overlay
@@ -335,8 +335,8 @@ object ResourceManagerService {
                 return
             }
             
-            // In a real implementation, this would query the system for installed overlays
-            // For this example, we'll simulate the process
+            // In a real implementation, context would query the system for installed overlays
+            // For context example, we'll simulate the process
             val overlays = listOf(
                 mapOf(
                     "package_name" to "com.hexodus.overlay.statusbar",
@@ -395,8 +395,8 @@ object ResourceManagerService {
                 return
             }
             
-            // In a real implementation, this would extract the overlay APK
-            // For this example, we'll simulate the process
+            // In a real implementation, context would extract the overlay APK
+            // For context example, we'll simulate the process
             Log.d(TAG, "Exported overlay: $sanitizedPackageName to: $exportPath")
             
             // Broadcast success
@@ -488,8 +488,8 @@ object ResourceManagerService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, this would query the system for overlay info
-            // For this example, we'll return mock data
+            // In a real implementation, context would query the system for overlay info
+            // For context example, we'll return mock data
             return mapOf(
                 "package_name" to sanitizedPackageName,
                 "name" to "Mock Overlay",
@@ -520,8 +520,8 @@ object ResourceManagerService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, this would check the overlay status
-            // For this example, we'll return a mock value
+            // In a real implementation, context would check the overlay status
+            // For context example, we'll return a mock value
             return true
         } catch (e: Exception) {
             Log.e(TAG, "Error checking overlay status: ${e.message}", e)

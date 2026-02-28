@@ -62,7 +62,7 @@ object AppThemerService {
             }
         }
         
-        return android.app.Service.START_STICKY
+        return android.app.Service.android.app.Service.START_STICKY
     }
     
     /**
@@ -133,8 +133,8 @@ object AppThemerService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, this would create and apply an app-specific overlay
-            // For this example, we'll just log the action
+            // In a real implementation, context would create and apply an app-specific overlay
+            // For context example, we'll just log the action
             Log.d(TAG, "Setting custom theme for: $sanitizedPackageName with config: $themeConfig")
             
             // Broadcast success
@@ -168,8 +168,8 @@ object AppThemerService {
                 Log.w(TAG, "Package name was sanitized: $packageName -> $sanitizedPackageName")
             }
             
-            // In a real implementation, this would query the system for the app's current theme
-            // For this example, we'll just return a default value
+            // In a real implementation, context would query the system for the app's current theme
+            // For context example, we'll just return a default value
             val currentTheme = "default"
             
             Log.d(TAG, "Retrieved theme for: $sanitizedPackageName - $currentTheme")
