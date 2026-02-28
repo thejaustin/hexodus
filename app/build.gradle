@@ -62,9 +62,9 @@ android {
 }
 
 dependencies {
-    // Shizuku API (Using the ShizukuPlus-API fork for enhanced features)
-    implementation 'com.github.thejaustin.ShizukuPlus-API:api:fa7d131833'
-    implementation 'com.github.thejaustin.ShizukuPlus-API:provider:fa7d131833'
+    // Shizuku API (Standard artifacts)
+    implementation 'dev.rikka.shizuku:api:13.1.5'
+    implementation 'dev.rikka.shizuku:provider:13.1.5'
     
     // Core Android libraries
     implementation 'androidx.core:core-ktx:1.17.0'
