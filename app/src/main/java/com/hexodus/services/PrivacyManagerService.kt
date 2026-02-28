@@ -16,7 +16,7 @@ import android.Manifest
  * Inspired by privacy-focused projects from awesome-shizuku
  */
 object PrivacyManagerService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -154,14 +154,14 @@ object PrivacyManagerService {
             val successIntent = Intent("APP_PERMISSIONS_RETRIEVED")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("permission_count", permissions.size)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting app permissions: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_PERMISSIONS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -195,14 +195,14 @@ object PrivacyManagerService {
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("permission_name", permissionName)
             successIntent.putExtra("granted", granted)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error setting app permission: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_PERMISSION_SET_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -211,7 +211,7 @@ object PrivacyManagerService {
      */
     private fun getUsageStats(targetPackageName: String, timeRange: Long) {
         try {
-            val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+            val usageStatsManager = appContext.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
             
             // In a real implementation, context would query usage stats
             // For context example, we'll simulate the process
@@ -227,14 +227,14 @@ object PrivacyManagerService {
             val successIntent = Intent("USAGE_STATS_RETRIEVED")
             successIntent.putExtra("package_name", targetPackageName)
             successIntent.putExtra("usage_stats", HashMap(usageStats))
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting usage stats: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("USAGE_STATS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -268,14 +268,14 @@ object PrivacyManagerService {
             val successIntent = Intent("APP_TRACKING_SET")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("tracking_level", trackingLevel)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error managing app tracking: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_TRACKING_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -305,14 +305,14 @@ object PrivacyManagerService {
             val successIntent = Intent("PRIVACY_SCORE_CALCULATED")
             successIntent.putExtra("package_name", targetPackageName)
             successIntent.putExtra("privacy_score", HashMap(privacyScore))
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error calculating privacy score: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("PRIVACY_SCORE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     

@@ -15,10 +15,10 @@ import java.io.File
  * Inspired by LibChecker and other system inspection projects from awesome-shizuku
  */
 object SystemInspectorService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
-    private val pm: PackageManager by lazy { context.packageManager }
+    private val pm: PackageManager by lazy { appContext.packageManager }
     
     private const val TAG = "SystemInspectorService"
     private const val ACTION_GET_APP_LIBRARIES = "com.hexodus.GET_APP_LIBRARIES"
@@ -87,7 +87,7 @@ object SystemInspectorService {
             Log.d(TAG, "Retrieved libraries for: $sanitized")
             val successIntent = Intent("APP_LIBRARIES_RETRIEVED")
             successIntent.putExtra("package_name", sanitized)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting app libraries: ${e.message}", e)
         }
@@ -101,7 +101,7 @@ object SystemInspectorService {
                 val successIntent = Intent("SYSTEM_PROPERTY_RETRIEVED")
                 successIntent.putExtra("property_name", propertyName)
                 successIntent.putExtra("property_value", result.trim())
-                context.sendBroadcast(successIntent)
+                appContext.sendBroadcast(successIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error getting system property: ${e.message}", e)
@@ -114,7 +114,7 @@ object SystemInspectorService {
             val result = ShizukuBridge.executeShellCommand("getprop")
             if (result != null) {
                 val successIntent = Intent("ALL_SYSTEM_PROPERTIES_RETRIEVED")
-                context.sendBroadcast(successIntent)
+                appContext.sendBroadcast(successIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error getting all system properties: ${e.message}", e)
@@ -125,12 +125,12 @@ object SystemInspectorService {
         try {
             if (!ShizukuBridge.isReady()) return
             val sanitized = SecurityUtils.sanitizePackageName(targetPackage)
-            Log.d(TAG, "Retrieved context.resources for: $sanitized")
+            Log.d(TAG, "Retrieved appContext.resources for: $sanitized")
             val successIntent = Intent("APP_RESOURCES_RETRIEVED")
             successIntent.putExtra("package_name", sanitized)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
-            Log.e(TAG, "Error getting app context.resources: ${e.message}", e)
+            Log.e(TAG, "Error getting app appContext.resources: ${e.message}", e)
         }
     }
     
@@ -144,7 +144,7 @@ object SystemInspectorService {
             val successIntent = Intent("INSTALLATION_SOURCE_RETRIEVED")
             successIntent.putExtra("package_name", sanitized)
             successIntent.putExtra("source", source)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting installation source: ${e.message}", e)
         }
@@ -156,7 +156,7 @@ object SystemInspectorService {
             val sanitized = SecurityUtils.sanitizePackageName(targetPackage)
             val successIntent = Intent("APP_ABI_RETRIEVED")
             successIntent.putExtra("package_name", sanitized)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting app ABI: ${e.message}", e)
         }
@@ -166,7 +166,7 @@ object SystemInspectorService {
         try {
             if (!ShizukuBridge.isReady()) return
             val successIntent = Intent("SYSTEM_HEALTH_RETRIEVED")
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting system health: ${e.message}", e)
         }

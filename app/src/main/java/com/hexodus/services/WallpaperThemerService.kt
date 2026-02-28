@@ -18,7 +18,7 @@ import java.io.IOException
  * Inspired by wallpaper-based theming projects from awesome-shizuku
  */
 object WallpaperThemerService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -116,7 +116,7 @@ object WallpaperThemerService {
             }
             
             // Validate inputs
-            if (!SecurityUtils.isValidFilePath(imagePath, listOf(context.filesDir.parent, context.cacheDir.parent, "/sdcard"))) {
+            if (!SecurityUtils.isValidFilePath(imagePath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent, "/sdcard"))) {
                 Log.e(TAG, "Invalid image path: $imagePath")
                 return
             }
@@ -162,7 +162,7 @@ object WallpaperThemerService {
             val successIntent = Intent("COLORS_EXTRACTED")
             successIntent.putExtra("image_path", imagePath)
             successIntent.putIntegerArrayListExtra("colors", ArrayList(finalColors))
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
             
             // Clean up bitmap
             bitmap.recycle()
@@ -172,7 +172,7 @@ object WallpaperThemerService {
             // Broadcast error
             val errorIntent = Intent("COLOR_EXTRACTION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -199,14 +199,14 @@ object WallpaperThemerService {
             // Broadcast success
             val successIntent = Intent("WALLPAPER_THEME_APPLIED")
             successIntent.putExtra("theme_name", themeName)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error applying wallpaper theme: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("WALLPAPER_THEME_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -249,7 +249,7 @@ object WallpaperThemerService {
                 // Broadcast results
                 val successIntent = Intent("CURRENT_WALLPAPER_COLORS_RETRIEVED")
                 successIntent.putExtra("colors", HashMap(colors))
-                context.sendBroadcast(successIntent)
+                appContext.sendBroadcast(successIntent)
                 
                 // Clean up bitmap
                 wallpaperBitmap.recycle()
@@ -259,7 +259,7 @@ object WallpaperThemerService {
                 // Broadcast error
                 val errorIntent = Intent("CURRENT_WALLPAPER_COLORS_ERROR")
                 errorIntent.putExtra("error", "Failed to retrieve wallpaper")
-                context.sendBroadcast(errorIntent)
+                appContext.sendBroadcast(errorIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error getting current wallpaper colors: ${e.message}", e)
@@ -267,7 +267,7 @@ object WallpaperThemerService {
             // Broadcast error
             val errorIntent = Intent("CURRENT_WALLPAPER_COLORS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -282,7 +282,7 @@ object WallpaperThemerService {
             }
             
             // Validate inputs
-            if (!SecurityUtils.isValidFilePath(imagePath, listOf(context.filesDir.parent, context.cacheDir.parent, "/sdcard"))) {
+            if (!SecurityUtils.isValidFilePath(imagePath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent, "/sdcard"))) {
                 Log.e(TAG, "Invalid image path: $imagePath")
                 return
             }
@@ -300,14 +300,14 @@ object WallpaperThemerService {
             // Broadcast success
             val successIntent = Intent("WALLPAPER_SET_FROM_THEME")
             successIntent.putExtra("image_path", imagePath)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error setting wallpaper from theme: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("WALLPAPER_SET_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -322,7 +322,7 @@ object WallpaperThemerService {
             }
             
             // Validate inputs
-            if (!SecurityUtils.isValidFilePath(imagePath, listOf(context.filesDir.parent, context.cacheDir.parent, "/sdcard"))) {
+            if (!SecurityUtils.isValidFilePath(imagePath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent, "/sdcard"))) {
                 Log.e(TAG, "Invalid image path: $imagePath")
                 return
             }
@@ -397,7 +397,7 @@ object WallpaperThemerService {
             successIntent.putExtra("image_path", imagePath)
             successIntent.putExtra("palette_type", paletteType)
             successIntent.putExtra("colors", HashMap(colors))
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
             
             // Clean up bitmap
             bitmap.recycle()
@@ -407,7 +407,7 @@ object WallpaperThemerService {
             // Broadcast error
             val errorIntent = Intent("PALETTE_GENERATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     

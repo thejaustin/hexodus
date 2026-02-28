@@ -17,7 +17,7 @@ import moe.shizuku.plus.ShizukuPlusAPI
  * using Shizuku. Enables workarounds for specific devices (e.g., S22 Ultra).
  */
 object FeatureFlagsService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
     private val prefsManager by lazy { PrefsManager.getInstance(com.hexodus.HexodusApplication.context) }
 
@@ -62,7 +62,7 @@ object FeatureFlagsService {
                 } else {
                     ShizukuBridge.executeShellCommand("settings put global $name $state")
                 }
-                context.sendBroadcast(Intent("FEATURE_FLAG_CHANGED").putExtra("name", name).putExtra("state", enabled))
+                appContext.sendBroadcast(Intent("FEATURE_FLAG_CHANGED").putExtra("name", name).putExtra("state", enabled))
             } catch (e: Exception) {
                 Log.e(TAG, "Error toggling flag $name", e)
             }
@@ -82,7 +82,7 @@ object FeatureFlagsService {
                         ShizukuBridge.executeShellCommand("settings put global $flag 0")
                     }
                 }
-                context.sendBroadcast(Intent("SYSTEM_DEFAULTS_RESTORED").putExtra("success", true))
+                appContext.sendBroadcast(Intent("SYSTEM_DEFAULTS_RESTORED").putExtra("success", true))
             } catch (e: Exception) {
                 Log.e(TAG, "Error restoring defaults", e)
             }

@@ -12,7 +12,7 @@ import com.hexodus.utils.SecurityUtils
  * Inspired by RootlessJamesDSP project from awesome-shizuku for audio enhancement
  */
 object AudioManagerService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -113,14 +113,14 @@ object AudioManagerService {
             val successIntent = Intent("EQUALIZER_SET")
             successIntent.putExtra("session_id", sessionId)
             successIntent.putStringArrayListExtra("equalizer_values", eqValues)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error setting equalizer: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("EQUALIZER_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -142,14 +142,14 @@ object AudioManagerService {
             val successIntent = Intent("BASS_BOOST_SET")
             successIntent.putExtra("session_id", sessionId)
             successIntent.putExtra("level", level)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error setting bass boost: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("BASS_BOOST_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -177,14 +177,14 @@ object AudioManagerService {
             val successIntent = Intent("AUDIO_EFFECT_SET")
             successIntent.putExtra("effect_type", effectType)
             successIntent.putExtra("effect_value", effectValue)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error setting audio effect: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("AUDIO_EFFECT_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -211,14 +211,14 @@ object AudioManagerService {
             // Broadcast success
             val successIntent = Intent("AUDIO_SESSIONS_RETRIEVED")
             successIntent.putExtra("session_count", mockSessions.size)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting audio sessions: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("AUDIO_SESSIONS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     

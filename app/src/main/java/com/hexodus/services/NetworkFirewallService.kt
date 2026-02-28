@@ -22,7 +22,7 @@ import com.hexodus.MainActivity
  * Inspired by firewall projects from awesome-shizuku
  */
 object NetworkFirewallService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -70,7 +70,7 @@ object NetworkFirewallService {
     private const val NOTIFICATION_CHANNEL_ID = "network_monitoring_channel"
     private const val NOTIFICATION_ID = 1001
     
-    private val connectivityManager by lazy { context.getSystemService(android.content.Context.CONNECTIVITY_SERVICE) as android.net.ConnectivityManager }
+    private val connectivityManager by lazy { appContext.getSystemService(android.content.Context.CONNECTIVITY_SERVICE) as android.net.ConnectivityManager }
     private var isMonitoring = false
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -149,14 +149,14 @@ object NetworkFirewallService {
             val successIntent = Intent("APP_NETWORK_BLOCKED")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("network_type", networkType)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error blocking app network: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_NETWORK_BLOCK_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -190,14 +190,14 @@ object NetworkFirewallService {
             val successIntent = Intent("APP_NETWORK_ALLOWED")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("network_type", networkType)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error allowing app network: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_NETWORK_ALLOW_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -232,14 +232,14 @@ object NetworkFirewallService {
             val successIntent = Intent("APP_NETWORK_ACCESS_RETRIEVED")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("network_access", HashMap(networkAccess))
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting app network access: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_NETWORK_ACCESS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -272,14 +272,14 @@ object NetworkFirewallService {
             // Broadcast results
             val successIntent = Intent("NETWORK_ACTIVITY_RETRIEVED")
             successIntent.putExtra("network_activity", HashMap(networkActivity))
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting network activity: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("NETWORK_ACTIVITY_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -313,14 +313,14 @@ object NetworkFirewallService {
             val successIntent = Intent("FIREWALL_RULE_MANAGED")
             successIntent.putExtra("rule", rule)
             successIntent.putExtra("action", action)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error managing firewall rule: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("FIREWALL_RULE_MANAGEMENT_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -349,14 +349,14 @@ object NetworkFirewallService {
             // Broadcast results
             val successIntent = Intent("FIREWALL_STATUS_RETRIEVED")
             successIntent.putExtra("firewall_status", HashMap(firewallStatus))
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting firewall status: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("FIREWALL_STATUS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -371,7 +371,7 @@ object NetworkFirewallService {
         
         // In a real implementation, context would start monitoring network activity
         // For context example, we'll create a foreground service notification
-        // context.startForeground not supported in object
+        // appContext.startForeground not supported in object
     }
     
     /**
@@ -383,7 +383,7 @@ object NetworkFirewallService {
         isMonitoring = false
         Log.d(TAG, "Stopped network monitoring")
         
-        // context.stopForeground not supported in object
+        // appContext.stopForeground not supported in object
     }
     
     /**
@@ -414,7 +414,7 @@ object NetworkFirewallService {
                 description = "Network firewall and monitoring service"
             }
             
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager = appContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }

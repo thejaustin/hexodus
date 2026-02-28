@@ -12,7 +12,7 @@ import com.hexodus.utils.SecurityUtils
  * Ensures all operations comply with security best practices
  */
 object SecurityValidationService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -121,7 +121,7 @@ object SecurityValidationService {
             val intent = Intent("INPUT_VALIDATION_COMPLETED")
             intent.putExtra("input", input)
             intent.putExtra("validation_results", HashMap(results))
-            context.sendBroadcast(intent)
+            appContext.sendBroadcast(intent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error validating input: ${e.message}", e)
@@ -130,7 +130,7 @@ object SecurityValidationService {
             val errorIntent = Intent("INPUT_VALIDATION_ERROR")
             errorIntent.putExtra("input", input)
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -160,7 +160,7 @@ object SecurityValidationService {
             intent.putExtra("file_path", filePath)
             intent.putExtra("allowed_directories", ArrayList(allowedDirectories))
             intent.putExtra("validation_results", HashMap(results))
-            context.sendBroadcast(intent)
+            appContext.sendBroadcast(intent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error validating file path: ${e.message}", e)
@@ -169,7 +169,7 @@ object SecurityValidationService {
             val errorIntent = Intent("FILE_PATH_VALIDATION_ERROR")
             errorIntent.putExtra("file_path", filePath)
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -195,7 +195,7 @@ object SecurityValidationService {
             val intent = Intent("COMMAND_VALIDATION_COMPLETED")
             intent.putExtra("command", command)
             intent.putExtra("validation_results", HashMap(results))
-            context.sendBroadcast(intent)
+            appContext.sendBroadcast(intent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error validating command: ${e.message}", e)
@@ -204,7 +204,7 @@ object SecurityValidationService {
             val errorIntent = Intent("COMMAND_VALIDATION_ERROR")
             errorIntent.putExtra("command", command)
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -227,7 +227,7 @@ object SecurityValidationService {
             val intent = Intent("PACKAGE_NAME_VALIDATION_COMPLETED")
             intent.putExtra("package_name", targetPackageName)
             intent.putExtra("validation_results", HashMap(results))
-            context.sendBroadcast(intent)
+            appContext.sendBroadcast(intent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error validating package name: ${e.message}", e)
@@ -236,7 +236,7 @@ object SecurityValidationService {
             val errorIntent = Intent("PACKAGE_NAME_VALIDATION_ERROR")
             errorIntent.putExtra("package_name", targetPackageName)
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -265,7 +265,7 @@ object SecurityValidationService {
             val intent = Intent("INPUT_SANITIZATION_COMPLETED")
             intent.putExtra("original_input", input)
             intent.putExtra("sanitized_input", sanitized)
-            context.sendBroadcast(intent)
+            appContext.sendBroadcast(intent)
             
         } catch (e: Exception) {
             Log.e(TAG, "Error sanitizing input: ${e.message}", e)
@@ -274,7 +274,7 @@ object SecurityValidationService {
             val errorIntent = Intent("INPUT_SANITIZATION_ERROR")
             errorIntent.putExtra("input", input)
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -284,7 +284,7 @@ object SecurityValidationService {
     fun validateThemePackage(apkPath: String): Boolean {
         try {
             // Validate file path
-            if (!SecurityUtils.isValidFilePath(apkPath, listOf(context.filesDir.parent, context.cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(apkPath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent))) {
                 Log.e(TAG, "Invalid APK path: $apkPath")
                 return false
             }

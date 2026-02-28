@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
  * Includes Samsung Z Flip 5 specific optimizations and foldable display support
  */
 object DeviceSpecificService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
     private const val TAG = "DeviceSpecificService"
@@ -83,7 +83,7 @@ object DeviceSpecificService {
             )
             val successIntent = Intent("DEVICE_INFO_RETRIEVED")
             successIntent.putExtra("device_info", HashMap(deviceInfo))
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting device info", e)
         }
@@ -95,7 +95,7 @@ object DeviceSpecificService {
     
     private fun getDisplayFeatures() {
         val successIntent = Intent("DISPLAY_FEATURES_RETRIEVED")
-        context.sendBroadcast(successIntent)
+        appContext.sendBroadcast(successIntent)
     }
     
     private fun manageDeXMode(mode: String) {
@@ -106,7 +106,7 @@ object DeviceSpecificService {
         val bixbyCapabilities = mapOf("available" to true)
         val successIntent = Intent("BIXBY_CAPABILITIES_RETRIEVED")
         successIntent.putExtra("bixby_capabilities", HashMap(bixbyCapabilities))
-        context.sendBroadcast(successIntent)
+        appContext.sendBroadcast(successIntent)
     }
     
     private fun manageOneUIFeature(featureName: String, enabled: Boolean) {

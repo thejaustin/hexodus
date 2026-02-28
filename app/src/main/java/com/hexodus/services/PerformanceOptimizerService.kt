@@ -19,7 +19,7 @@ import androidx.annotation.RequiresApi
  * Inspired by power management projects from awesome-shizuku
  */
 object PerformanceOptimizerService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -62,7 +62,7 @@ object PerformanceOptimizerService {
     const val EXTRA_POWER_MODE = "power_mode" // performance, balanced, battery_saver
     const val EXTRA_CLEAN_SCOPE = "clean_scope" // cache, temp, all
     
-    private val powerManager by lazy { context.getSystemService(android.content.Context.POWER_SERVICE) as android.os.PowerManager }
+    private val powerManager by lazy { appContext.getSystemService(android.content.Context.POWER_SERVICE) as android.os.PowerManager }
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
@@ -128,14 +128,14 @@ object PerformanceOptimizerService {
             // Broadcast results
             val successIntent = Intent("BATTERY_STATS_RETRIEVED")
             successIntent.putExtra("battery_stats", HashMap(batteryStats))
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting battery stats: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("BATTERY_STATS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -162,14 +162,14 @@ object PerformanceOptimizerService {
             // Broadcast success
             val successIntent = Intent("APP_OPTIMIZED")
             successIntent.putExtra("package_name", sanitizedPackageName)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error optimizing app: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_OPTIMIZATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -196,14 +196,14 @@ object PerformanceOptimizerService {
             // Broadcast success
             val successIntent = Intent("POWER_MODE_SET")
             successIntent.putExtra("power_mode", mode)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error managing power mode: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("POWER_MODE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -218,8 +218,8 @@ object PerformanceOptimizerService {
                 return
             }
             
-            val storageManager = context.getSystemService(Context.STORAGE_SERVICE) as StorageManager
-            val storageStatsManager = context.getSystemService(Context.STORAGE_STATS_SERVICE) as StorageStatsManager
+            val storageManager = appContext.getSystemService(Context.STORAGE_SERVICE) as StorageManager
+            val storageStatsManager = appContext.getSystemService(Context.STORAGE_STATS_SERVICE) as StorageStatsManager
             
             // In a real implementation, context would query storage stats
             // For context example, we'll simulate the process
@@ -239,14 +239,14 @@ object PerformanceOptimizerService {
             // Broadcast results
             val successIntent = Intent("STORAGE_STATS_RETRIEVED")
             successIntent.putExtra("storage_stats", HashMap(storageStats))
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting storage stats: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("STORAGE_STATS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -281,14 +281,14 @@ object PerformanceOptimizerService {
             val successIntent = Intent("STORAGE_CLEANED")
             successIntent.putExtra("clean_scope", scope)
             successIntent.putExtra("freed_space_bytes", freedSpace)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error cleaning storage: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("STORAGE_CLEAN_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -315,14 +315,14 @@ object PerformanceOptimizerService {
             // Broadcast results
             val successIntent = Intent("MEMORY_INFO_RETRIEVED")
             successIntent.putExtra("memory_info", HashMap(memoryInfo))
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting memory info: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("MEMORY_INFO_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     

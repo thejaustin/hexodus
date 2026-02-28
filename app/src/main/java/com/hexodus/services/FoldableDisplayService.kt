@@ -20,7 +20,7 @@ import com.hexodus.HexodusApplication
  * Optimized for Samsung Z Flip 5 and other foldable devices based on awesome-shizuku insights
  */
 object FoldableDisplayService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
     private const val TAG = "FoldableDisplayService"
@@ -54,7 +54,7 @@ object FoldableDisplayService {
      */
     private fun startMonitoringDisplays() {
         Log.d(TAG, "Starting foldable display monitoring")
-        // Note: WindowInfoTracker usually requires an Activity context.
+        // Note: WindowInfoTracker usually requires an Activity appContext.
         // For a background object, we'll use a simplified detection method.
         updateDisplayState()
     }
@@ -109,7 +109,7 @@ object FoldableDisplayService {
 
     private fun determineIfCoverScreen(): Boolean {
         return try {
-            val metrics = context.resources.displayMetrics
+            val metrics = appContext.resources.displayMetrics
             // Typical cover screen is much smaller than main screen
             metrics.widthPixels < 600 || metrics.heightPixels < 600
         } catch (e: Exception) {
@@ -123,10 +123,10 @@ object FoldableDisplayService {
         intent.putExtra("is_main_screen", isMainScreen)
         intent.putExtra("is_tabletop_mode", isTabletopMode)
         intent.putExtra("is_flat_mode", isFlatMode)
-        context.sendBroadcast(intent)
+        appContext.sendBroadcast(intent)
     }
 
     fun getDisplayMetrics(): DisplayMetrics {
-        return context.resources.displayMetrics
+        return appContext.resources.displayMetrics
     }
 }

@@ -29,7 +29,7 @@ import java.util.zip.ZipOutputStream
  * Inspired by various theming projects from awesome-shizuku
  */
 object AdvancedThemingService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -184,7 +184,7 @@ object AdvancedThemingService {
                 )
                 
                 // Save the theme to internal storage temporarily
-                val tempFile = File(context.cacheDir, "${targetPackageName}.apk")
+                val tempFile = File(appContext.cacheDir, "${targetPackageName}.apk")
                 FileOutputStream(tempFile).use { it.write(themeData) }
                 
                 // Install the overlay using Shizuku
@@ -202,7 +202,7 @@ object AdvancedThemingService {
                         successIntent.putExtra("package_name", targetPackageName)
                         successIntent.putStringArrayListExtra("colors", ArrayList(colors))
                         successIntent.putExtra("component", componentName)
-                        context.sendBroadcast(successIntent)
+                        appContext.sendBroadcast(successIntent)
                         
                         // Clean up temp file
                         tempFile.delete()
@@ -213,7 +213,7 @@ object AdvancedThemingService {
                         val failureIntent = Intent("GRADIENT_THEME_CREATION_FAILED")
                         failureIntent.putExtra("package_name", targetPackageName)
                         failureIntent.putExtra("error", "Failed to enable overlay")
-                        context.sendBroadcast(failureIntent)
+                        appContext.sendBroadcast(failureIntent)
                         
                         // Clean up temp file
                         tempFile.delete()
@@ -225,7 +225,7 @@ object AdvancedThemingService {
                     val failureIntent = Intent("GRADIENT_THEME_INSTALL_FAILED")
                     failureIntent.putExtra("package_name", targetPackageName)
                     failureIntent.putExtra("error", "Failed to install APK")
-                    context.sendBroadcast(failureIntent)
+                    appContext.sendBroadcast(failureIntent)
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error creating gradient theme: ${e.message}", e)
@@ -233,7 +233,7 @@ object AdvancedThemingService {
                 // Broadcast error
                 val errorIntent = Intent("GRADIENT_THEME_ERROR")
                 errorIntent.putExtra("error_message", e.message)
-                context.sendBroadcast(errorIntent)
+                appContext.sendBroadcast(errorIntent)
             }
         }
     }
@@ -276,7 +276,7 @@ object AdvancedThemingService {
             )
             
             // Save the theme to internal storage temporarily
-            val tempFile = File(context.cacheDir, "${targetPackageName}.apk")
+            val tempFile = File(appContext.cacheDir, "${targetPackageName}.apk")
             FileOutputStream(tempFile).use { it.write(themeData) }
             
             // Install the overlay using Shizuku
@@ -294,7 +294,7 @@ object AdvancedThemingService {
                     successIntent.putExtra("package_name", targetPackageName)
                     successIntent.putExtra("animation_type", animationType)
                     successIntent.putExtra("hex_color", hexColor)
-                    context.sendBroadcast(successIntent)
+                    appContext.sendBroadcast(successIntent)
                     
                     // Clean up temp file
                     tempFile.delete()
@@ -305,7 +305,7 @@ object AdvancedThemingService {
                     val failureIntent = Intent("ANIMATED_THEME_CREATION_FAILED")
                     failureIntent.putExtra("package_name", targetPackageName)
                     failureIntent.putExtra("error", "Failed to enable overlay")
-                    context.sendBroadcast(failureIntent)
+                    appContext.sendBroadcast(failureIntent)
                     
                     // Clean up temp file
                     tempFile.delete()
@@ -317,7 +317,7 @@ object AdvancedThemingService {
                 val failureIntent = Intent("ANIMATED_THEME_INSTALL_FAILED")
                 failureIntent.putExtra("package_name", targetPackageName)
                 failureIntent.putExtra("error", "Failed to install APK")
-                context.sendBroadcast(failureIntent)
+                appContext.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error creating animated theme: ${e.message}", e)
@@ -325,7 +325,7 @@ object AdvancedThemingService {
             // Broadcast error
             val errorIntent = Intent("ANIMATED_THEME_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -345,7 +345,7 @@ object AdvancedThemingService {
                 return
             }
             
-            if (!SecurityUtils.isValidFilePath(texturePath, listOf(context.filesDir.parent, context.cacheDir.parent, "/sdcard"))) {
+            if (!SecurityUtils.isValidFilePath(texturePath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent, "/sdcard"))) {
                 Log.e(TAG, "Invalid texture path: $texturePath")
                 return
             }
@@ -372,7 +372,7 @@ object AdvancedThemingService {
             )
             
             // Save the theme to internal storage temporarily
-            val tempFile = File(context.cacheDir, "${targetPackageName}.apk")
+            val tempFile = File(appContext.cacheDir, "${targetPackageName}.apk")
             FileOutputStream(tempFile).use { it.write(themeData) }
             
             // Install the overlay using Shizuku
@@ -390,7 +390,7 @@ object AdvancedThemingService {
                     successIntent.putExtra("package_name", targetPackageName)
                     successIntent.putExtra("texture_path", texturePath)
                     successIntent.putExtra("hex_color", hexColor)
-                    context.sendBroadcast(successIntent)
+                    appContext.sendBroadcast(successIntent)
                     
                     // Clean up temp file
                     tempFile.delete()
@@ -401,7 +401,7 @@ object AdvancedThemingService {
                     val failureIntent = Intent("TEXTURE_THEME_CREATION_FAILED")
                     failureIntent.putExtra("package_name", targetPackageName)
                     failureIntent.putExtra("error", "Failed to enable overlay")
-                    context.sendBroadcast(failureIntent)
+                    appContext.sendBroadcast(failureIntent)
                     
                     // Clean up temp file
                     tempFile.delete()
@@ -413,7 +413,7 @@ object AdvancedThemingService {
                 val failureIntent = Intent("TEXTURE_THEME_INSTALL_FAILED")
                 failureIntent.putExtra("package_name", targetPackageName)
                 failureIntent.putExtra("error", "Failed to install APK")
-                context.sendBroadcast(failureIntent)
+                appContext.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error creating texture theme: ${e.message}", e)
@@ -421,7 +421,7 @@ object AdvancedThemingService {
             // Broadcast error
             val errorIntent = Intent("TEXTURE_THEME_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -465,14 +465,14 @@ object AdvancedThemingService {
             // Broadcast results
             val successIntent = Intent("THEME_PRESETS_RETRIEVED")
             successIntent.putExtra("preset_count", presets.size)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting theme presets: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("THEME_PRESETS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -509,21 +509,21 @@ object AdvancedThemingService {
             // For now, we'll just apply the 'to' theme
             val applyIntent = Intent("com.hexodus.APPLY_THEME")
             applyIntent.putExtra("theme_name", toTheme)
-            context.sendBroadcast(applyIntent)
+            appContext.sendBroadcast(applyIntent)
             
             // Broadcast success
             val successIntent = Intent("THEME_TRANSITION_APPLIED")
             successIntent.putExtra("from_theme", fromTheme)
             successIntent.putExtra("to_theme", toTheme)
             successIntent.putExtra("transition_speed", speed)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error applying theme transition: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("THEME_TRANSITION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -565,7 +565,7 @@ object AdvancedThemingService {
             )
             
             // Save the theme to internal storage temporarily
-            val tempFile = File(context.cacheDir, "${targetPackageName}.apk")
+            val tempFile = File(appContext.cacheDir, "${targetPackageName}.apk")
             FileOutputStream(tempFile).use { it.write(themeData) }
             
             // Install the overlay using Shizuku
@@ -583,7 +583,7 @@ object AdvancedThemingService {
                     successIntent.putExtra("package_name", targetPackageName)
                     successIntent.putExtra("animation_type", animationType)
                     successIntent.putExtra("duration", duration)
-                    context.sendBroadcast(successIntent)
+                    appContext.sendBroadcast(successIntent)
                     
                     // Clean up temp file
                     tempFile.delete()
@@ -594,7 +594,7 @@ object AdvancedThemingService {
                     val failureIntent = Intent("THEME_ANIMATION_CREATION_FAILED")
                     failureIntent.putExtra("package_name", targetPackageName)
                     failureIntent.putExtra("error", "Failed to enable overlay")
-                    context.sendBroadcast(failureIntent)
+                    appContext.sendBroadcast(failureIntent)
                     
                     // Clean up temp file
                     tempFile.delete()
@@ -606,7 +606,7 @@ object AdvancedThemingService {
                 val failureIntent = Intent("THEME_ANIMATION_INSTALL_FAILED")
                 failureIntent.putExtra("package_name", targetPackageName)
                 failureIntent.putExtra("error", "Failed to install APK")
-                context.sendBroadcast(failureIntent)
+                appContext.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error creating theme animation: ${e.message}", e)
@@ -614,7 +614,7 @@ object AdvancedThemingService {
             // Broadcast error
             val errorIntent = Intent("THEME_ANIMATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     

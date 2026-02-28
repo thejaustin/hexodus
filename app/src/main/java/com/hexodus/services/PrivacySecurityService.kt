@@ -13,7 +13,7 @@ import java.io.File
  * Inspired by AppLock, Amarok-Hider, and PrivacyFlip projects from awesome-shizuku
  */
 object PrivacySecurityService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -141,7 +141,7 @@ object PrivacySecurityService {
             Log.d(TAG, "App locked: $sanitizedPackageName using method: $lockMethod")
             
             // Store in preferences
-            val prefs = context.getSharedPreferences("app_locks", 0)
+            val prefs = appContext.getSharedPreferences("app_locks", 0)
             val editor = prefs.edit()
             val currentLocked = prefs.getStringSet("locked_apps", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
             currentLocked.add(sanitizedPackageName)
@@ -152,14 +152,14 @@ object PrivacySecurityService {
             val successIntent = Intent("APP_LOCKED")
             successIntent.putExtra("package_name", sanitizedPackageName)
             successIntent.putExtra("lock_method", lockMethod)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error locking app: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_LOCK_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -180,7 +180,7 @@ object PrivacySecurityService {
             Log.d(TAG, "App unlocked: $sanitizedPackageName")
             
             // Update preferences
-            val prefs = context.getSharedPreferences("app_locks", 0)
+            val prefs = appContext.getSharedPreferences("app_locks", 0)
             val editor = prefs.edit()
             val currentLocked = prefs.getStringSet("locked_apps", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
             currentLocked.remove(sanitizedPackageName)
@@ -190,14 +190,14 @@ object PrivacySecurityService {
             // Broadcast success
             val successIntent = Intent("APP_UNLOCKED")
             successIntent.putExtra("package_name", sanitizedPackageName)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error unlocking app: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("APP_UNLOCK_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -207,7 +207,7 @@ object PrivacySecurityService {
     private fun hideFile(filePath: String) {
         try {
             // Validate file path
-            if (!SecurityUtils.isValidFilePath(filePath, listOf(context.filesDir.parent, context.cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(filePath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent))) {
                 Log.e(TAG, "Invalid file path: $filePath")
                 return
             }
@@ -235,7 +235,7 @@ object PrivacySecurityService {
             }
             
             // Store in preferences
-            val prefs = context.getSharedPreferences("hidden_files", 0)
+            val prefs = appContext.getSharedPreferences("hidden_files", 0)
             val editor = prefs.edit()
             val currentHidden = prefs.getStringSet("hidden_files", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
             currentHidden.add(filePath)
@@ -245,14 +245,14 @@ object PrivacySecurityService {
             // Broadcast success
             val successIntent = Intent("FILE_HIDDEN")
             successIntent.putExtra("file_path", filePath)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error hiding file: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("FILE_HIDE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -262,7 +262,7 @@ object PrivacySecurityService {
     private fun unhideFile(filePath: String) {
         try {
             // Validate file path
-            if (!SecurityUtils.isValidFilePath(filePath, listOf(context.filesDir.parent, context.cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(filePath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent))) {
                 Log.e(TAG, "Invalid file path: $filePath")
                 return
             }
@@ -284,7 +284,7 @@ object PrivacySecurityService {
             hiddenFiles.remove(filePath)
             
             // Update preferences
-            val prefs = context.getSharedPreferences("hidden_files", 0)
+            val prefs = appContext.getSharedPreferences("hidden_files", 0)
             val editor = prefs.edit()
             val currentHidden = prefs.getStringSet("hidden_files", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
             currentHidden.remove(filePath)
@@ -294,14 +294,14 @@ object PrivacySecurityService {
             // Broadcast success
             val successIntent = Intent("FILE_UNHIDDEN")
             successIntent.putExtra("file_path", filePath)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error unhiding file: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("FILE_UNHIDE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -331,7 +331,7 @@ object PrivacySecurityService {
                 // Broadcast success
                 val successIntent = Intent("APP_HIDDEN_FROM_LAUNCHER")
                 successIntent.putExtra("package_name", sanitizedPackageName)
-                context.sendBroadcast(successIntent)
+                appContext.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to hide app from launcher: $sanitizedPackageName")
                 
@@ -339,7 +339,7 @@ object PrivacySecurityService {
                 val failureIntent = Intent("APP_HIDE_FROM_LAUNCHER_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
                 failureIntent.putExtra("error", "Failed to execute command")
-                context.sendBroadcast(failureIntent)
+                appContext.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error hiding app: ${e.message}", e)
@@ -347,7 +347,7 @@ object PrivacySecurityService {
             // Broadcast error
             val errorIntent = Intent("APP_HIDE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -377,7 +377,7 @@ object PrivacySecurityService {
                 // Broadcast success
                 val successIntent = Intent("APP_UNHIDDEN_FROM_LAUNCHER")
                 successIntent.putExtra("package_name", sanitizedPackageName)
-                context.sendBroadcast(successIntent)
+                appContext.sendBroadcast(successIntent)
             } else {
                 Log.e(TAG, "Failed to unhide app from launcher: $sanitizedPackageName")
                 
@@ -385,7 +385,7 @@ object PrivacySecurityService {
                 val failureIntent = Intent("APP_UNHIDE_FROM_LAUNCHER_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
                 failureIntent.putExtra("error", "Failed to execute command")
-                context.sendBroadcast(failureIntent)
+                appContext.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error unhiding app: ${e.message}", e)
@@ -393,7 +393,7 @@ object PrivacySecurityService {
             // Broadcast error
             val errorIntent = Intent("APP_UNHIDE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -422,14 +422,14 @@ object PrivacySecurityService {
             // Broadcast success
             val successIntent = Intent("PRIVACY_MANAGED")
             successIntent.putExtra("device_locked", deviceLocked)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error managing privacy: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("PRIVACY_MANAGE_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -456,14 +456,14 @@ object PrivacySecurityService {
             // Broadcast results
             val resultsIntent = Intent("PRIVACY_SCAN_COMPLETED")
             resultsIntent.putExtra("issue_count", privacyIssues.size)
-            context.sendBroadcast(resultsIntent)
+            appContext.sendBroadcast(resultsIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error scanning for privacy issues: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("PRIVACY_SCAN_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -471,7 +471,7 @@ object PrivacySecurityService {
      * Gets list of locked apps
      */
     fun getLockedApps(): Set<String> {
-        val prefs = context.getSharedPreferences("app_locks", 0)
+        val prefs = appContext.getSharedPreferences("app_locks", 0)
         return prefs.getStringSet("locked_apps", mutableSetOf()) ?: mutableSetOf()
     }
     
@@ -479,7 +479,7 @@ object PrivacySecurityService {
      * Gets list of hidden files
      */
     fun getHiddenFiles(): Set<String> {
-        val prefs = context.getSharedPreferences("hidden_files", 0)
+        val prefs = appContext.getSharedPreferences("hidden_files", 0)
         return prefs.getStringSet("hidden_files", mutableSetOf()) ?: mutableSetOf()
     }
 }

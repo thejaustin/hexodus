@@ -13,7 +13,7 @@ import moe.shizuku.plus.ShizukuPlusAPI
  * CapabilityManager - Detects system capabilities (Root, Shizuku, Shizuku+, Dhizuku, ADB, LSPatch)
  * and hardware info to filter compatible features.
  */
-class CapabilityManager(private val context: Context) {
+class CapabilityManager(private val appContext: Context) {
 
     companion object {
         private const val TAG = "CapabilityManager"
@@ -52,7 +52,7 @@ class CapabilityManager(private val context: Context) {
             isShizukuReady = isShizukuReady,
             isShizukuPlusReady = isShizukuPlusReady,
             isDhizukuReady = checkDhizuku(isShizukuPlusReady),
-            isADBEnabled = Settings.Global.getInt(context.contentResolver, Settings.Global.ADB_ENABLED, 0) > 0,
+            isADBEnabled = Settings.Global.getInt(appContext.contentResolver, Settings.Global.ADB_ENABLED, 0) > 0,
             isXposedActive = checkXposed(),
             isVectorActive = checkVector(),
             isS22Ultra = Build.MODEL.uppercase().contains("S908"),
@@ -68,7 +68,7 @@ class CapabilityManager(private val context: Context) {
             Class.forName("org.jingmatrix.vector.VectorBridge")
             true
         } catch (e: Exception) {
-            val intent = context.packageManager.getLaunchIntentForPackage("org.jingmatrix.vector")
+            val intent = appContext.packageManager.getLaunchIntentForPackage("org.jingmatrix.vector")
             intent != null
         }
     }
@@ -106,7 +106,7 @@ class CapabilityManager(private val context: Context) {
         }
 
         return try {
-            val intent = context.packageManager.getLaunchIntentForPackage("com.iamr0s.dhizuku")
+            val intent = appContext.packageManager.getLaunchIntentForPackage("com.iamr0s.dhizuku")
             intent != null
         } catch (e: Exception) {
             false

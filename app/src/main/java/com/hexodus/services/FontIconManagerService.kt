@@ -19,7 +19,7 @@ import java.io.OutputStream
  * Inspired by font and icon customization projects from awesome-shizuku
  */
 object FontIconManagerService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -68,7 +68,7 @@ object FontIconManagerService {
     const val EXTRA_ICON_PACK_PACKAGE = "icon_pack_package"
     
     private val fontsDir = File("/system/fonts")
-    private val iconPacksDir = File(context.getExternalFilesDir(null), "icon_packs")
+    private val iconPacksDir = File(appContext.getExternalFilesDir(null), "icon_packs")
     
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
@@ -137,7 +137,7 @@ object FontIconManagerService {
                 return
             }
             
-            if (!SecurityUtils.isValidFilePath(fontPath, listOf(context.filesDir.parent, context.cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(fontPath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent))) {
                 Log.e(TAG, "Invalid font path: $fontPath")
                 return
             }
@@ -157,14 +157,14 @@ object FontIconManagerService {
             val successIntent = Intent("FONT_INSTALLED")
             successIntent.putExtra("font_name", fontName)
             successIntent.putExtra("font_path", fontPath)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error installing font: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("FONT_INSTALL_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -184,7 +184,7 @@ object FontIconManagerService {
                 return
             }
             
-            if (!SecurityUtils.isValidFilePath(iconPackPath, listOf(context.filesDir.parent, context.cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(iconPackPath, listOf(appContext.filesDir.parent, appContext.cacheDir.parent))) {
                 Log.e(TAG, "Invalid icon pack path: $iconPackPath")
                 return
             }
@@ -210,14 +210,14 @@ object FontIconManagerService {
             val successIntent = Intent("ICON_PACK_INSTALLED")
             successIntent.putExtra("icon_pack_name", iconPackName)
             successIntent.putExtra("icon_pack_path", iconPackPath)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error installing icon pack: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("ICON_PACK_INSTALL_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -260,14 +260,14 @@ object FontIconManagerService {
             // Broadcast results
             val successIntent = Intent("AVAILABLE_FONTS_RETRIEVED")
             successIntent.putExtra("font_count", availableFonts.size)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting available fonts: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("AVAILABLE_FONTS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -304,14 +304,14 @@ object FontIconManagerService {
             // Broadcast results
             val successIntent = Intent("AVAILABLE_ICON_PACKS_RETRIEVED")
             successIntent.putExtra("icon_pack_count", availableIconPacks.size)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting available icon packs: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("AVAILABLE_ICON_PACKS_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -338,14 +338,14 @@ object FontIconManagerService {
             // Broadcast success
             val successIntent = Intent("FONT_APPLIED")
             successIntent.putExtra("font_family", fontFamily)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error applying font: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("FONT_APPLICATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -372,14 +372,14 @@ object FontIconManagerService {
             // Broadcast success
             val successIntent = Intent("ICON_PACK_APPLIED")
             successIntent.putExtra("icon_pack_package", sanitizedPackageName)
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error applying icon pack: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("ICON_PACK_APPLICATION_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -401,14 +401,14 @@ object FontIconManagerService {
             // Broadcast results
             val successIntent = Intent("CURRENT_FONT_RETRIEVED")
             successIntent.putExtra("current_font", HashMap(currentFont))
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting current font: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("CURRENT_FONT_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     
@@ -430,14 +430,14 @@ object FontIconManagerService {
             // Broadcast results
             val successIntent = Intent("CURRENT_ICON_PACK_RETRIEVED")
             successIntent.putExtra("current_icon_pack", HashMap(currentIconPack))
-            context.sendBroadcast(successIntent)
+            appContext.sendBroadcast(successIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting current icon pack: ${e.message}", e)
             
             // Broadcast error
             val errorIntent = Intent("CURRENT_ICON_PACK_ERROR")
             errorIntent.putExtra("error_message", e.message)
-            context.sendBroadcast(errorIntent)
+            appContext.sendBroadcast(errorIntent)
         }
     }
     

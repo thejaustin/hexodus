@@ -20,12 +20,11 @@ import com.hexodus.services.ModExtensionManager
 @Composable
 fun CustomModsScreen(navController: NavController) {
     val context = LocalContext.current
-    val modManager = remember { ModExtensionManager(context) }
     var mods by remember { mutableStateOf<List<ModExtensionManager.ModExtension>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
-        mods = modManager.discoverMods()
+        mods = ModExtensionManager.discoverMods()
         isLoading = false
     }
 
@@ -41,7 +40,7 @@ fun CustomModsScreen(navController: NavController) {
                 actions = {
                     IconButton(onClick = { 
                         isLoading = true
-                        mods = modManager.discoverMods()
+                        mods = ModExtensionManager.discoverMods()
                         isLoading = false
                     }) {
                         Icon(Icons.Default.Refresh, contentDescription = "Refresh")
@@ -67,7 +66,7 @@ fun CustomModsScreen(navController: NavController) {
             LazyColumn(modifier = Modifier.fillMaxSize().padding(padding)) {
                 items(mods) { mod ->
                     ListItem(
-                        headlineContent = { Text(mod.appName) },
+                        headlineContent = { Text(mod.name) },
                         supportingContent = { Text("Version: ${mod.version} | Author: ${mod.author}") },
                         leadingContent = { 
                             Icon(
@@ -87,7 +86,6 @@ fun CustomModsScreen(navController: NavController) {
                             // Open mod settings or details
                         }
                     )
-                    Divider()
                 }
             }
         }

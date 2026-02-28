@@ -11,7 +11,7 @@ import com.hexodus.HexodusApplication
  * ModExtensionManager - Handles loading and interaction with third-party Hexodus mods
  */
 object ModExtensionManager {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     private const val TAG = "ModExtensionManager"
     private const val MOD_PERMISSION = "com.hexodus.permission.MOD_EXTENSION"
@@ -27,7 +27,7 @@ object ModExtensionManager {
 
     fun discoverMods(): List<ModExtension> {
         val mods = mutableListOf<ModExtension>()
-        val packageManager = context.packageManager
+        val packageManager = appContext.packageManager
         
         try {
             val intent = Intent(ACTION_MOD_SERVICE)
@@ -68,7 +68,7 @@ object ModExtensionManager {
                 setPackage(packageName)
                 putExtra("command", command)
             }
-            context.startService(intent)
+            appContext.startService(intent)
             Log.d(TAG, "Executed command '$command' on mod '$packageName'")
             return true
         } catch (e: Exception) {

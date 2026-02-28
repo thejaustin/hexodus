@@ -16,7 +16,7 @@ import com.hexodus.utils.ColorUtils
  * Based on techniques from awesome-shizuku projects for system-level theming
  */
 object MonetOverrideService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -194,7 +194,7 @@ object MonetOverrideService {
         
         // Simulate the process by storing the palette in shared preferences
         // which can be accessed by other parts of the app
-        val prefs = context.applicationContext.getSharedPreferences("monet_override", 0)
+        val prefs = appContext.applicationContext.getSharedPreferences("monet_override", 0)
         val editor = prefs.edit()
         
         for ((role, color) in palette) {
@@ -209,20 +209,20 @@ object MonetOverrideService {
         val intent = Intent("MONET_OVERRIDE_UPDATED")
         intent.putExtra("palette", HashMap(palette))
         intent.putStringArrayListExtra("components", ArrayList(components))
-        context.sendBroadcast(intent)
+        appContext.sendBroadcast(intent)
     }
     
     /**
      * Restores the original system palette
      */
     private fun restoreOriginalPalette() {
-        val prefs = context.applicationContext.getSharedPreferences("monet_override", 0)
+        val prefs = appContext.applicationContext.getSharedPreferences("monet_override", 0)
         val editor = prefs.edit()
         editor.clear()
         editor.apply()
         
         // Broadcast an intent to notify other components
         val intent = Intent("MONET_OVERRIDE_RESTORED")
-        context.sendBroadcast(intent)
+        appContext.sendBroadcast(intent)
     }
 }

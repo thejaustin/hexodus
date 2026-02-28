@@ -10,7 +10,7 @@ import com.hexodus.HexodusApplication
  * OverlayActivationService - Service that wraps OverlayManager to handle Intents
  */
 object OverlayActivationService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     
@@ -42,7 +42,7 @@ object OverlayActivationService {
                     val success = OverlayManager.activateOverlay(targetPackage, apkPath, validateSignature)
                     val resultIntent = Intent(if (success) "OVERLAY_ACTIVATION_SUCCESS" else "OVERLAY_ACTIVATION_FAILURE")
                     resultIntent.putExtra("package_name", targetPackage)
-                    context.sendBroadcast(resultIntent)
+                    appContext.sendBroadcast(resultIntent)
                 }
             }
             ACTION_DEACTIVATE_OVERLAY -> {
@@ -51,7 +51,7 @@ object OverlayActivationService {
                     val success = OverlayManager.deactivateOverlay(targetPackage)
                     val resultIntent = Intent(if (success) "OVERLAY_DEACTIVATION_SUCCESS" else "OVERLAY_DEACTIVATION_FAILURE")
                     resultIntent.putExtra("package_name", targetPackage)
-                    context.sendBroadcast(resultIntent)
+                    appContext.sendBroadcast(resultIntent)
                 }
             }
             ACTION_REFRESH_OVERLAYS -> {

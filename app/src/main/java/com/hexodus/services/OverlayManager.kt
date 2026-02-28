@@ -12,7 +12,7 @@ import java.io.File
  * OverlayManager - Singleton utility for managing overlays via Shizuku
  */
 object OverlayManager {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     private const val TAG = "OverlayManager"
@@ -90,7 +90,7 @@ object OverlayManager {
 
     fun applyTheme(themeData: ByteArray, themeName: String) {
         try {
-            val tempFile = File(context.cacheDir, "$themeName.apk")
+            val tempFile = File(appContext.cacheDir, "$themeName.apk")
             tempFile.writeBytes(themeData)
             activateOverlay("com.hexodus.theme.$themeName", tempFile.absolutePath, false)
         } catch (e: Exception) {

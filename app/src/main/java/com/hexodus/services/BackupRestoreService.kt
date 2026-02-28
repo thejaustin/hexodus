@@ -20,7 +20,7 @@ import android.os.IBinder
  * Inspired by Swift Backup and other backup projects from awesome-shizuku
  */
 object BackupRestoreService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
     private const val TAG = "BackupRestoreService"
@@ -71,13 +71,13 @@ object BackupRestoreService {
     private fun backupTheme(themeName: String, includeSettings: Boolean) {
         try {
             Log.d(TAG, "Backing up theme: $themeName (Include settings: $includeSettings)")
-            val backupFile = File(context.getExternalFilesDir(null), "backups/themes/${themeName}_backup.zip")
+            val backupFile = File(appContext.getExternalFilesDir(null), "backups/themes/${themeName}_backup.zip")
             backupFile.parentFile?.mkdirs()
             
             val intent = Intent("THEME_BACKUP_COMPLETED")
             intent.putExtra("theme_name", themeName)
             intent.putExtra("backup_path", backupFile.absolutePath)
-            context.sendBroadcast(intent)
+            appContext.sendBroadcast(intent)
         } catch (e: Exception) {
             Log.e(TAG, "Error backing up theme: ${e.message}", e)
         }
@@ -85,7 +85,11 @@ object BackupRestoreService {
     
     private fun restoreTheme(backupPath: String) {
         try {
-            if (!SecurityUtils.isValidFilePath(backupPath, listOf(context.getExternalFilesDir(null)?.parent?.absolutePath ?: "", context.cacheDir.parent ?: ""))) {
+            val allowedPaths = mutableListOf<String>()
+            appContext.getExternalFilesDir(null)?.parent?.let { allowedPaths.add(it) }
+            appContext.cacheDir.parent?.let { allowedPaths.add(it) }
+            
+            if (!SecurityUtils.isValidFilePath(backupPath, allowedPaths)) {
                 Log.e(TAG, "Invalid backup path: $backupPath")
                 return
             }
@@ -93,7 +97,7 @@ object BackupRestoreService {
             Log.d(TAG, "Restoring theme from: $backupPath")
             val intent = Intent("THEME_RESTORE_COMPLETED")
             intent.putExtra("backup_path", backupPath)
-            context.sendBroadcast(intent)
+            appContext.sendBroadcast(intent)
         } catch (e: Exception) {
             Log.e(TAG, "Error restoring theme: ${e.message}", e)
         }
@@ -101,9 +105,9 @@ object BackupRestoreService {
     
     private fun backupSettings() {
         try {
-            val prefs = context.getSharedPreferences("hexodus_prefs", 0)
+            val prefs = appContext.getSharedPreferences("hexodus_prefs", 0)
             Log.d(TAG, "Backing up settings")
-            context.sendBroadcast(Intent("SETTINGS_BACKUP_COMPLETED"))
+            appContext.sendBroadcast(Intent("SETTINGS_BACKUP_COMPLETED"))
         } catch (e: Exception) {
             Log.e(TAG, "Error backing up settings: ${e.message}", e)
         }
@@ -112,7 +116,7 @@ object BackupRestoreService {
     private fun restoreSettings(backupPath: String) {
         try {
             Log.d(TAG, "Restoring settings from: $backupPath")
-            context.sendBroadcast(Intent("SETTINGS_RESTORE_COMPLETED"))
+            appContext.sendBroadcast(Intent("SETTINGS_RESTORE_COMPLETED"))
         } catch (e: Exception) {
             Log.e(TAG, "Error restoring settings: ${e.message}", e)
         }
@@ -120,12 +124,12 @@ object BackupRestoreService {
     
     private fun getBackupList() {
         try {
-            val backupDir = File(context.getExternalFilesDir(null), "backups")
+            val backupDir = File(appContext.getExternalFilesDir(null), "backups")
             val backups = backupDir.listFiles()?.map { it.name } ?: emptyList<String>()
             
             val intent = Intent("BACKUP_LIST_RETRIEVED")
             intent.putStringArrayListExtra("backups", ArrayList(backups))
-            context.sendBroadcast(intent)
+            appContext.sendBroadcast(intent)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting backup list: ${e.message}", e)
         }

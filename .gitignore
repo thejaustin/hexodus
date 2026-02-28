@@ -49,3 +49,4 @@ Thumbs.db
 **/shizuku/**
 !**/shizuku-api/**
 !app/src/main/java/moe/shizuku/plus/**
+!app/src/main/java/rikka/shizuku/ShizukuPlusAPI.java

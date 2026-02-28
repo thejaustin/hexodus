@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
  * Inspired by System UI Tuner project from awesome-shizuku
  */
 object SystemTunerService {
-    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
+    private val appContext: android.content.Context get() = com.hexodus.HexodusApplication.context
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
     private val prefsManager by lazy { PrefsManager.getInstance(com.hexodus.HexodusApplication.context) }
 
@@ -75,7 +75,7 @@ object SystemTunerService {
                 Log.d(TAG, "System setting modified: $key = $value")
                 val successIntent = Intent("SYSTEM_SETTING_MODIFIED")
                 successIntent.putExtra("setting_key", key)
-                context.sendBroadcast(successIntent)
+                appContext.sendBroadcast(successIntent)
             } catch (e: Exception) {
                 Log.e(TAG, "Error modifying system setting: ${e.message}", e)
             }
@@ -95,7 +95,7 @@ object SystemTunerService {
                     val successIntent = Intent("SYSTEM_SETTING_RETRIEVED")
                     successIntent.putExtra("setting_key", key)
                     successIntent.putExtra("setting_value", result.trim())
-                    context.sendBroadcast(successIntent)
+                    appContext.sendBroadcast(successIntent)
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error getting system setting", e)
