@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
  * Inspired by System UI Tuner project from awesome-shizuku
  */
 object SystemTunerService {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
     private val prefsManager by lazy { PrefsManager.getInstance(com.hexodus.HexodusApplication.context) }
 

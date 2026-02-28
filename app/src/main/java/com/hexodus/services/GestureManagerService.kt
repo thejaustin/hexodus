@@ -12,7 +12,7 @@ import com.hexodus.utils.SecurityUtils
  * Inspired by TapTap project from awesome-shizuku for back gesture features
  */
 object GestureManagerService {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     

@@ -12,7 +12,7 @@ import com.hexodus.utils.SecurityUtils
  * Inspired by BatStats and EnforceDoze projects from awesome-shizuku
  */
 object PowerManagerService {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     

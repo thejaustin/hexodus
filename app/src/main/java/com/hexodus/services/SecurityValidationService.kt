@@ -12,7 +12,7 @@ import com.hexodus.utils.SecurityUtils
  * Ensures all operations comply with security best practices
  */
 object SecurityValidationService {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     

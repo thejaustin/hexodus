@@ -19,7 +19,7 @@ import java.io.OutputStream
  * Inspired by font and icon customization projects from awesome-shizuku
  */
 object FontIconManagerService {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     

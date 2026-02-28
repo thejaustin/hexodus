@@ -12,7 +12,7 @@ import com.hexodus.utils.SecurityUtils
  * Inspired by RootlessJamesDSP project from awesome-shizuku for audio enhancement
  */
 object AudioManagerService {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     

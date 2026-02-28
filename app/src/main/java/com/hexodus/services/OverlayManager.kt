@@ -12,7 +12,7 @@ import java.io.File
  * OverlayManager - Singleton utility for managing overlays via Shizuku
  */
 object OverlayManager {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     private const val TAG = "OverlayManager"

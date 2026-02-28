@@ -19,7 +19,7 @@ import java.util.zip.ZipOutputStream
  * Inspired by various awesome-shizuku projects for system-level resource management
  */
 object ResourceManagerService {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
     private val themeCompiler = com.hexodus.core.ThemeCompiler()
 

@@ -13,7 +13,7 @@ import java.io.File
  * Inspired by AppLock, Amarok-Hider, and PrivacyFlip projects from awesome-shizuku
  */
 object PrivacySecurityService {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     

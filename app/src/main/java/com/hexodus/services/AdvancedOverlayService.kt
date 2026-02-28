@@ -16,7 +16,7 @@ import java.io.FileOutputStream
  * Inspired by various overlay management projects from awesome-shizuku
  */
 object AdvancedOverlayService {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
     private val themeCompiler = com.hexodus.core.ThemeCompiler()
 

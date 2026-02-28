@@ -15,7 +15,7 @@ import com.hexodus.utils.ColorUtils
  * Implements dynamic color generation and application based on user preferences
  */
 object DynamicColorService {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     

@@ -16,7 +16,7 @@ import java.io.FileOutputStream
  * Handles theme creation, application, sharing, and persistence
  */
 object ThemeManager {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     private const val TAG = "ThemeManager"

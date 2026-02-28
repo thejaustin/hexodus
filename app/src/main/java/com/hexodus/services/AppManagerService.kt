@@ -12,7 +12,7 @@ import com.hexodus.utils.SecurityUtils
  * Inspired by Hail, Ice Box, and Inure App Manager projects from awesome-shizuku
  */
 object AppManagerService {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     

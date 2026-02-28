@@ -16,7 +16,7 @@ import android.Manifest
  * Inspired by privacy-focused projects from awesome-shizuku
  */
 object PrivacyManagerService {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     

@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.collect
  * Includes wallpaper-based theming, system resource inspection, and more
  */
 object AdvancedFeatureService {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)

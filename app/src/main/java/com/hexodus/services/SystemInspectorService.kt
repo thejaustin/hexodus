@@ -15,7 +15,7 @@ import java.io.File
  * Inspired by LibChecker and other system inspection projects from awesome-shizuku
  */
 object SystemInspectorService {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     private val pm: PackageManager by lazy { context.packageManager }

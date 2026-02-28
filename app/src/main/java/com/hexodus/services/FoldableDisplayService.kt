@@ -20,7 +20,7 @@ import com.hexodus.HexodusApplication
  * Optimized for Samsung Z Flip 5 and other foldable devices based on awesome-shizuku insights
  */
 object FoldableDisplayService {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
     private const val TAG = "FoldableDisplayService"

@@ -19,7 +19,7 @@ import androidx.annotation.RequiresApi
  * Inspired by power management projects from awesome-shizuku
  */
 object PerformanceOptimizerService {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     

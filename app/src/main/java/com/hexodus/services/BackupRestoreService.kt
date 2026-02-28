@@ -20,14 +20,7 @@ import android.os.IBinder
  * Inspired by Swift Backup and other backup projects from awesome-shizuku
  */
 object BackupRestoreService {
-    private val context get() = com.hexodus.HexodusApplication.context
-
-    
-    
-    
-    
-    
-    
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
     private const val TAG = "BackupRestoreService"
@@ -75,19 +68,12 @@ object BackupRestoreService {
         return android.app.Service.START_STICKY
     }
     
-    /**
-     * Backs up a theme to a ZIP file
-     */
     private fun backupTheme(themeName: String, includeSettings: Boolean) {
         try {
-            // In a real implementation, this would create a ZIP of the theme files
-            // For this example, we'll simulate the process
             Log.d(TAG, "Backing up theme: $themeName (Include settings: $includeSettings)")
-            
             val backupFile = File(context.getExternalFilesDir(null), "backups/themes/${themeName}_backup.zip")
             backupFile.parentFile?.mkdirs()
             
-            // Broadcast success
             val intent = Intent("THEME_BACKUP_COMPLETED")
             intent.putExtra("theme_name", themeName)
             intent.putExtra("backup_path", backupFile.absolutePath)
@@ -97,20 +83,14 @@ object BackupRestoreService {
         }
     }
     
-    /**
-     * Restores a theme from a ZIP file
-     */
     private fun restoreTheme(backupPath: String) {
         try {
-            // Validate backup path
-            if (!SecurityUtils.isValidFilePath(backupPath, listOf(context.getExternalFilesDir(null)?.parent, context.cacheDir.parent))) {
+            if (!SecurityUtils.isValidFilePath(backupPath, listOf(context.getExternalFilesDir(null)?.parent?.absolutePath ?: "", context.cacheDir.parent ?: ""))) {
                 Log.e(TAG, "Invalid backup path: $backupPath")
                 return
             }
             
             Log.d(TAG, "Restoring theme from: $backupPath")
-            
-            // Broadcast success
             val intent = Intent("THEME_RESTORE_COMPLETED")
             intent.putExtra("backup_path", backupPath)
             context.sendBroadcast(intent)
@@ -119,48 +99,30 @@ object BackupRestoreService {
         }
     }
     
-    /**
-     * Backs up app settings
-     */
     private fun backupSettings() {
         try {
             val prefs = context.getSharedPreferences("hexodus_prefs", 0)
             Log.d(TAG, "Backing up settings")
-            
-            // Broadcast success
-            val intent = Intent("SETTINGS_BACKUP_COMPLETED")
-            context.sendBroadcast(intent)
+            context.sendBroadcast(Intent("SETTINGS_BACKUP_COMPLETED"))
         } catch (e: Exception) {
             Log.e(TAG, "Error backing up settings: ${e.message}", e)
         }
     }
     
-    /**
-     * Restores app settings
-     */
     private fun restoreSettings(backupPath: String) {
         try {
             Log.d(TAG, "Restoring settings from: $backupPath")
-            
-            // Broadcast success
-            val intent = Intent("SETTINGS_RESTORE_COMPLETED")
-            context.sendBroadcast(intent)
+            context.sendBroadcast(Intent("SETTINGS_RESTORE_COMPLETED"))
         } catch (e: Exception) {
             Log.e(TAG, "Error restoring settings: ${e.message}", e)
         }
     }
     
-    /**
-     * Gets a list of available backups
-     */
     private fun getBackupList() {
         try {
             val backupDir = File(context.getExternalFilesDir(null), "backups")
             val backups = backupDir.listFiles()?.map { it.name } ?: emptyList<String>()
             
-            Log.d(TAG, "Retrieved ${backups.size} backups")
-            
-            // Broadcast results
             val intent = Intent("BACKUP_LIST_RETRIEVED")
             intent.putStringArrayListExtra("backups", ArrayList(backups))
             context.sendBroadcast(intent)

@@ -12,7 +12,7 @@ import com.hexodus.utils.SecurityUtils
  * Inspired by DarQ project from awesome-shizuku for per-app dark mode
  */
 object AppThemerService {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     

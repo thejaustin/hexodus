@@ -15,7 +15,7 @@ import com.hexodus.utils.AccessibilityUtils
  * Performs checks to ensure the app meets Android 16 accessibility standards
  */
 object AccessibilityCheckerService {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     

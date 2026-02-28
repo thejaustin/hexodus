@@ -18,7 +18,7 @@ import java.io.IOException
  * Inspired by wallpaper-based theming projects from awesome-shizuku
  */
 object WallpaperThemerService {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
 
     
     

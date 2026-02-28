@@ -17,7 +17,7 @@ import java.security.MessageDigest
  * Based on techniques from awesome-shizuku projects for system-level theming
  */
 object HighContrastInjectorService {
-    private val context get() = com.hexodus.HexodusApplication.context
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
 
     private const val TAG = "HCInjectorService"

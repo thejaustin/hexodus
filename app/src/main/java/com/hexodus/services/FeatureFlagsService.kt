@@ -17,32 +17,9 @@ import moe.shizuku.plus.ShizukuPlusAPI
  * using Shizuku. Enables workarounds for specific devices (e.g., S22 Ultra).
  */
 object FeatureFlagsService {
-    private val context get() = com.hexodus.HexodusApplication.context
-
-    
-    
-    
-    
-    
-    
+    private val context: android.content.Context get() = com.hexodus.HexodusApplication.context
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
-
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
+    private val prefsManager by lazy { PrefsManager.getInstance(com.hexodus.HexodusApplication.context) }
 
     private const val TAG = "FeatureFlagsService"
     
@@ -51,9 +28,6 @@ object FeatureFlagsService {
 
     const val EXTRA_FLAG_NAME = "flag_name"
     const val EXTRA_FLAG_STATE = "flag_state"
-
-    private val prefsManager by lazy { PrefsManager.getInstance(com.hexodus.HexodusApplication.context) }
-    private val scope = CoroutineScope(Dispatchers.IO)
 
     fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
@@ -100,7 +74,6 @@ object FeatureFlagsService {
         scope.launch {
             try {
                 Log.d(TAG, "Restoring system defaults...")
-                // Restore some common flags
                 val flags = listOf("sem_enhanced_cpu_responsiveness", "notification_cooldown_enabled")
                 for (flag in flags) {
                     if (useEnhancedApi()) {
