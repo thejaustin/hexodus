@@ -16,11 +16,10 @@ import java.io.FileOutputStream
  * Inspired by various overlay management projects from awesome-shizuku
  */
 object AdvancedOverlayService {
-    private val appContext get() = com.hexodus.HexodusApplication.context
+    private const val TAG = "AdvancedOverlayService"
     private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO)
     private val themeCompiler = com.hexodus.core.ThemeCompiler()
 
-    private const val TAG = "AdvancedOverlayService"
     private const val ACTION_CREATE_ADVANCED_OVERLAY = "com.hexodus.CREATE_ADVANCED_OVERLAY"
     private const val ACTION_LIST_OVERLAYS = "com.hexodus.LIST_OVERLAYS"
     private const val ACTION_SET_OVERLAY_PRIORITY = "com.hexodus.SET_OVERLAY_PRIORITY"
@@ -73,9 +72,6 @@ object AdvancedOverlayService {
         return android.app.Service.START_STICKY
     }
     
-    /**
-     * Creates an advanced overlay with custom resources
-     */
     private fun createAdvancedOverlay(
         name: String,
         targetPackage: String,
@@ -95,10 +91,6 @@ object AdvancedOverlayService {
                 return
             }
             
-            // In a real implementation, this would create an advanced overlay
-            // For this example, we'll simulate the process
-            Log.d(TAG, "Created advanced overlay: $name for package: $targetPackage with priority: $priority")
-            
             // Compile the overlay
             val themeData = themeCompiler.compileTheme(
                 "#FF6200EE", // Default color
@@ -108,7 +100,7 @@ object AdvancedOverlayService {
             )
             
             // Save and apply
-            val tempFile = File(appContext.cacheDir, "${targetPackage}.apk")
+            val tempFile = File(HexodusApplication.context.cacheDir, "${targetPackage}.apk")
             FileOutputStream(tempFile).use { it.write(themeData) }
             
             val success = OverlayManager.activateOverlay(targetPackage, tempFile.absolutePath)
@@ -117,7 +109,7 @@ object AdvancedOverlayService {
                 // Broadcast success
                 val successIntent = Intent("ADVANCED_OVERLAY_CREATED")
                 successIntent.putExtra("package_name", targetPackage)
-                appContext.sendBroadcast(successIntent)
+                HexodusApplication.context.sendBroadcast(successIntent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error creating advanced overlay: ${e.message}", e)
@@ -140,7 +132,7 @@ object AdvancedOverlayService {
             // Broadcast results
             val intent = Intent("OVERLAYS_LISTED")
             intent.putStringArrayListExtra("overlays", ArrayList(overlays))
-            appContext.sendBroadcast(intent)
+            HexodusApplication.context.sendBroadcast(intent)
         } catch (e: Exception) {
             Log.e(TAG, "Error listing overlays: ${e.message}", e)
         }
@@ -165,7 +157,7 @@ object AdvancedOverlayService {
                 val intent = Intent("OVERLAY_PRIORITY_SET")
                 intent.putExtra("package_name", overlayPackage)
                 intent.putExtra("priority", priority)
-                appContext.sendBroadcast(intent)
+                HexodusApplication.context.sendBroadcast(intent)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error setting overlay priority: ${e.message}", e)
@@ -178,7 +170,11 @@ object AdvancedOverlayService {
     private fun exportOverlay(overlayPackage: String, exportPath: String) {
         try {
             // Validate export path
-            if (!SecurityUtils.isValidFilePath(exportPath, listOf(appContext.getExternalFilesDir(null).filterNotNull()?.parent, appContext.cacheDir.parent))) {
+            val allowedPaths = mutableListOf<String?>()
+            allowedPaths.add(HexodusApplication.context.getExternalFilesDir(null)?.parent)
+            allowedPaths.add(HexodusApplication.context.cacheDir.parent)
+            
+            if (!SecurityUtils.isValidFilePath(exportPath, allowedPaths.filterNotNull())) {
                 Log.e(TAG, "Invalid export path: $exportPath")
                 return
             }
@@ -189,7 +185,7 @@ object AdvancedOverlayService {
             val intent = Intent("OVERLAY_EXPORTED")
             intent.putExtra("package_name", overlayPackage)
             intent.putExtra("export_path", exportPath)
-            appContext.sendBroadcast(intent)
+            HexodusApplication.context.sendBroadcast(intent)
         } catch (e: Exception) {
             Log.e(TAG, "Error exporting overlay: ${e.message}", e)
         }
