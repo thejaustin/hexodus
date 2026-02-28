@@ -8,6 +8,7 @@ import java.io.File
 import rikka.shizuku.Shizuku
 import android.content.pm.PackageManager
 import moe.shizuku.plus.ShizukuPlusAPI
+import com.hexodus.HexodusApplication
 
 /**
  * CapabilityManager - Detects system capabilities (Root, Shizuku, Shizuku+, Dhizuku, ADB, LSPatch)

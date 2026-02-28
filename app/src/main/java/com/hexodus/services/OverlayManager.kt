@@ -7,6 +7,7 @@ import com.hexodus.utils.SecurityUtils
 import com.hexodus.utils.PrefsManager
 import moe.shizuku.plus.ShizukuPlusAPI
 import java.io.File
+import com.hexodus.HexodusApplication
 
 /**
  * OverlayManager - Singleton utility for managing overlays via Shizuku
