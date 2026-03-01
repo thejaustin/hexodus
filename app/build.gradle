@@ -2,6 +2,9 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.compose'
+    id 'io.gitlab.arturbosch.detekt'
+    id 'org.jlleitschuh.gradle.ktlint'
+    id 'jacoco'
 }
 
 android {
@@ -33,11 +36,23 @@ android {
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix "-DEBUG"
+            enableUnitTestCoverage true
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+
+    lint {
+        abortOnError false
+        warningsAsErrors false
+        checkReleaseBuilds true
+        htmlReport true
+        xmlReport true
+        htmlOutput file("${project.layout.buildDirectory.get()}/reports/lint/lint-report.html")
+        xmlOutput file("${project.layout.buildDirectory.get()}/reports/lint/lint-report.xml")
+        disable 'MissingTranslation', 'ExtraTranslation'
     }
 
     compileOptions {
@@ -60,6 +75,57 @@ android {
         }
     }
 
+}
+
+detekt {
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
+    allRules = false
+    ignoredBuildTypes = ["release"]
+}
+
+ktlint {
+    android.set(true)
+    ignoreFailures.set(true)
+    reporters {
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.HTML)
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.CHECKSTYLE)
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+tasks.withType(Test).configureEach {
+    jacoco.includeNoLocationClasses = true
+    jacoco.excludes = ['jdk.internal.*']
+}
+
+tasks.register('jacocoTestReport', JacocoReport) {
+    dependsOn 'testDebugUnitTest'
+    reports {
+        xml.required = true
+        html.required = true
+    }
+    def excludedFiles = [
+        '**/R.class', '**/R$*.class', '**/BuildConfig.*',
+        '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*',
+        '**/databinding/**', '**/hilt_aggregated_deps/**',
+        '**/*_Factory*', '**/*_HiltModules*'
+    ]
+    classDirectories.setFrom(fileTree(
+        dir: "${layout.buildDirectory.get()}/tmp/kotlin-classes/debug",
+        excludes: excludedFiles
+    ))
+    sourceDirectories.setFrom(files("${project.projectDir}/src/main/java"))
+    executionData.setFrom(fileTree(
+        dir: "${layout.buildDirectory.get()}",
+        includes: [
+            "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec",
+            "jacoco/testDebugUnitTest.exec"
+        ]
+    ))
 }
 
 dependencies {
@@ -102,6 +168,9 @@ dependencies {
 
     // Crash reporting
     implementation 'io.sentry:sentry-android:7.14.0'
+
+    // Memory leak detection (debug builds only)
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
 
     // Testing
     testImplementation 'junit:junit:4.13.2'

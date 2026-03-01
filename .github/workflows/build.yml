@@ -42,3 +42,119 @@ jobs:
         name: hexodus-debug
         path: app/build/outputs/apk/debug/*.apk
         if-no-files-found: error
+
+  quality:
+    runs-on: ubuntu-latest
+    needs: build
+    continue-on-error: true
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+      with:
+        packages: >
+          tools
+          platform-tools
+          build-tools;36.0.0
+          platforms;android-36
+        cmdline-tools-version: 'latest'
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Run Ktlint
+      run: ./gradlew ktlintCheck --no-daemon
+      continue-on-error: true
+
+    - name: Upload Ktlint report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: ktlint-report
+        path: app/build/reports/ktlint/
+        if-no-files-found: ignore
+
+    - name: Run Detekt
+      run: ./gradlew detekt --no-daemon
+      continue-on-error: true
+
+    - name: Upload Detekt report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: detekt-report
+        path: app/build/reports/detekt/
+        if-no-files-found: ignore
+
+    - name: Run Android Lint
+      run: ./gradlew lint --no-daemon
+      continue-on-error: true
+
+    - name: Upload Lint report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: lint-report
+        path: app/build/reports/lint/
+        if-no-files-found: ignore
+
+    - name: Run Unit Tests
+      run: ./gradlew testDebugUnitTest --no-daemon
+      continue-on-error: true
+
+    - name: Upload Test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: app/build/reports/tests/
+        if-no-files-found: ignore
+
+    - name: Generate JaCoCo coverage report
+      run: ./gradlew jacocoTestReport --no-daemon
+      continue-on-error: true
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        files: app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
+        fail_ci_if_error: false
+        verbose: false
+
+    - name: Upload JaCoCo HTML report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: app/build/reports/jacoco/
+        if-no-files-found: ignore
+
+  danger:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: quality
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Danger
+      run: npm install -g danger
+
+    - name: Run Danger
+      run: danger ci
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
