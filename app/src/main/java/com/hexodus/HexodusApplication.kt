@@ -2,9 +2,13 @@ package com.hexodus
 
 import android.app.Application
 import android.content.Intent
+import android.os.Build
 import android.util.Log
-import rikka.shizuku.Shizuku
 import com.hexodus.utils.CrashHandler
+import io.sentry.SentryEvent
+import io.sentry.SentryOptions
+import io.sentry.android.core.SentryAndroid
+import rikka.shizuku.Shizuku
 
 class HexodusApplication : Application() {
     companion object {
@@ -20,10 +24,72 @@ class HexodusApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         context = applicationContext
+        initSentry()
         CrashHandler.setup(this)
         checkShizukuSupport()
         initShizuku()
     }
+
+    private fun initSentry() {
+        SentryAndroid.init(this) { options ->
+            options.dsn = "https://befafa4507a58a7e9d2e8eacc380c7bd@o4510887187841024.ingest.us.sentry.io/4510970837532672"
+            options.environment = BuildConfig.BUILD_TYPE
+            options.release = "hexodus@${BuildConfig.VERSION_NAME}"
+
+            // Performance
+            options.tracesSampleRate = 0.2
+            options.profilesSampleRate = 0.1
+            options.isEnableAppStartProfiling = true
+
+            // ANR detection
+            options.isAnrEnabled = true
+            options.anrTimeoutIntervalMillis = 5000
+
+            // Session health tracking
+            options.isEnableAutoSessionTracking = true
+
+            // Breadcrumbs
+            options.isEnableUserInteractionBreadcrumbs = true
+            options.isEnableAppLifecycleBreadcrumbs = true
+            options.isEnableSystemEventBreadcrumbs = true
+            options.isEnableNetworkEventBreadcrumbs = true
+
+            // Privacy
+            options.isSendDefaultPii = false
+            options.isAttachScreenshot = false
+
+            // Filter out expected Shizuku exceptions to reduce noise
+            options.beforeSend = SentryOptions.BeforeSendCallback { event, _ ->
+                filterShizukuNoise(event)
+            }
+
+            // Device tags for Samsung/foldable filtering in dashboard
+            options.setTag("manufacturer", Build.MANUFACTURER.lowercase())
+            options.setTag("device_model", Build.MODEL)
+            options.setTag("android_api", Build.VERSION.SDK_INT.toString())
+            options.setTag("is_samsung", (Build.MANUFACTURER.equals("samsung", ignoreCase = true)).toString())
+            options.setTag("is_foldable", isFoldableDevice().toString())
+        }
+    }
+
+    private fun filterShizukuNoise(event: SentryEvent): SentryEvent? {
+        val throwable = event.throwable ?: return event
+        return when {
+            // Shizuku binder died — happens whenever Shizuku stops/restarts
+            throwable is android.os.DeadObjectException -> null
+            // Permission denied before Shizuku grants access
+            throwable is SecurityException &&
+                throwable.message?.contains("shizuku", ignoreCase = true) == true -> null
+            // Shizuku IPC failures
+            throwable is android.os.RemoteException &&
+                throwable.stackTrace.any { it.className.contains("shizuku", ignoreCase = true) } -> null
+            else -> event
+        }
+    }
+
+    private fun isFoldableDevice(): Boolean =
+        Build.MODEL.contains("fold", ignoreCase = true) ||
+        Build.MODEL.contains("flip", ignoreCase = true)
 
     private fun checkShizukuSupport() {
         IS_SHIZUKU_SUPPORTED = try {

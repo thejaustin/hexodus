@@ -68,3 +68,16 @@ jobs:
         generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Notify Sentry of release
+      if: startsWith(github.ref, 'refs/tags/') && env.IS_PRERELEASE == 'false'
+      env:
+        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        SENTRY_ORG: af-developments
+        SENTRY_PROJECT: hexodus
+      run: |
+        curl -sL https://sentry.io/get-cli/ | bash
+        sentry-cli releases new "hexodus@${{ env.NEW_VERSION }}"
+        sentry-cli releases set-commits "hexodus@${{ env.NEW_VERSION }}" --auto
+        sentry-cli releases finalize "hexodus@${{ env.NEW_VERSION }}"
+        sentry-cli releases deploys "hexodus@${{ env.NEW_VERSION }}" new -e production

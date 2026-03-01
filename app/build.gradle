@@ -33,18 +33,10 @@ android {
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix "-DEBUG"
-            manifestPlaceholders = [
-                sentryEnvironment: "debug",
-                sentryRelease: "hexodus@${major}.${minor}.${patch}-DEBUG"
-            ]
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            manifestPlaceholders = [
-                sentryEnvironment: "production",
-                sentryRelease: "hexodus@${major}.${minor}.${patch}"
-            ]
         }
     }
 
@@ -59,6 +51,7 @@ android {
 
     buildFeatures {
         compose true
+        buildConfig true
     }
 
     packagingOptions {
