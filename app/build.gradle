@@ -33,10 +33,18 @@ android {
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix "-DEBUG"
+            manifestPlaceholders = [
+                sentryEnvironment: "debug",
+                sentryRelease: "hexodus@${major}.${minor}.${patch}-DEBUG"
+            ]
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [
+                sentryEnvironment: "production",
+                sentryRelease: "hexodus@${major}.${minor}.${patch}"
+            ]
         }
     }
 
@@ -98,6 +106,9 @@ dependencies {
 
     // Permissions (for Compose)
     implementation 'com.google.accompanist:accompanist-permissions:0.34.0'
+
+    // Crash reporting
+    implementation 'io.sentry:sentry-android:7.14.0'
 
     // Testing
     testImplementation 'junit:junit:4.13.2'

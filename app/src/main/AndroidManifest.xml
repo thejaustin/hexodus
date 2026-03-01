@@ -63,6 +63,36 @@
 
         <!-- Theme Manager Service -->
 
+        <!-- Sentry crash reporting -->
+        <meta-data android:name="io.sentry.dsn" android:value="https://befafa4507a58a7e9d2e8eacc380c7bd@o4510887187841024.ingest.us.sentry.io/4510970837532672" />
+        <meta-data android:name="io.sentry.environment" android:value="${sentryEnvironment}" />
+        <meta-data android:name="io.sentry.release" android:value="${sentryRelease}" />
+
+        <!-- ANR detection: report when main thread is blocked >5s -->
+        <meta-data android:name="io.sentry.anr.enable" android:value="true" />
+        <meta-data android:name="io.sentry.anr.timeout-interval-millis" android:value="5000" />
+
+        <!-- Performance tracing: capture 20% of sessions -->
+        <meta-data android:name="io.sentry.traces-sample-rate" android:value="0.2" />
+
+        <!-- Profiling: CPU profiling on 10% of traced sessions -->
+        <meta-data android:name="io.sentry.profiles-sample-rate" android:value="0.1" />
+
+        <!-- Session tracking: release health / crash-free rate dashboard -->
+        <meta-data android:name="io.sentry.session-tracking.enable" android:value="true" />
+
+        <!-- Breadcrumbs: trail of events leading up to a crash -->
+        <meta-data android:name="io.sentry.breadcrumbs.user-interaction" android:value="true" />
+        <meta-data android:name="io.sentry.breadcrumbs.system-events" android:value="true" />
+        <meta-data android:name="io.sentry.breadcrumbs.app-components" android:value="true" />
+        <meta-data android:name="io.sentry.breadcrumbs.network-events" android:value="true" />
+
+        <!-- Privacy: never send PII (IPs, emails, etc.) -->
+        <meta-data android:name="io.sentry.send-default-pii" android:value="false" />
+
+        <!-- Screenshots disabled — app handles sensitive system UI -->
+        <meta-data android:name="io.sentry.attach-screenshots" android:value="false" />
+
         <!-- Shizuku Provider -->
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
