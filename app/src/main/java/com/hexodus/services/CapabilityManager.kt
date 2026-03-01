@@ -65,12 +65,15 @@ class CapabilityManager(private val appContext: Context) {
     }
 
     private fun checkVector(): Boolean {
+        // Only return true if VectorBridge is actually loadable — meaning Vector is
+        // actively hooked into this process via Zygisk. A mere package-install check
+        // would false-positive on devices where the APK is installed but root/Zygisk
+        // is not active.
         return try {
             Class.forName("org.jingmatrix.vector.VectorBridge")
             true
         } catch (e: Exception) {
-            val intent = HexodusApplication.context.packageManager.getLaunchIntentForPackage("org.jingmatrix.vector")
-            intent != null
+            false
         }
     }
 
