@@ -70,7 +70,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Upload to Firebase App Distribution
-      if: env.IS_PRERELEASE == 'true' && secrets.FIREBASE_APP_ID != ''
+      if: env.IS_PRERELEASE == 'true'
       uses: wzieba/Firebase-Distribution-Github-Action@v1
       continue-on-error: true
       with:
