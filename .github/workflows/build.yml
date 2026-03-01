@@ -119,6 +119,18 @@ jobs:
         path: app/build/reports/tests/
         if-no-files-found: ignore
 
+    - name: Run Paparazzi screenshot tests
+      run: ./gradlew verifyPaparazziDebug --no-daemon
+      continue-on-error: true
+
+    - name: Upload Paparazzi failure diffs
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: paparazzi-diffs
+        path: app/build/paparazzi/failures/
+        if-no-files-found: ignore
+
     - name: Generate JaCoCo coverage report
       run: ./gradlew jacocoTestReport --no-daemon
       continue-on-error: true
