@@ -164,7 +164,7 @@ dependencies {
     implementation 'androidx.palette:palette-ktx:1.0.0'
 
     // Permissions (for Compose)
-    implementation 'com.google.accompanist:accompanist-permissions:0.34.0'
+    implementation 'com.google.accompanist:accompanist-permissions:0.37.3'
 
     // Crash reporting
     implementation 'io.sentry:sentry-android:7.14.0'
