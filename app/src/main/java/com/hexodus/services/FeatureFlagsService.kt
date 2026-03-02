@@ -42,7 +42,7 @@ object FeatureFlagsService {
                 }
             }
             ACTION_RESTORE_DEFAULTS -> {
-                restoreSystemDefaults()
+                scope.launch { restoreSystemDefaults() }
             }
         }
         return android.app.Service.START_STICKY

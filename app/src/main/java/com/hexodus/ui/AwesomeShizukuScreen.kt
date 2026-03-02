@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -37,9 +38,9 @@ fun AwesomeShizukuScreen(navController: NavController) {
     var loadError by remember { mutableStateOf(false) }
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var selectedTags by rememberSaveable(
-        saver = Saver(
-            save = { ArrayList<String>(it) },
-            restore = { it.toSet() }
+        saver = Saver<Set<String>, ArrayList<String>>(
+            save = { value -> ArrayList(value) },
+            restore = { list -> list.toSet() }
         )
     ) { mutableStateOf<Set<String>>(emptySet()) }
     var showIncompatible by rememberSaveable { mutableStateOf(false) }

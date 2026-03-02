@@ -6,6 +6,7 @@ import android.app.Service
 import android.content.Intent
 import android.util.Log
 import com.hexodus.utils.SecurityUtils
+import kotlinx.coroutines.launch
 
 /**
  * AppManagerService - Service for advanced app management
