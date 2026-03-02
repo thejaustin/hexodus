@@ -38,9 +38,9 @@ fun AwesomeShizukuScreen(navController: NavController) {
     var loadError by remember { mutableStateOf(false) }
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var selectedTags by rememberSaveable(
-        saver = Saver<Set<String>, ArrayList<String>>(
-            save = { value -> ArrayList(value) },
-            restore = { list -> list.toSet() }
+        saver = Saver<MutableState<Set<String>>, ArrayList<String>>(
+            save = { state -> ArrayList(state.value) },
+            restore = { list -> mutableStateOf(list.toSet()) }
         )
     ) { mutableStateOf<Set<String>>(emptySet()) }
     var showIncompatible by rememberSaveable { mutableStateOf(false) }
