@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.hexodus.services.CapabilityManager
 import com.hexodus.utils.RedundancyEngine
 import com.hexodus.ui.components.FeatureToggleCard
+import com.hexodus.ui.components.DeprecationInfo
 
 import androidx.navigation.NavController
 
@@ -92,7 +93,9 @@ fun FeatureDashboardScreen(navController: NavController? = null) {
         icon: ImageVector,
         isEnabled: Boolean,
         onToggle: (Boolean) -> Unit,
-        requirements: List<String>
+        requirements: List<String>,
+        deprecationInfo: DeprecationInfo? = null,
+        version: String? = null
     ) {
         // Search filtering
         if (searchQuery.isNotEmpty() && !title.contains(searchQuery, ignoreCase = true) && !description.contains(searchQuery, ignoreCase = true)) {
@@ -107,7 +110,7 @@ fun FeatureDashboardScreen(navController: NavController? = null) {
                     context.packageManager.getPackageInfo(appName, 0)
                     true
                 } catch (e: Exception) {
-                    false 
+                    false
                 }
             }
         }
@@ -138,7 +141,9 @@ fun FeatureDashboardScreen(navController: NavController? = null) {
                     isEnabled = isEnabled,
                     onToggle = onToggle,
                     colorIndicator = MaterialTheme.colorScheme.primary, // Switched to Material Theme Color
-                    modifier = Modifier.alpha(if (isCompatible) 1f else 0.5f)
+                    modifier = Modifier.alpha(if (isCompatible) 1f else 0.5f),
+                    deprecationInfo = deprecationInfo,
+                    version = version
                 )
             }
         }
@@ -359,6 +364,64 @@ fun FeatureDashboardScreen(navController: NavController? = null) {
             isEnabled = glassmorphismEnabled,
             onToggle = { glassmorphismEnabled = it },
             requirements = listOf("Samsung", "Shizuku")
+        )
+
+        // Deprecated Features Section
+        if (searchQuery.isEmpty()) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                "⚠️ Deprecated Tools",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        FeatureCard(
+            title = "Legacy Theme Engine",
+            description = "Old theme system using Xposed framework",
+            icon = Icons.Default.Palette,
+            isEnabled = themingEnabled,
+            onToggle = { themingEnabled = it },
+            requirements = listOf("Root"),
+            deprecationInfo = DeprecationInfo(
+                message = "Deprecated - Use new engine instead",
+                replacement = "Hexodus Theme Engine v2",
+                deprecatedSince = "2025.1",
+                removeInVersion = "2026.2",
+                migrationGuide = "See migration docs"
+            )
+        )
+
+        FeatureCard(
+            title = "Substratum Overlay Manager",
+            description = "Classic overlay management system",
+            icon = Icons.Default.Layers,
+            isEnabled = systemTunerEnabled,
+            onToggle = { systemTunerEnabled = it },
+            requirements = listOf("Root"),
+            deprecationInfo = DeprecationInfo(
+                message = "Deprecated - No longer maintained",
+                replacement = "RRO Overlay System",
+                deprecatedSince = "2024.3",
+                removeInVersion = "2026.1"
+            )
+        )
+
+        FeatureCard(
+            title = "GravityBox Tweaks",
+            description = "System tweaks via GravityBox module",
+            icon = Icons.Default.Tune,
+            isEnabled = systemTunerEnabled,
+            onToggle = { systemTunerEnabled = it },
+            requirements = listOf("Xposed"),
+            deprecationInfo = DeprecationInfo(
+                message = "Deprecated - Use native implementation",
+                replacement = "System Tuner (Native)",
+                deprecatedSince = "2025.2"
+            )
         )
 
         if (searchQuery.isEmpty()) {

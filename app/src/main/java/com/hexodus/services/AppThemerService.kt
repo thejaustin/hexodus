@@ -225,9 +225,7 @@ object AppThemerService {
             if (!result.isNullOrEmpty()) {
                 return result.lines()
                     .filter { it.contains("ENABLED") }
-                    .map { line -> 
-                        line.substringAfterLast(":").trim() 
-                    }
+                    .map { line -> line.substringAfterLast(":").trim() }
                     .filter { it.isNotEmpty() }
             }
         } catch (e: Exception) {

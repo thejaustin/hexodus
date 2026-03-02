@@ -57,18 +57,19 @@ object ThemeManager {
     suspend fun applyTheme(themeFilePath: String) = withContext(Dispatchers.IO) {
         try {
             Log.d(TAG, "Applying theme from: $themeFilePath")
-            
-            delay(1000) 
-            
-            val completeIntent = Intent("THEME_APPLICATION_COMPLETE")
-            completeIntent.putExtra("theme_path", themeFilePath)
+            delay(1000)
+
+            val completeIntent = Intent("THEME_APPLICATION_COMPLETE").apply {
+                putExtra("theme_path", themeFilePath)
+            }
             HexodusApplication.context.sendBroadcast(completeIntent)
-            
+
         } catch (e: Exception) {
             Log.e(TAG, "Error applying theme: ${e.message}", e)
-            
-            val errorIntent = Intent("THEME_APPLICATION_ERROR")
-            errorIntent.putExtra("error_message", e.message)
+
+            val errorIntent = Intent("THEME_APPLICATION_ERROR").apply {
+                putExtra("error_message", e.message)
+            }
             HexodusApplication.context.sendBroadcast(errorIntent)
         }
     }

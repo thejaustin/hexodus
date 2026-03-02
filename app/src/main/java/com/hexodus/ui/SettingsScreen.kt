@@ -47,11 +47,13 @@ fun SettingsScreen(navController: NavController) {
                 }
             },
             confirmButton = {
-                TextButton(onClick = { 
-                    CrashHandler.clearCrashLog(context)
-                    crashLog = null
-                    showCrashDialog = false
-                }) {
+                TextButton(
+                    onClick = {
+                        CrashHandler.clearCrashLog(context)
+                        crashLog = null
+                        showCrashDialog = false
+                    }
+                ) {
                     Text("Clear Log")
                 }
             },

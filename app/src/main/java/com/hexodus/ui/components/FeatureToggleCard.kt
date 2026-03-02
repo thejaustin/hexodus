@@ -9,9 +9,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
@@ -26,83 +28,98 @@ fun FeatureToggleCard(
     isEnabled: Boolean,
     onToggle: (Boolean) -> Unit,
     colorIndicator: androidx.compose.ui.graphics.Color? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    deprecationInfo: DeprecationInfo? = null,
+    version: String? = null
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min), // Ensures minimum touch target size
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = if (deprecationInfo != null) {
+                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
+            } else {
+                MaterialTheme.colorScheme.surfaceVariant
+            }
         ),
         shape = RoundedCornerShape(20.dp) // M3E shape standard
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp), // Increased padding for accessibility
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            // Icon with color indicator
-            Box(
+            // Deprecation bar at top if deprecated
+            deprecationInfo?.let { info ->
+                DeprecationBar(deprecationInfo = info)
+            }
+
+            Row(
                 modifier = Modifier
-                    .size(56.dp) // Larger icon for better visibility
-                    .clip(RoundedCornerShape(16.dp)), // M3E shape standard
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
+                    .padding(20.dp), // Increased padding for accessibility
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                // Icon with color indicator
                 Box(
                     modifier = Modifier
-                        .size(48.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(
-                            colorIndicator ?: MaterialTheme.colorScheme.primaryContainer
-                        )
-                )
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.size(24.dp) // Proper icon size
-                )
-            }
+                        .size(56.dp) // Larger icon for better visibility
+                        .clip(RoundedCornerShape(16.dp)), // M3E shape standard
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(
+                                colorIndicator ?: MaterialTheme.colorScheme.primaryContainer
+                            )
+                    )
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.size(24.dp) // Proper icon size
+                    )
+                }
 
-            Spacer(modifier = Modifier.width(20.dp)) // Increased spacing
+                Spacer(modifier = Modifier.width(20.dp)) // Increased spacing
 
-            // Title and description
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge, // Larger title for better readability
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = description,
-                    style = MaterialTheme.typography.bodyMedium, // Larger body text for accessibility
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 3, // Limit description lines
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
+                // Title and description
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleLarge, // Larger title for better readability
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodyMedium, // Larger body text for accessibility
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 3, // Limit description lines
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
 
-            Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(16.dp))
 
-            // Toggle switch with improved accessibility
-            Switch(
-                checked = isEnabled,
-                onCheckedChange = onToggle,
-                modifier = Modifier
-                    .size(56.dp, 32.dp), // Proper touch target size
+                // Toggle switch with improved accessibility
+                Switch(
+                    checked = isEnabled,
+                    onCheckedChange = onToggle,
+                    modifier = Modifier
+                        .size(56.dp, 32.dp), // Proper touch target size
                     colors = SwitchDefaults.colors(
-                    checkedThumbColor = MaterialTheme.colorScheme.primary,
-                    checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
-                    uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                    uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                        checkedThumbColor = MaterialTheme.colorScheme.primary,
+                        checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                        uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                        uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
                 )
-            )
+            }
         }
     }
 }
