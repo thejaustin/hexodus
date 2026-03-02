@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -34,6 +35,7 @@ fun ShizukuAppDetailScreen(navController: NavController, appName: String) {
     var app by remember { mutableStateOf<ShizukuRepoParser.ShizukuApp?>(null) }
     var similarApps by remember { mutableStateOf<List<ShizukuRepoParser.ShizukuApp>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
+    var networkError by remember { mutableStateOf(false) }
     var caps by remember { mutableStateOf<CapabilityManager.DeviceCapabilities?>(null) }
     
     // Installation state
@@ -75,24 +77,30 @@ fun ShizukuAppDetailScreen(navController: NavController, appName: String) {
 
     LaunchedEffect(appName) {
         coroutineScope.launch {
-            val currentCaps = capabilityManager.detectCapabilities()
-            caps = currentCaps
-            
-            val apps = ShizukuRepoParser.fetchAwesomeShizukuList()
-            val foundApp = apps.find { it.name == appName }
-            app = foundApp
-            
-            if (foundApp != null) {
-                similarApps = apps.filter { it.name != foundApp.name }
-                    .sortedByDescending { other ->
-                        var score = 0
-                        if (other.category == foundApp.category) score += 5
-                        score += other.tags.count { foundApp.tags.contains(it) }
-                        if (capabilityManager.isCompatible(other.tags, currentCaps)) score += 10
-                        score
-                    }.take(6)
+            try {
+                val currentCaps = capabilityManager.detectCapabilities()
+                caps = currentCaps
+
+                val apps = ShizukuRepoParser.fetchAwesomeShizukuList()
+                // Case-insensitive match to handle navigation encoding differences
+                val foundApp = apps.find { it.name.equals(appName, ignoreCase = true) }
+                app = foundApp
+
+                if (foundApp != null) {
+                    similarApps = apps.filter { it.name != foundApp.name }
+                        .sortedByDescending { other ->
+                            var score = 0
+                            if (other.category == foundApp.category) score += 5
+                            score += other.tags.count { foundApp.tags.contains(it) }
+                            if (capabilityManager.isCompatible(other.tags, currentCaps)) score += 10
+                            score
+                        }.take(6)
+                }
+            } catch (e: Exception) {
+                networkError = true
+            } finally {
+                isLoading = false
             }
-            isLoading = false
         }
     }
 
@@ -114,6 +122,18 @@ fun ShizukuAppDetailScreen(navController: NavController, appName: String) {
                 contentAlignment = androidx.compose.ui.Alignment.Center
             ) {
                 CircularProgressIndicator()
+            }
+        } else if (networkError) {
+            Box(
+                modifier = Modifier.fillMaxSize().padding(padding),
+                contentAlignment = androidx.compose.ui.Alignment.Center
+            ) {
+                Column(horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
+                    Icon(Icons.Default.WifiOff, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(48.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text("Network error", style = MaterialTheme.typography.titleMedium)
+                    Text("Couldn't load app details.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
             }
         } else if (app == null) {
             Box(
@@ -160,7 +180,7 @@ fun ShizukuAppDetailScreen(navController: NavController, appName: String) {
                                 style = MaterialTheme.typography.bodySmall
                             )
                             TextButton(
-                                onClick = { navController.navigate("dashboard") },
+                                onClick = { navController.navigate(NavRoutes.Dashboard) },
                                 modifier = Modifier.align(androidx.compose.ui.Alignment.End)
                             ) {
                                 Text("Go to Hexodus Features")
@@ -225,7 +245,7 @@ fun ShizukuAppDetailScreen(navController: NavController, appName: String) {
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            text = "Repository Information",
+                            text = "About",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
@@ -234,12 +254,45 @@ fun ShizukuAppDetailScreen(navController: NavController, appName: String) {
                             text = app!!.description,
                             style = MaterialTheme.typography.bodyMedium
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "GitHub: ${app!!.repoUrl}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.secondary
-                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            if (app!!.repoUrl.isNotBlank()) {
+                                OutlinedButton(
+                                    onClick = {
+                                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(app!!.repoUrl)))
+                                    }
+                                ) {
+                                    Icon(Icons.Default.Code, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text("GitHub", style = MaterialTheme.typography.labelMedium)
+                                }
+                            }
+                            // Use direct market:// URI when package name is known, search otherwise
+                            val playUri = if (app!!.packageName.isNotBlank()) {
+                                Uri.parse("market://details?id=${app!!.packageName}")
+                            } else {
+                                Uri.parse("https://play.google.com/store/search?q=${Uri.encode(app!!.name)}&c=apps")
+                            }
+                            OutlinedButton(
+                                onClick = {
+                                    runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, playUri)) }
+                                        .onFailure {
+                                            // market:// not available, fallback to browser search
+                                            val pkg = app!!.packageName
+                                            val webUri = if (pkg.isNotBlank()) {
+                                                Uri.parse("https://play.google.com/store/apps/details?id=$pkg")
+                                            } else {
+                                                Uri.parse("https://play.google.com/store/search?q=${Uri.encode(app!!.name)}&c=apps")
+                                            }
+                                            context.startActivity(Intent(Intent.ACTION_VIEW, webUri))
+                                        }
+                                }
+                            ) {
+                                Icon(Icons.Default.Shop, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("Play Store", style = MaterialTheme.typography.labelMedium)
+                            }
+                        }
                     }
                 }
                 
@@ -294,7 +347,7 @@ fun ShizukuAppDetailScreen(navController: NavController, appName: String) {
                                 modifier = Modifier
                                     .width(220.dp)
                                     .clickable {
-                                        navController.navigate("shizuku_detail/${sim.name}")
+                                        navController.navigate(NavRoutes.ShizukuDetail(sim.name))
                                     },
                                 colors = CardDefaults.cardColors(
                                     containerColor = if (simCompatible) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant

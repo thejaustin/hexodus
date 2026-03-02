@@ -6,7 +6,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,6 +19,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.hexodus.R
+import com.hexodus.services.ThemeManager
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,10 +30,18 @@ fun ThemePreviewScreen(
     onBackPressed: () -> Unit
 ) {
     val context = LocalContext.current
-    val parsedColor = try {
+    val coroutineScope = rememberCoroutineScope()
+    var isApplying by remember { mutableStateOf(false) }
+    var applyDone by remember { mutableStateOf(false) }
+    var applyError by remember { mutableStateOf(false) }
+    val isValidColor = remember(hexColor) {
+        try { android.graphics.Color.parseColor(if (hexColor.startsWith("#")) hexColor else "#$hexColor"); true }
+        catch (e: Exception) { false }
+    }
+    val parsedColor = if (isValidColor) {
         Color(android.graphics.Color.parseColor(if (hexColor.startsWith("#")) hexColor else "#$hexColor"))
-    } catch (e: Exception) {
-        Color.Magenta // fallback color
+    } else {
+        MaterialTheme.colorScheme.primary // use theme primary as fallback, not jarring Magenta
     }
 
     Scaffold(
@@ -241,17 +251,39 @@ fun ThemePreviewScreen(
                 }
             }
 
-            // Apply theme button - M3E compliant
+            // Apply theme button
             Button(
-                onClick = { /* Apply theme */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min) // Ensures minimum touch target size
+                onClick = {
+                    val path = ThemeManager.lastCreatedThemePath
+                    if (path != null && !isApplying) {
+                        isApplying = true
+                        applyDone = false
+                        applyError = false
+                        coroutineScope.launch {
+                            val success = ThemeManager.applyTheme(path)
+                            isApplying = false
+                            if (success) applyDone = true else applyError = true
+                        }
+                    }
+                },
+                enabled = !isApplying && ThemeManager.lastCreatedThemePath != null,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    "Apply Theme",
-                    style = MaterialTheme.typography.labelLarge // M3E typography standard
-                )
+                if (isApplying) {
+                    CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.onPrimary)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Applying...", style = MaterialTheme.typography.labelLarge)
+                } else if (applyDone) {
+                    Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Applied", style = MaterialTheme.typography.labelLarge)
+                } else if (applyError) {
+                    Icon(Icons.Default.Error, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Apply Failed", style = MaterialTheme.typography.labelLarge)
+                } else {
+                    Text("Apply Theme", style = MaterialTheme.typography.labelLarge)
+                }
             }
         }
     }

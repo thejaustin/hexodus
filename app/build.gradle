@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.compose'
+    id 'org.jetbrains.kotlin.plugin.serialization'
     id 'io.gitlab.arturbosch.detekt'
     id 'org.jlleitschuh.gradle.ktlint'
     id 'jacoco'
@@ -150,6 +151,7 @@ dependencies {
 
     // Navigation
     implementation 'androidx.navigation:navigation-compose:2.8.5'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3'
 
     // Material Design components
     implementation 'com.google.android.material:material:1.12.0'

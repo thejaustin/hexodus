@@ -10,6 +10,7 @@ import com.hexodus.utils.PrefsManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import moe.shizuku.plus.ShizukuPlusAPI
 
 /**
@@ -51,6 +52,31 @@ object FeatureFlagsService {
         return prefsManager.preferShizukuPlus && ShizukuPlusAPI.isEnhancedApiSupported()
     }
 
+    // Maps UI feature keys → system/Samsung flag names
+    private val featureFlags = mapOf(
+        "circle_to_search"        to "sem_circle_to_search",
+        "vertical_drawer"         to "sem_vertical_app_drawer",
+        "now_brief"               to "sem_now_brief_enabled",
+        "battery_stats"           to "sem_advanced_battery_reports",
+        "enhanced_processing"     to "sem_enhanced_cpu_responsiveness",
+        "notification_cooldown"   to "notification_cooldown_enabled",
+        "desktop_windowing"       to "enable_freeform_support",
+        "screen_off_fod"          to "fingerprint_always_on_enabled",
+        "vertical_qs"             to "sem_vertical_qs_panel",
+        "priority_notifs"         to "sem_priority_ai_notifications",
+        "glassmorphism"           to "sem_glassmorphism_icons",
+        "now_bar"                 to "sem_now_bar_enabled",
+        "notification_redaction"  to "sem_sensitive_notif_redaction"
+    )
+
+    fun toggleFeature(featureKey: String, enabled: Boolean) {
+        val flagName = featureFlags[featureKey] ?: run {
+            Log.w(TAG, "Unknown feature key: $featureKey")
+            return
+        }
+        toggleFlag(flagName, enabled)
+    }
+
     private fun toggleFlag(name: String, enabled: Boolean) {
         if (!ShizukuBridge.isReady()) return
         
@@ -69,23 +95,21 @@ object FeatureFlagsService {
         }
     }
 
-    fun restoreSystemDefaults() {
-        if (!ShizukuBridge.isReady()) return
-        scope.launch {
-            try {
-                Log.d(TAG, "Restoring system defaults...")
-                val flags = listOf("sem_enhanced_cpu_responsiveness", "notification_cooldown_enabled")
-                for (flag in flags) {
-                    if (useEnhancedApi()) {
-                        ShizukuPlusAPI.Settings.putGlobal(flag, "0")
-                    } else {
-                        ShizukuBridge.executeShellCommand("settings put global $flag 0")
-                    }
+    suspend fun restoreSystemDefaults() = withContext(Dispatchers.IO) {
+        if (!ShizukuBridge.isReady()) return@withContext
+        try {
+            Log.d(TAG, "Restoring system defaults...")
+            val flags = listOf("sem_enhanced_cpu_responsiveness", "notification_cooldown_enabled")
+            for (flag in flags) {
+                if (useEnhancedApi()) {
+                    ShizukuPlusAPI.Settings.putGlobal(flag, "0")
+                } else {
+                    ShizukuBridge.executeShellCommand("settings put global $flag 0")
                 }
-                HexodusApplication.context.sendBroadcast(Intent("SYSTEM_DEFAULTS_RESTORED").putExtra("success", true))
-            } catch (e: Exception) {
-                Log.e(TAG, "Error restoring defaults", e)
             }
+            HexodusApplication.context.sendBroadcast(Intent("SYSTEM_DEFAULTS_RESTORED").putExtra("success", true))
+        } catch (e: Exception) {
+            Log.e(TAG, "Error restoring defaults", e)
         }
     }
 }

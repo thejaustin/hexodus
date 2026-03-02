@@ -110,6 +110,22 @@ object AppManagerService {
         return android.app.Service.START_STICKY
     }
     
+    // ── Public API ────────────────────────────────────────────────────────────
+    /** Disable (freeze) a package so it uses no RAM/battery. */
+    fun freeze(packageName: String) = scope.launch { freezeApp(packageName) }
+    /** Re-enable a previously frozen package. */
+    fun unfreeze(packageName: String) = scope.launch { unfreezeApp(packageName) }
+    /** Hide a package from the launcher (package remains installed). */
+    fun hide(packageName: String) = scope.launch { hideApp(packageName) }
+    /** Unhide a previously hidden package. */
+    fun unhide(packageName: String) = scope.launch { unhideApp(packageName) }
+    /** Force-stop a running package. */
+    fun forceStop(packageName: String) = scope.launch { forceStopApp(packageName) }
+    /** Run the same operation on multiple packages at once. */
+    fun batch(operation: String, packages: ArrayList<String>) =
+        scope.launch { performBatchOperation(operation, packages) }
+
+    // ── Private implementations ───────────────────────────────────────────────
     /**
      * Freezes an app using Shizuku
      */

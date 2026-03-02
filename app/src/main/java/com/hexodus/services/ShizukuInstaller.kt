@@ -23,12 +23,22 @@ import com.hexodus.utils.PrefsManager
 object ShizukuInstaller {
     private const val TAG = "ShizukuInstaller"
 
-    suspend fun downloadAndInstall(apkUrl: String, appName: String): Unit = withContext(Dispatchers.IO) {
+    suspend fun downloadAndInstall(apkUrl: String, appName: String, redirectDepth: Int = 0): Unit = withContext(Dispatchers.IO) {
+        if (redirectDepth > 3) {
+            Log.e(TAG, "Too many redirects for $appName")
+            HexodusApplication.context.sendBroadcast(Intent("APK_INSTALLATION_RESULT").apply {
+                putExtra("success", false)
+                putExtra("app_name", appName)
+                putExtra("error", "Too many redirects")
+            })
+            return@withContext
+        }
+
         val prefsManager = PrefsManager.getInstance(HexodusApplication.context)
-        
+
         try {
             var finalUrl = apkUrl
-            
+
             // Use GitHub API to find the actual APK asset
             if (apkUrl.contains("github.com") && apkUrl.contains("/releases/")) {
                 finalUrl = resolveGitHubAsset(apkUrl)
@@ -37,18 +47,19 @@ object ShizukuInstaller {
             // 1. Download the APK
             val file = File(HexodusApplication.context.cacheDir, "${appName.replace(" ", "_")}.apk")
             Log.d(TAG, "Downloading $appName from $finalUrl to ${file.absolutePath}")
-            
+
             val url = URL(finalUrl)
             val connection = url.openConnection() as HttpURLConnection
             connection.connect()
 
             if (connection.responseCode != HttpURLConnection.HTTP_OK) {
                 Log.e(TAG, "Server returned HTTP ${connection.responseCode}")
-                // Handle redirection for GitHub assets
-                if (connection.responseCode == 302 || connection.responseCode == 301) {
+                // Handle redirection for GitHub assets (301, 302, 307, 308)
+                val code = connection.responseCode
+                if (code == 301 || code == 302 || code == 307 || code == 308) {
                     val newUrl = connection.getHeaderField("Location")
                     if (newUrl != null) {
-                        downloadAndInstall(newUrl, appName)
+                        downloadAndInstall(newUrl, appName, redirectDepth + 1)
                     }
                     return@withContext
                 }
@@ -85,9 +96,12 @@ object ShizukuInstaller {
 
             // 2. Install the APK
             if (ShizukuBridge.isReady()) {
-                installViaShizuku(file, prefsManager)
+                installViaShizuku(file, appName, prefsManager)
+                // Safe to clean up after silent install completes
+                file.delete()
             } else {
                 installViaNative(file)
+                // Don't delete — system installer needs the file via FileProvider URI
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error during download/install of $appName", e)
@@ -135,19 +149,20 @@ object ShizukuInstaller {
         }
     }
 
-    private fun installViaShizuku(apkFile: File, prefsManager: PrefsManager) {
+    private fun installViaShizuku(apkFile: File, appName: String, prefsManager: PrefsManager) {
         Log.d(TAG, "Installing via Shizuku...")
-        
+
         val success: Boolean = if (prefsManager.preferShizukuPlus && ShizukuPlusAPI.isEnhancedApiSupported()) {
             Log.d(TAG, "Using Shizuku+ Enhanced API for installation")
             ShizukuPlusAPI.PackageManager.installPackage(apkFile.absolutePath)
         } else {
             installLegacy(apkFile)
         }
-        
-        val intent = Intent("APK_INSTALLATION_RESULT")
-        intent.putExtra("success", success)
-        HexodusApplication.context.sendBroadcast(intent)
+
+        HexodusApplication.context.sendBroadcast(Intent("APK_INSTALLATION_RESULT").apply {
+            putExtra("success", success)
+            putExtra("app_name", appName)
+        })
     }
 
     private fun installLegacy(apkFile: File): Boolean {

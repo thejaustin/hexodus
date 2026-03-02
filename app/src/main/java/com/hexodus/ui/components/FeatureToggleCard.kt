@@ -9,7 +9,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -18,7 +17,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 /**
- * FeatureToggleCard - A unified component for displaying and toggling features
+ * FeatureToggleCard - Compact M3-compliant toggle card for feature lists
  */
 @Composable
 fun FeatureToggleCard(
@@ -29,94 +28,78 @@ fun FeatureToggleCard(
     onToggle: (Boolean) -> Unit,
     colorIndicator: androidx.compose.ui.graphics.Color? = null,
     modifier: Modifier = Modifier,
+    switchEnabled: Boolean = true,
     deprecationInfo: DeprecationInfo? = null,
     version: String? = null
 ) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min), // Ensures minimum touch target size
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = if (deprecationInfo != null) {
+            containerColor = if (deprecationInfo != null)
                 MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
-            } else {
+            else
                 MaterialTheme.colorScheme.surfaceVariant
-            }
         ),
-        shape = RoundedCornerShape(20.dp) // M3E shape standard
+        shape = RoundedCornerShape(16.dp)
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            // Deprecation bar at top if deprecated
-            deprecationInfo?.let { info ->
-                DeprecationBar(deprecationInfo = info)
-            }
+        Column(modifier = Modifier.fillMaxWidth()) {
+            deprecationInfo?.let { DeprecationBar(deprecationInfo = it) }
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp), // Increased padding for accessibility
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Icon with color indicator
+                // Icon
                 Box(
                     modifier = Modifier
-                        .size(56.dp) // Larger icon for better visibility
-                        .clip(RoundedCornerShape(16.dp)), // M3E shape standard
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(colorIndicator ?: MaterialTheme.colorScheme.primaryContainer),
                     contentAlignment = Alignment.Center
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(
-                                colorIndicator ?: MaterialTheme.colorScheme.primaryContainer
-                            )
-                    )
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.size(24.dp) // Proper icon size
+                        tint = if (colorIndicator != null) MaterialTheme.colorScheme.onPrimary
+                               else MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
 
-                Spacer(modifier = Modifier.width(20.dp)) // Increased spacing
+                Spacer(modifier = Modifier.width(12.dp))
 
-                // Title and description
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.titleLarge, // Larger title for better readability
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = if (switchEnabled) MaterialTheme.colorScheme.onSurface
+                                else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = description,
-                        style = MaterialTheme.typography.bodyMedium, // Larger body text for accessibility
+                        style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 3, // Limit description lines
+                        maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
 
-                Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(8.dp))
 
-                // Toggle switch with improved accessibility
                 Switch(
                     checked = isEnabled,
                     onCheckedChange = onToggle,
-                    modifier = Modifier
-                        .size(56.dp, 32.dp), // Proper touch target size
+                    enabled = switchEnabled,
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = MaterialTheme.colorScheme.primary,
                         checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
                         uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                        uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                        uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        disabledCheckedThumbColor = MaterialTheme.colorScheme.outline,
+                        disabledUncheckedThumbColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
                     )
                 )
             }
@@ -125,7 +108,7 @@ fun FeatureToggleCard(
 }
 
 /**
- * CategoryHeader - A header for organizing features by category
+ * CategoryHeader - Section label for feature groups
  */
 @Composable
 fun CategoryHeader(
@@ -140,16 +123,16 @@ fun CategoryHeader(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(18.dp)
             )
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(6.dp))
         }
         Text(
             text = title,
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
     }
-    Spacer(modifier = Modifier.height(12.dp))
 }

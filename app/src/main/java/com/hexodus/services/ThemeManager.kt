@@ -7,7 +7,6 @@ import com.hexodus.core.ThemeCompiler
 import com.hexodus.HexodusApplication
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.delay
 import java.io.File
 import java.io.FileOutputStream
 
@@ -21,6 +20,9 @@ object ThemeManager {
     
     private const val TAG = "ThemeManager"
     private val themeCompiler = ThemeCompiler()
+
+    var lastCreatedThemePath: String? = null
+        private set
     
     /**
      * Creates a theme from hex color and component preferences
@@ -35,6 +37,7 @@ object ThemeManager {
             val themeFile = File(HexodusApplication.context.filesDir, "${themeName}_${System.currentTimeMillis()}.apk")
             FileOutputStream(themeFile).use { it.write(themeData) }
             
+            lastCreatedThemePath = themeFile.absolutePath
             Log.d(TAG, "Theme created: ${themeFile.absolutePath}")
             
             val completeIntent = Intent("THEME_CREATION_COMPLETE")
@@ -52,25 +55,31 @@ object ThemeManager {
     }
     
     /**
-     * Applies a theme to the system using Shizuku
+     * Applies a theme to the system by activating it through OverlayManager.
      */
-    suspend fun applyTheme(themeFilePath: String) = withContext(Dispatchers.IO) {
+    suspend fun applyTheme(themeFilePath: String): Boolean = withContext(Dispatchers.IO) {
         try {
             Log.d(TAG, "Applying theme from: $themeFilePath")
-            delay(1000)
 
-            val completeIntent = Intent("THEME_APPLICATION_COMPLETE").apply {
-                putExtra("theme_path", themeFilePath)
-            }
-            HexodusApplication.context.sendBroadcast(completeIntent)
+            val themeFile = File(themeFilePath)
+            if (!themeFile.exists()) throw Exception("Theme file not found: $themeFilePath")
 
+            val themeData = themeFile.readBytes()
+            // Strip the timestamp suffix added during creation to get a stable name
+            val themeName = themeFile.nameWithoutExtension.replace(Regex("_\\d{10,}$"), "")
+            OverlayManager.applyTheme(themeData, themeName)
+
+            Log.d(TAG, "Theme applied: $themeName")
+            HexodusApplication.context.sendBroadcast(
+                Intent("THEME_APPLICATION_COMPLETE").putExtra("theme_path", themeFilePath)
+            )
+            true
         } catch (e: Exception) {
             Log.e(TAG, "Error applying theme: ${e.message}", e)
-
-            val errorIntent = Intent("THEME_APPLICATION_ERROR").apply {
-                putExtra("error_message", e.message)
-            }
-            HexodusApplication.context.sendBroadcast(errorIntent)
+            HexodusApplication.context.sendBroadcast(
+                Intent("THEME_APPLICATION_ERROR").putExtra("error_message", e.message)
+            )
+            false
         }
     }
 }

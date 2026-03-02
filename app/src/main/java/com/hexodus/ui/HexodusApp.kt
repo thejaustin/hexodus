@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 
 @Composable
 fun HexodusApp() {
@@ -11,41 +12,40 @@ fun HexodusApp() {
 
     NavHost(
         navController = navController,
-        startDestination = "dashboard"
+        startDestination = NavRoutes.Dashboard
     ) {
-        composable("dashboard") {
+        composable<NavRoutes.Dashboard> {
             FeatureDashboardScreen(navController)
         }
-        composable("main") {
+        composable<NavRoutes.Main> {
             MainActivityScreen(navController)
         }
-        composable("preview/{hexColor}/{themeName}") { backStackEntry ->
-            val hexColor = backStackEntry.arguments?.getString("hexColor") ?: "#FF6200EE"
-            val themeName = backStackEntry.arguments?.getString("themeName") ?: "Default Theme"
+        composable<NavRoutes.Preview> { backStackEntry ->
+            val route = backStackEntry.toRoute<NavRoutes.Preview>()
             ThemePreviewScreen(
-                hexColor = hexColor,
-                themeName = themeName,
+                hexColor = route.hexColor,
+                themeName = route.themeName,
                 onBackPressed = { navController.popBackStack() }
             )
         }
-        composable("features/{category}") { backStackEntry ->
-            val category = backStackEntry.arguments?.getString("category") ?: "Theming"
+        composable<NavRoutes.Features> { backStackEntry ->
+            val route = backStackEntry.toRoute<NavRoutes.Features>()
             FeatureExplorerScreen(
-                category = category,
+                category = route.category,
                 onBackClick = { navController.popBackStack() }
             )
         }
-        composable("awesome_shizuku") {
+        composable<NavRoutes.AwesomeShizuku> {
             AwesomeShizukuScreen(navController)
         }
-        composable("shizuku_detail/{appName}") { backStackEntry ->
-            val appName = backStackEntry.arguments?.getString("appName") ?: ""
-            ShizukuAppDetailScreen(navController, appName)
+        composable<NavRoutes.ShizukuDetail> { backStackEntry ->
+            val route = backStackEntry.toRoute<NavRoutes.ShizukuDetail>()
+            ShizukuAppDetailScreen(navController, route.appName)
         }
-        composable("custom_mods") {
+        composable<NavRoutes.CustomMods> {
             CustomModsScreen(navController)
         }
-        composable("settings") {
+        composable<NavRoutes.Settings> {
             SettingsScreen(navController)
         }
     }

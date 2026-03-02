@@ -7,7 +7,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -15,20 +17,54 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.hexodus.services.ModExtensionManager
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomModsScreen(navController: NavController) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     var mods by remember { mutableStateOf<List<ModExtensionManager.ModExtension>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
+    var isRefreshing by remember { mutableStateOf(false) }
+    var pendingUnverifiedMod by remember { mutableStateOf<ModExtensionManager.ModExtension?>(null) }
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
-    LaunchedEffect(Unit) {
-        mods = ModExtensionManager.discoverMods()
-        isLoading = false
+    fun refresh(isRefresh: Boolean = false) {
+        coroutineScope.launch {
+            if (isRefresh) isRefreshing = true else isLoading = true
+            mods = ModExtensionManager.discoverMods()
+            isLoading = false
+            isRefreshing = false
+        }
+    }
+
+    LaunchedEffect(Unit) { refresh() }
+
+    pendingUnverifiedMod?.let { mod ->
+        AlertDialog(
+            onDismissRequest = { pendingUnverifiedMod = null },
+            icon = { Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
+            title = { Text("Unverified Mod") },
+            text = { Text("\"${mod.name}\" has not been verified by Hexodus. It may behave unexpectedly or request dangerous permissions. Launch anyway?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        pendingUnverifiedMod = null
+                        val launchIntent = context.packageManager.getLaunchIntentForPackage(mod.packageName)
+                        if (launchIntent != null) context.startActivity(launchIntent)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) { Text("Launch Anyway") }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingUnverifiedMod = null }) { Text("Cancel") }
+            }
+        )
     }
 
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = { Text("Custom Mod Extensions") },
@@ -38,17 +74,19 @@ fun CustomModsScreen(navController: NavController) {
                     }
                 },
                 actions = {
-                    IconButton(onClick = { 
-                        isLoading = true
-                        mods = ModExtensionManager.discoverMods()
-                        isLoading = false
-                    }) {
+                    IconButton(onClick = { refresh(isRefresh = true) }) {
                         Icon(Icons.Default.Refresh, contentDescription = "Refresh")
                     }
-                }
+                },
+                scrollBehavior = scrollBehavior
             )
         }
     ) { padding ->
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = { refresh(isRefresh = true) },
+            modifier = Modifier.fillMaxSize().padding(padding)
+        ) {
         if (isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
@@ -63,7 +101,7 @@ fun CustomModsScreen(navController: NavController) {
                 }
             }
         } else {
-            LazyColumn(modifier = Modifier.fillMaxSize().padding(padding)) {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(mods) { mod ->
                     ListItem(
                         headlineContent = { Text(mod.name) },
@@ -82,12 +120,18 @@ fun CustomModsScreen(navController: NavController) {
                                 Icon(Icons.Default.CheckCircle, contentDescription = "Verified", tint = MaterialTheme.colorScheme.primary)
                             }
                         },
-                        modifier = Modifier.clickable { 
-                            // Open mod settings or details
+                        modifier = Modifier.clickable {
+                            if (mod.isVerified) {
+                                val launchIntent = context.packageManager.getLaunchIntentForPackage(mod.packageName)
+                                if (launchIntent != null) context.startActivity(launchIntent)
+                            } else {
+                                pendingUnverifiedMod = mod
+                            }
                         }
                     )
                 }
             }
         }
+        } // end PullToRefreshBox
     }
 }
