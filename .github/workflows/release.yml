@@ -16,59 +16,53 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: 0 # Necessary for git history to calculate version
+        fetch-depth: 0
 
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
         java-version: '21'
         distribution: 'temurin'
-        cache: gradle
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        cache-read-only: ${{ github.ref != 'refs/heads/main' }}
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       with:
-        packages: >
-          tools
-          platform-tools
-          build-tools;35.0.0
-          platforms;android-36
-        cmdline-tools-version: 'latest'
+        packages: 'build-tools;35.0.0 platforms;android-36'
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Calculate Version (Non-tag)
-      if: startsWith(github.ref, 'refs/tags/') != true
-      run: |
-        VERSION=$(python3 scripts/version_manager.py alpha)
-        echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
-        echo "IS_PRERELEASE=true" >> $GITHUB_ENV
+    - name: Run Detekt (Quality Check)
+      run: ./gradlew detekt --continue || true # Don't fail build on lint for now, but report
 
-    - name: Use Tagged Version
-      if: startsWith(github.ref, 'refs/tags/')
+    - name: Calculate Version
       run: |
-        TAG_NAME=${GITHUB_REF#refs/tags/}
-        # Strip 'v' prefix for version.properties
-        VERSION=${TAG_NAME#v}
-        # Update version.properties to match tag exactly
-        sed -i "s/version.name=.*/version.name=$VERSION/" version.properties
-        echo "NEW_VERSION=$TAG_NAME" >> $GITHUB_ENV
-        if [[ $TAG_NAME == *"-"* ]]; then
-          echo "IS_PRERELEASE=true" >> $GITHUB_ENV
+        if [[ $GITHUB_REF == refs/tags/v* ]]; then
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          VERSION=${TAG_NAME#v}
+          sed -i "s/version.name=.*/version.name=$VERSION/" version.properties
+          echo "NEW_VERSION=$TAG_NAME" >> $GITHUB_ENV
+          echo "IS_PRERELEASE=$( [[ $TAG_NAME == *"-"* ]] && echo true || echo false )" >> $GITHUB_ENV
         else
-          echo "IS_PRERELEASE=false" >> $GITHUB_ENV
+          VERSION=$(python3 scripts/version_manager.py alpha)
+          echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "IS_PRERELEASE=true" >> $GITHUB_ENV
         fi
 
-    - name: Build with Gradle
-      run: ./gradlew assembleDebug
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug --scan
 
     - name: Prepare Release Asset
       run: |
         mkdir -p release
         cp app/build/outputs/apk/debug/*.apk release/hexodus-${{ env.NEW_VERSION }}.apk
 
-    - name: Upload Alpha/Beta Release
+    - name: Upload GitHub Release
       uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ env.NEW_VERSION }}
@@ -76,6 +70,12 @@ jobs:
         prerelease: ${{ env.IS_PRERELEASE }}
         name: Hexodus ${{ env.NEW_VERSION }}
         generate_release_notes: true
+        body: |
+          ### Automated Build for ${{ env.NEW_VERSION }}
+          - Latest changes synchronized with Shizuku+ Enhanced API
+          - M3 Expressive UI/UX Refinements
+          
+          View the full changelog below for a list of all merged PRs and commits.
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
