@@ -28,6 +28,7 @@ fun SettingsScreen(navController: NavController) {
 
     var preferShizukuPlus by remember { mutableStateOf(prefs.preferShizukuPlus) }
     var enableDhizukuMode by remember { mutableStateOf(prefs.enableDhizukuMode) }
+    var useDynamicTheming by remember { mutableStateOf(prefs.useDynamicTheming) }
     var showIncompatible by remember { mutableStateOf(prefs.showIncompatibleFeatures) }
     var overrideCompat by remember { mutableStateOf(prefs.overrideCompatibility) }
     var showDeprecated by remember { mutableStateOf(prefs.showDeprecatedTools) }
@@ -115,6 +116,24 @@ fun SettingsScreen(navController: NavController) {
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
+
+            // ── Appearance ───────────────────────────────────────────────────
+            SettingsSectionHeader("Appearance", Icons.Default.Palette)
+
+            ListItem(
+                modifier = Modifier.toggleable(
+                    value = useDynamicTheming,
+                    role = Role.Switch,
+                    onValueChange = { useDynamicTheming = it; prefs.useDynamicTheming = it }
+                ),
+                headlineContent = { Text("Dynamic Theming (Monet)") },
+                supportingContent = { Text("Use system accent colors from your wallpaper. Requires Android 12+.") },
+                trailingContent = {
+                    Switch(checked = useDynamicTheming, onCheckedChange = null)
+                }
+            )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
             // ── Feature Visibility ────────────────────────────────────────────
             SettingsSectionHeader("Feature Visibility", Icons.Default.Visibility)

@@ -1,5 +1,7 @@
 package com.hexodus.ui
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,7 +14,19 @@ fun HexodusApp() {
 
     NavHost(
         navController = navController,
-        startDestination = NavRoutes.Dashboard
+        startDestination = NavRoutes.Dashboard,
+        enterTransition = { 
+            slideInHorizontally(initialOffsetX = { 400 }, animationSpec = tween(400)) + fadeIn(animationSpec = tween(400)) 
+        },
+        exitTransition = { 
+            slideOutHorizontally(targetOffsetX = { -400 }, animationSpec = tween(400)) + fadeOut(animationSpec = tween(400)) 
+        },
+        popEnterTransition = { 
+            slideInHorizontally(initialOffsetX = { -400 }, animationSpec = tween(400)) + fadeIn(animationSpec = tween(400)) 
+        },
+        popExitTransition = { 
+            slideOutHorizontally(targetOffsetX = { 400 }, animationSpec = tween(400)) + fadeOut(animationSpec = tween(400)) 
+        }
     ) {
         composable<NavRoutes.Dashboard> {
             FeatureDashboardScreen(navController)

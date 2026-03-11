@@ -6,6 +6,10 @@ import android.content.SharedPreferences
 class PrefsManager(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("hexodus_prefs", Context.MODE_PRIVATE)
 
+    var useDynamicTheming: Boolean
+        get() = prefs.getBoolean("use_dynamic_theming", true)
+        set(value) = prefs.edit().putBoolean("use_dynamic_theming", value).apply()
+
     var preferShizukuPlus: Boolean
         get() = prefs.getBoolean("prefer_shizuku_plus", true)
         set(value) = prefs.edit().putBoolean("prefer_shizuku_plus", value).apply()

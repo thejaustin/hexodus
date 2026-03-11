@@ -223,6 +223,87 @@ public class ShizukuPlusAPI {
     }
 
     /**
+     * Easy wrappers for System Properties.
+     */
+    public static class SystemProperties {
+        private static final int TRANSACTION_getSystemProperty = 9;
+
+        /**
+         * Get a system property.
+         */
+        @NonNull
+        public static String get(@NonNull String key) {
+            if (isEnhancedApiSupported()) {
+                try {
+                    android.os.IBinder binder = (android.os.IBinder) Shizuku.class.getDeclaredMethod("getBinder").invoke(null);
+                    if (binder != null) {
+                        android.os.Parcel data = android.os.Parcel.obtain();
+                        android.os.Parcel reply = android.os.Parcel.obtain();
+                        try {
+                            data.writeInterfaceToken("moe.shizuku.server.IShizukuService");
+                            data.writeString(key);
+                            data.writeString(""); // defaultValue
+                            binder.transact(TRANSACTION_getSystemProperty, data, reply, 0);
+                            reply.readException();
+                            return reply.readString();
+                        } finally {
+                            data.recycle();
+                            reply.recycle();
+                        }
+                    }
+                } catch (Exception e) {
+                    // Fallback
+                }
+            }
+            return SafeShell.run(new String[]{"getprop", key}).output;
+        }
+
+        /**
+         * Get all system properties.
+         */
+        @NonNull
+        public static String list() {
+            return SafeShell.run(new String[]{"getprop"}).output;
+        }
+    }
+
+    /**
+     * Manage Shizuku+ specific features/toggles.
+     */
+    public static class PlusFeatures {
+        private static final int TRANSACTION_updatePlusFeatureEnabled = 112;
+
+        /**
+         * Update the enabled state of a Shizuku+ server-side feature toggle.
+         */
+        public static boolean toggleFeature(@NonNull String key, boolean enabled) {
+            if (isEnhancedApiSupported()) {
+                try {
+                    android.os.IBinder binder = (android.os.IBinder) Shizuku.class.getDeclaredMethod("getBinder").invoke(null);
+                    if (binder != null) {
+                        android.os.Parcel data = android.os.Parcel.obtain();
+                        android.os.Parcel reply = android.os.Parcel.obtain();
+                        try {
+                            data.writeInterfaceToken("moe.shizuku.server.IShizukuService");
+                            data.writeString(key);
+                            data.writeInt(enabled ? 1 : 0);
+                            binder.transact(TRANSACTION_updatePlusFeatureEnabled, data, reply, 0);
+                            reply.readException();
+                            return true;
+                        } finally {
+                            data.recycle();
+                            reply.recycle();
+                        }
+                    }
+                } catch (Exception e) {
+                    return false;
+                }
+            }
+            return false;
+        }
+    }
+
+    /**
      * Compatibility layer for Dhizuku (Device Owner) features.
      */
     public static class Dhizuku {

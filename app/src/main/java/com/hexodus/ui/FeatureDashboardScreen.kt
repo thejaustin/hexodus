@@ -28,21 +28,36 @@ import com.hexodus.utils.RedundancyEngine
 import com.hexodus.ui.components.FeatureToggleCard
 import com.hexodus.ui.components.DeprecationInfo
 
-@OptIn(ExperimentalMaterial3Api::class)
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun FeatureDashboardScreen(navController: NavController? = null) {
     val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
     val capabilityManager = remember { CapabilityManager(context) }
     val prefs = remember { PrefsManager.getInstance(context) }
 
-    // Quick Actions — initial state loaded from prefs
+    // State for enter animations
+    var visible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { visible = true }
+
+    // ... (rest of feature states remains same)
     var circleToSearchEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("circle_to_search")) }
     var verticalDrawerEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("vertical_drawer")) }
     var nowBriefEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("now_brief")) }
     var batteryStatsEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("battery_stats")) }
     var enhancedProcessingEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("enhanced_processing")) }
 
-    // Android 16 features
     var notificationCooldownEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("notification_cooldown")) }
     var desktopModeEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("desktop_windowing")) }
     var screenOffFodEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("screen_off_fod")) }
@@ -50,7 +65,6 @@ fun FeatureDashboardScreen(navController: NavController? = null) {
     var priorityNotifsEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("priority_notifs")) }
     var glassmorphismEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("glassmorphism")) }
 
-    // Deprecated tools
     var legacyThemeEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("legacy_theme")) }
     var substratumEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("substratum")) }
     var gravityBoxEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("gravitybox")) }
@@ -58,7 +72,6 @@ fun FeatureDashboardScreen(navController: NavController? = null) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var caps by remember { mutableStateOf<CapabilityManager.DeviceCapabilities?>(null) }
 
-    // Read visibility prefs
     val showIncompatible = prefs.showIncompatibleFeatures
     val overrideCompat = prefs.overrideCompatibility
     val showDeprecated = prefs.showDeprecatedTools
@@ -67,7 +80,6 @@ fun FeatureDashboardScreen(navController: NavController? = null) {
         caps = capabilityManager.detectCapabilities()
     }
 
-    // Wrapper that shows a Toast if Shizuku isn't available before applying the flag
     fun applyFlag(key: String, enabled: Boolean) {
         if (!ShizukuBridge.isReady()) {
             Toast.makeText(context, "Shizuku not connected — toggle saved locally", Toast.LENGTH_SHORT).show()
@@ -76,136 +88,71 @@ fun FeatureDashboardScreen(navController: NavController? = null) {
     }
 
     @Composable
-    fun FrameworkChip(label: String, isActive: Boolean, icon: ImageVector) {
-        Surface(
-            color = if (isActive) MaterialTheme.colorScheme.primaryContainer
-                    else MaterialTheme.colorScheme.surfaceVariant,
-            shape = RoundedCornerShape(10.dp),
-            modifier = Modifier.padding(2.dp)
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(12.dp),
-                    tint = if (isActive) MaterialTheme.colorScheme.primary
-                           else MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = if (isActive) MaterialTheme.colorScheme.onPrimaryContainer
-                            else MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-    }
-
-    @Composable
-    fun FeatureCard(
-        title: String,
-        description: String,
-        icon: ImageVector,
-        isEnabled: Boolean,
-        onToggle: (Boolean) -> Unit,
-        requirements: List<String>,
-        deprecationInfo: DeprecationInfo? = null
-    ) {
-        if (searchQuery.isNotEmpty() &&
-            !title.contains(searchQuery, ignoreCase = true) &&
-            !description.contains(searchQuery, ignoreCase = true)
-        ) return
-
-        val isCompatible = caps?.let { capabilityManager.isCompatible(requirements, it) } ?: true
-        if (!isCompatible && !showIncompatible) return
-
-        val conflictingApps = RedundancyEngine.getConflictingApps(title)
-        val installedConflicts = remember(conflictingApps) {
-            conflictingApps.filter { pkg ->
-                try { context.packageManager.getPackageInfo(pkg, 0); true }
-                catch (e: Exception) { false }
-            }
-        }
-
-        val switchEnabled = isCompatible || overrideCompat
-
-        Column {
-            if (installedConflicts.isNotEmpty()) {
-                Surface(
-                    color = MaterialTheme.colorScheme.errorContainer,
-                    shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.Default.Warning,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            "Conflict: ${installedConflicts.joinToString()} detected — Hexodus handles this natively.",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onErrorContainer
-                        )
-                    }
-                }
-            }
-            FeatureToggleCard(
-                title = title,
-                description = description,
-                icon = icon,
-                isEnabled = isEnabled,
-                onToggle = onToggle,
-                switchEnabled = switchEnabled,
-                colorIndicator = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.alpha(if (isCompatible) 1f else 0.55f),
-                deprecationInfo = deprecationInfo
-            )
-        }
-    }
-
-    @Composable
-    fun SectionLabel(text: String) {
-        if (searchQuery.isNotEmpty()) return
-        Text(
-            text = text,
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(start = 4.dp, top = 8.dp, bottom = 4.dp)
+    fun AnimatedSection(delay: Int, content: @Composable () -> Unit) {
+        AnimatedVisibility(
+            visible = visible,
+            enter = slideInVertically(animationSpec = tween(400, delayMillis = delay)) { it / 2 } +
+                    fadeIn(animationSpec = tween(400, delayMillis = delay)),
+            content = { content() }
         )
     }
 
     @Composable
-    fun CategoryButton(title: String, icon: ImageVector, onNavigate: () -> Unit) {
+    fun BentoCategory(title: String, icon: ImageVector, color: Color, isLarge: Boolean = false, onNavigate: () -> Unit) {
         if (searchQuery.isNotEmpty() && !title.contains(searchQuery, ignoreCase = true)) return
-        Card(
+        
+        val interactionSource = remember { MutableInteractionSource() }
+        val isPressed by interactionSource.collectIsPressedAsState()
+        val scale by animateFloatAsState(if (isPressed) 0.96f else 1f, label = "scale")
+
+        ElevatedCard(
             modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClickLabel = "Open $title") { onNavigate() },
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-            shape = RoundedCornerShape(16.dp)
+                .fillMaxWidth(if (isLarge) 1f else 0.485f)
+                .height(if (isLarge) 84.dp else 104.dp)
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                }
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onNavigate()
+                    }
+                ),
+            colors = CardDefaults.elevatedCardColors(containerColor = color.copy(alpha = 0.12f)),
+            shape = RoundedCornerShape(24.dp),
+            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 14.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(22.dp))
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSecondaryContainer)
-                Spacer(modifier = Modifier.weight(1f))
-                Icon(Icons.Default.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
+            Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                if (isLarge) {
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
+                        Surface(
+                            color = color.copy(alpha = 0.25f), 
+                            shape = RoundedCornerShape(14.dp),
+                            modifier = Modifier.size(44.dp)
+                        ) {
+                            Icon(icon, null, tint = color, modifier = Modifier.padding(10.dp).size(24.dp))
+                        }
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onSurface)
+                        Spacer(modifier = Modifier.weight(1f))
+                        Icon(Icons.Default.ArrowForward, null, tint = color.copy(alpha = 0.6f), modifier = Modifier.size(20.dp))
+                    }
+                } else {
+                    Column(horizontalAlignment = Alignment.Start) {
+                        Surface(
+                            color = color.copy(alpha = 0.2f), 
+                            shape = RoundedCornerShape(10.dp),
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(icon, null, tint = color, modifier = Modifier.padding(6.dp).size(20.dp))
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                        Text(title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onSurface)
+                    }
+                }
             }
         }
     }
@@ -215,79 +162,133 @@ fun FeatureDashboardScreen(navController: NavController? = null) {
             .fillMaxSize()
             .systemBarsPadding()
             .imePadding()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Header
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-            shape = RoundedCornerShape(24.dp)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Hero Header with Gradient
+        AnimatedSection(0) {
+            val heroGradient = Brush.verticalGradient(
+                colors = listOf(
+                    MaterialTheme.colorScheme.primaryContainer,
+                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+                )
+            )
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(32.dp),
+                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(heroGradient)
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = "Hexodus",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                    IconButton(onClick = { navController?.navigate(NavRoutes.Settings) }) {
-                        Icon(Icons.Default.Settings, contentDescription = "Settings")
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                text = "Hexodus",
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            Text(
+                                text = "Expressive Design Edition",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+                                letterSpacing = androidx.compose.ui.unit.TextUnit.Unspecified
+                            )
+                        }
+                        IconButton(
+                            onClick = { navController?.navigate(NavRoutes.Settings) },
+                            colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                        ) {
+                            Icon(Icons.Default.Settings, contentDescription = "Settings", tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                        }
                     }
-                }
 
-                Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    FrameworkChip("Shizuku", caps?.isShizukuReady == true, Icons.Default.Bolt)
-                    FrameworkChip("Dhizuku", caps?.isDhizukuReady == true, Icons.Default.Shield)
-                    FrameworkChip("Vector", caps?.isVectorActive == true, Icons.Default.Hub)
-                    FrameworkChip("Root", caps?.isRooted == true, Icons.Default.Terminal)
-                    FrameworkChip("Xposed", caps?.isXposedActive == true, Icons.Default.Code)
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        maxItemsInEachRow = 3
+                    ) {
+                        FrameworkChip("Shizuku", caps?.isShizukuReady == true, Icons.Default.Bolt)
+                        FrameworkChip("Dhizuku", caps?.isDhizukuReady == true, Icons.Default.Shield)
+                        FrameworkChip("Vector", caps?.isVectorActive == true, Icons.Default.Hub)
+                        FrameworkChip("Root", caps?.isRooted == true, Icons.Default.Terminal)
+                        FrameworkChip("Xposed", caps?.isXposedActive == true, Icons.Default.Code)
+                    }
                 }
             }
         }
 
-        // Search
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("Search features...") },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(20.dp)) },
-            trailingIcon = {
-                if (searchQuery.isNotEmpty()) {
-                    IconButton(onClick = { searchQuery = "" }) {
-                        Icon(Icons.Default.Clear, contentDescription = "Clear", modifier = Modifier.size(18.dp))
+        // Search Bar - Floating Style with Focus Animation
+        var isSearchFocused by remember { mutableStateOf(false) }
+        val searchScale by animateFloatAsState(if (isSearchFocused) 1.02f else 1f, label = "searchScale")
+        val searchElevation by animateDpAsState(if (isSearchFocused) 4.dp else 0.dp, label = "searchElevation")
+
+        AnimatedSection(100) {
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .graphicsLayer {
+                        scaleX = searchScale
+                        scaleY = searchScale
                     }
-                }
-            },
-            shape = RoundedCornerShape(14.dp),
-            singleLine = true,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = Color.Transparent
+                    .onFocusChanged { isSearchFocused = it.isFocused },
+                placeholder = { Text("Search repo & features...") },
+                leadingIcon = { 
+                    Icon(
+                        Icons.Default.Search, 
+                        null, 
+                        tint = if (isSearchFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    ) 
+                },
+                shape = RoundedCornerShape(20.dp),
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = Color.Transparent
+                )
             )
-        )
+        }
+
+        if (searchQuery.isEmpty()) {
+            AnimatedSection(200) {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    SectionLabel("Discovery Hub")
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        BentoCategory("Device Mods", Icons.Default.Smartphone, Color(0xFF2196F3)) { navController?.navigate(NavRoutes.Features("Device Specific")) }
+                        BentoCategory("Camera Pro", Icons.Default.CameraAlt, Color(0xFFFF5722)) { navController?.navigate(NavRoutes.Features("Camera")) }
+                    }
+                    BentoCategory("Discovery & Repos", Icons.Default.Explore, MaterialTheme.colorScheme.tertiary, isLarge = true) { navController?.navigate(NavRoutes.AwesomeShizuku) }
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        BentoCategory("Theming", Icons.Default.ColorLens, Color(0xFF9C27B0)) { navController?.navigate(NavRoutes.Features("Theming")) }
+                        BentoCategory("Extensions", Icons.Default.Extension, Color(0xFF4CAF50)) { navController?.navigate(NavRoutes.CustomMods) }
+                    }
+                    BentoCategory("System Tuning", Icons.Default.Tune, Color(0xFF795548), isLarge = true) { navController?.navigate(NavRoutes.Features("System")) }
+                }
+            }
+        }
 
         // Quick Actions
-        SectionLabel("Quick Actions")
+        AnimatedSection(300) {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                SectionLabel("Standard Toggles")
 
         FeatureCard(
             title = "Circle to Search",

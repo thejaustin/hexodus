@@ -96,8 +96,8 @@ object SystemInspectorService {
     private fun getSystemProperty(propertyName: String) {
         try {
             if (!ShizukuBridge.isReady()) return
-            val result = ShizukuBridge.executeShellCommand("getprop $propertyName")
-            if (result != null) {
+            val result = ShizukuBridge.Properties.get(propertyName)
+            if (result.isNotEmpty()) {
                 val successIntent = Intent("SYSTEM_PROPERTY_RETRIEVED")
                 successIntent.putExtra("property_name", propertyName)
                 successIntent.putExtra("property_value", result.trim())
@@ -111,9 +111,10 @@ object SystemInspectorService {
     private fun getAllSystemProperties() {
         try {
             if (!ShizukuBridge.isReady()) return
-            val result = ShizukuBridge.executeShellCommand("getprop")
-            if (result != null) {
+            val result = ShizukuBridge.Properties.list()
+            if (result.isNotEmpty()) {
                 val successIntent = Intent("ALL_SYSTEM_PROPERTIES_RETRIEVED")
+                successIntent.putExtra("properties", result)
                 HexodusApplication.context.sendBroadcast(successIntent)
             }
         } catch (e: Exception) {

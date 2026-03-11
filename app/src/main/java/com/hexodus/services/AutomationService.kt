@@ -475,10 +475,9 @@ object AutomationService {
             // Validate brightness level (0-255)
             val clampedLevel = level.coerceIn(0, 255)
             
-            val command = "settings put system screen_brightness $clampedLevel"
-            val result = ShizukuBridge.executeShellCommand(command)
+            val success = ShizukuBridge.Settings.putSystem("screen_brightness", clampedLevel.toString())
             
-            if (result != null) {
+            if (success) {
                 Log.d(TAG, "Set brightness to: $clampedLevel")
             } else {
                 Log.e(TAG, "Failed to set brightness to: $clampedLevel")

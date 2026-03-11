@@ -229,14 +229,10 @@ object AppManagerService {
             
             // Validate package name
             val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
-            if (sanitizedPackageName != targetPackageName) {
-                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
-            }
             
-            val command = "pm hide $sanitizedPackageName"
-            val result = ShizukuBridge.executeShellCommand(command)
+            val success = ShizukuBridge.AppManagement.hide(sanitizedPackageName)
             
-            if (result != null) {
+            if (success) {
                 Log.d(TAG, "App hidden: $sanitizedPackageName")
                 
                 // Broadcast success
@@ -249,7 +245,7 @@ object AppManagerService {
                 // Broadcast failure
                 val failureIntent = Intent("APP_HIDE_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
-                failureIntent.putExtra("error", "Failed to execute command")
+                failureIntent.putExtra("error", "Failed to hide")
                 HexodusApplication.context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
@@ -274,14 +270,10 @@ object AppManagerService {
             
             // Validate package name
             val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
-            if (sanitizedPackageName != targetPackageName) {
-                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
-            }
             
-            val command = "pm unhide $sanitizedPackageName"
-            val result = ShizukuBridge.executeShellCommand(command)
+            val success = ShizukuBridge.AppManagement.unhide(sanitizedPackageName)
             
-            if (result != null) {
+            if (success) {
                 Log.d(TAG, "App unhidden: $sanitizedPackageName")
                 
                 // Broadcast success
@@ -294,7 +286,7 @@ object AppManagerService {
                 // Broadcast failure
                 val failureIntent = Intent("APP_UNHIDE_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
-                failureIntent.putExtra("error", "Failed to execute command")
+                failureIntent.putExtra("error", "Failed to unhide")
                 HexodusApplication.context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {
@@ -319,14 +311,10 @@ object AppManagerService {
             
             // Validate package name
             val sanitizedPackageName = SecurityUtils.sanitizePackageName(targetPackageName)
-            if (sanitizedPackageName != targetPackageName) {
-                Log.w(TAG, "Package name was sanitized: $targetPackageName -> $sanitizedPackageName")
-            }
             
-            val command = "am force-stop $sanitizedPackageName"
-            val result = ShizukuBridge.executeShellCommand(command)
+            val success = ShizukuBridge.AppManagement.forceStop(sanitizedPackageName)
             
-            if (result != null) {
+            if (success) {
                 Log.d(TAG, "App force stopped: $sanitizedPackageName")
                 
                 // Broadcast success
@@ -339,7 +327,7 @@ object AppManagerService {
                 // Broadcast failure
                 val failureIntent = Intent("APP_FORCE_STOP_FAILED")
                 failureIntent.putExtra("package_name", sanitizedPackageName)
-                failureIntent.putExtra("error", "Failed to execute command")
+                failureIntent.putExtra("error", "Failed to force stop")
                 HexodusApplication.context.sendBroadcast(failureIntent)
             }
         } catch (e: Exception) {

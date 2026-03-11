@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "project-files": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/data/data/com.termux/files/home/hexodus"
+      ]
+    }
+  }
+}

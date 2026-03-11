@@ -7,14 +7,15 @@ import android.util.Log
 import java.io.IOException
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuRemoteProcess
+import rikka.shizuku.ShizukuPlusAPI
 
 /**
  * ShizukuBridge - Enhanced bridge for Shizuku communication
  * Handles privileged operations through Shizuku's API with additional security measures.
  * Refactored from Service to Singleton for stability and easier access.
+ * Now leverages ShizukuPlusAPI for enhanced functionality and Dhizuku support.
  */
 object ShizukuBridge {
-    
     
     private const val TAG = "ShizukuBridge"
     private const val REQUEST_CODE_PERMISSION = 1001
@@ -34,6 +35,20 @@ object ShizukuBridge {
             Log.w(TAG, "Shizuku not ready: ${e.message}")
             false
         }
+    }
+
+    /**
+     * Checks if Shizuku+ Enhanced API is supported
+     */
+    fun isEnhancedApiSupported(): Boolean {
+        return isReady() && ShizukuPlusAPI.isEnhancedApiSupported()
+    }
+
+    /**
+     * Checks if Dhizuku (Device Owner) mode is available
+     */
+    fun isDhizukuAvailable(): Boolean {
+        return isReady() && ShizukuPlusAPI.Dhizuku.isAvailable()
     }
     
     /**
@@ -61,34 +76,18 @@ object ShizukuBridge {
         }
 
         return try {
-            // Execute the command using Shizuku's privileged shell access.
-            // Use reflection because newProcess is private in some versions
-            val newProcessMethod = Shizuku::class.java.getDeclaredMethod("newProcess", Array<String>::class.java, Array<String>::class.java, String::class.java)
-            newProcessMethod.isAccessible = true
-            val process = newProcessMethod.invoke(null, arrayOf("sh", "-c", command), null, null) as ShizukuRemoteProcess
+            val result = ShizukuPlusAPI.Shell.executeCommand(command)
             
-            val output = process.inputStream.bufferedReader().readText()
-            val errorOutput = process.errorStream.bufferedReader().readText()
-            val exitCode = process.waitFor()
-
-            Log.d(TAG, "Privileged command executed: $command, Exit code: $exitCode")
+            Log.d(TAG, "Privileged command executed: $command, Exit code: ${result.exitCode}")
             
-            if (exitCode == 0) output else {
-                Log.w(TAG, "Command failed with exit code $exitCode: $errorOutput")
-                if (output.isNotEmpty()) output else errorOutput
+            if (result.isSuccess) {
+                result.output
+            } else {
+                Log.w(TAG, "Command failed with exit code ${result.exitCode}: ${result.error}")
+                if (result.output.isNotEmpty()) result.output else result.error
             }
-        } catch (e: SecurityException) {
-            Log.e(TAG, "Security exception executing shell command: ${e.message}", e)
-            null
-        } catch (e: IOException) {
-            Log.e(TAG, "IO exception executing shell command: ${e.message}", e)
-            null
-        } catch (e: InterruptedException) {
-            Log.e(TAG, "Command execution interrupted: ${e.message}", e)
-            Thread.currentThread().interrupt()
-            null
         } catch (e: Exception) {
-            Log.e(TAG, "Unexpected error executing shell command: ${e.message}", e)
+            Log.e(TAG, "Error executing shell command: ${e.message}", e)
             null
         }
     }
@@ -98,24 +97,15 @@ object ShizukuBridge {
      */
     fun executeOverlayCommand(packageName: String, action: String): Boolean {
         if (!isReady()) return false
-
         if (!isValidPackageName(packageName)) return false
 
-        val validActions = listOf("enable", "disable", "set-priority")
-        if (action !in validActions) return false
-
-        val escapedPackage = packageName.replace("'", "'\\''")
-
         return try {
-            val command = when (action) {
-                "enable" -> "cmd overlay enable $escapedPackage"
-                "disable" -> "cmd overlay disable $escapedPackage"
-                "set-priority" -> "cmd overlay set-priority $escapedPackage 100"
-                else -> return false
+            when (action) {
+                "enable" -> ShizukuPlusAPI.OverlayManager.enableOverlay(packageName)
+                "disable" -> ShizukuPlusAPI.OverlayManager.disableOverlay(packageName)
+                "set-priority" -> ShizukuPlusAPI.OverlayManager.setPriority(packageName, "android")
+                else -> false
             }
-
-            val result = executeShellCommand(command)
-            result != null
         } catch (e: Exception) {
             Log.e(TAG, "Error executing overlay command", e)
             false
@@ -129,12 +119,8 @@ object ShizukuBridge {
         if (!isReady()) return false
         if (!isValidFilePath(apkPath)) return false
 
-        val escapedPath = apkPath.replace("'", "'\\''")
-
         return try {
-            val command = "pm install -r -d -t '$escapedPath'"
-            val result = executeShellCommand(command)
-            result?.contains("Success", ignoreCase = true) == true
+            ShizukuPlusAPI.PackageManager.installPackage(apkPath)
         } catch (e: Exception) {
             Log.e(TAG, "Error installing APK", e)
             false
@@ -148,12 +134,8 @@ object ShizukuBridge {
         if (!isReady()) return false
         if (!isValidPackageName(packageName)) return false
 
-        val escapedPackage = packageName.replace("'", "'\\''")
-
         return try {
-            val command = "pm uninstall '$escapedPackage'"
-            val result = executeShellCommand(command)
-            result?.contains("Success", ignoreCase = true) == true
+            ShizukuPlusAPI.PackageManager.uninstallPackage(packageName)
         } catch (e: Exception) {
             Log.e(TAG, "Error uninstalling package", e)
             false
@@ -167,10 +149,10 @@ object ShizukuBridge {
         if (!isReady()) return emptyList()
 
         return try {
-            val command = "cmd overlay list"
-            val output = executeShellCommand(command) ?: ""
+            val result = ShizukuPlusAPI.Shell.executeCommand("cmd overlay list")
+            if (!result.isSuccess) return emptyList()
 
-            output.lines()
+            result.output.lines()
                 .filter { it.contains("ENABLED") }
                 .filter { it.contains(":") }
                 .map { line ->
@@ -180,6 +162,46 @@ object ShizukuBridge {
         } catch (e: Exception) {
             Log.e(TAG, "Error getting overlay packages", e)
             emptyList()
+        }
+    }
+
+    /**
+     * System Settings access via ShizukuPlusAPI
+     */
+    object Settings {
+        fun putSystem(key: String, value: String): Boolean = ShizukuPlusAPI.Settings.putSystem(key, value)
+        fun putSecure(key: String, value: String): Boolean = ShizukuPlusAPI.Settings.putSecure(key, value)
+        fun putGlobal(key: String, value: String): Boolean = ShizukuPlusAPI.Settings.putGlobal(key, value)
+        
+        fun getSystem(key: String): String = ShizukuPlusAPI.Settings.getSystem(key)
+        fun getSecure(key: String): String = ShizukuPlusAPI.Settings.getSecure(key)
+        fun getGlobal(key: String): String = ShizukuPlusAPI.Settings.getGlobal(key)
+    }
+
+    /**
+     * System Properties access via ShizukuPlusAPI
+     */
+    object Properties {
+        fun get(key: String): String = ShizukuPlusAPI.SystemProperties.get(key)
+        fun list(): String = ShizukuPlusAPI.SystemProperties.list()
+    }
+
+    /**
+     * App Management operations via ShizukuPlusAPI
+     */
+    object AppManagement {
+        fun freeze(packageName: String): Boolean = ShizukuPlusAPI.PackageManager.clearPackageData(packageName) // Placeholder for actual freeze if API supports it
+        
+        fun forceStop(packageName: String): Boolean {
+            return ShizukuPlusAPI.Shell.executeCommand("am force-stop $packageName").isSuccess
+        }
+
+        fun hide(packageName: String): Boolean {
+            return ShizukuPlusAPI.Shell.executeCommand("pm hide $packageName").isSuccess
+        }
+
+        fun unhide(packageName: String): Boolean {
+            return ShizukuPlusAPI.Shell.executeCommand("pm unhide $packageName").isSuccess
         }
     }
 
@@ -207,3 +229,4 @@ object ShizukuBridge {
         return Regex("^[a-zA-Z][a-zA-Z0-9_]*(\\.[a-zA-Z][a-zA-Z0-9_]*)*$").matches(packageName)
     }
 }
+

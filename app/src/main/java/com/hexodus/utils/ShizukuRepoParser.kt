@@ -157,18 +157,35 @@ object ShizukuRepoParser {
     }
 
     private fun getFallbackList(): List<ShizukuApp> = listOf(
+        // Elite Backports & Frameworks
         ShizukuApp("LSPatch", "No-root Xposed framework — patches APKs to inject modules without root, works with just Shizuku.", "LSPosed", "https://github.com/LSPosed/LSPatch", "https://github.com/LSPosed/LSPatch/releases/latest", "System Tools", listOf("LSPatch", "Shizuku"), "org.lsposed.lspatch"),
         ShizukuApp("LSPatch (JingMatrix)", "Actively maintained LSPatch fork with Android 14/15/16 support.", "JingMatrix", "https://github.com/JingMatrix/LSPatch", "https://github.com/JingMatrix/LSPatch/releases/latest", "System Tools", listOf("LSPatch", "Shizuku")),
         ShizukuApp("Vector (LSPosed fork)", "JingMatrix's actively maintained LSPosed fork for Android 16. Requires root + Magisk + Zygisk.", "JingMatrix", "https://github.com/JingMatrix/LSPosed", "https://github.com/JingMatrix/LSPosed/releases/latest", "System Tools", listOf("Vector", "Root", "Dev")),
+        ShizukuApp("Dhizuku", "Share Device Owner permissions across apps — enables persistent rootless freezing without Shizuku restart.", "iamr0s", "https://github.com/iamr0s/Dhizuku", "https://github.com/iamr0s/Dhizuku/releases/latest", "System Tools", listOf("Dhizuku", "Shizuku", "ADB"), "com.iamr0s.dhizuku"),
+        
+        // Essential Shizuku Utilities
+        ShizukuApp("Hail", "Freeze, hide, or disable apps without root to save battery and memory.", "aistra0528", "https://github.com/aistra0528/Hail", "https://github.com/aistra0528/Hail/releases/latest", "App Management", listOf("Shizuku", "System"), "com.aistra.hail"),
+        ShizukuApp("App Ops", "Manage hidden application permissions that Android doesn't normally let you change.", "RikkaApps", "https://github.com/RikkaApps/AppOps", "https://play.google.com/store/apps/details?id=rikka.appops", "Privacy", listOf("Shizuku", "Privacy"), "rikka.appops"),
+        ShizukuApp("aShell", "A local ADB shell for Android, powered by Shizuku. Run commands without a PC.", "RikkaApps", "https://gitlab.com/RikkaApps/aShell", "https://gitlab.com/RikkaApps/aShell/-/releases", "Developer Tools", listOf("Shizuku", "ADB", "Terminal"), "in.wjn.ashell"),
+        ShizukuApp("System UI Tuner", "View and modify hidden Android settings safely.", "zacharee", "https://github.com/zacharee/SystemUITuner", "https://play.google.com/store/apps/details?id=com.zacharee1.systemuituner", "Customization", listOf("Shizuku", "System"), "com.zacharee1.systemuituner"),
+        ShizukuApp("Canta", "Uninstall any app without root. Removes bloatware safely.", "samolego", "https://github.com/samolego/Canta", "https://github.com/samolego/Canta/releases/latest", "App Management", listOf("Shizuku", "System"), "org.samo_lego.canta"),
+        ShizukuApp("Swift Backup", "Backup external app files under Android/data and obb without root.", "SwiftApps", "https://play.google.com/store/apps/details?id=org.swiftapps.swiftbackup", "https://play.google.com/store/apps/details?id=org.swiftapps.swiftbackup", "System Tools", listOf("Shizuku", "Backup"), "org.swiftapps.swiftbackup"),
+        
+        // Customization & Theming
+        ShizukuApp("ColorBlendr", "Modify Material You colors of your device directly.", "drdisagree", "https://github.com/drdisagree/ColorBlendr", "https://github.com/drdisagree/ColorBlendr/releases/latest", "Customization", listOf("Shizuku", "Theming"), "com.drdisagree.colorblendr"),
+        ShizukuApp("DarQ", "Per-app selectable force dark option for apps that don't support dark mode natively.", "KieronQuinn", "https://github.com/KieronQuinn/DarQ", "https://github.com/KieronQuinn/DarQ/releases/latest", "Customization", listOf("Shizuku", "Theming"), "com.kieronquinn.app.darq"),
+        ShizukuApp("Iconify", "Modern GravityBox alternative — deep UI customisation for QS tiles, brightness slider, and status bar.", "Dr-Muda", "https://github.com/Dr-Muda/Iconify", "https://github.com/Dr-Muda/Iconify/releases/latest", "Customization", listOf("Root", "LSPatch", "Theming"), "com.drdisagree.iconify"),
+        
+        // Backports & Mods
         ShizukuApp("Pixelify Google Photos", "LSPatch module to unlock Pixel-exclusive Magic Editor, Reimagine, and unlimited saves.", "BaltiApps", "https://github.com/BaltiApps/Pixelify-Google-Photos", "https://github.com/BaltiApps/Pixelify-Google-Photos/releases/latest", "Pixel Backport", listOf("Backport", "LSPatch"), "balti.apps.pixelify"),
         ShizukuApp("Ambient Music Mod", "Pixel-exclusive 'Now Playing' offline music recognition for any device.", "KieronQuinn", "https://github.com/KieronQuinn/AmbientMusicMod", "https://github.com/KieronQuinn/AmbientMusicMod/releases/latest", "Pixel Backport", listOf("Backport", "Shizuku"), "com.kieronquinn.app.ambientmusicmod"),
         ShizukuApp("Smartspacer", "At a Glance replacement with Pixel features and extensibility.", "KieronQuinn", "https://github.com/KieronQuinn/Smartspacer", "https://github.com/KieronQuinn/Smartspacer/releases/latest", "Pixel Backport", listOf("Backport", "Shizuku"), "com.kieronquinn.app.smartspacer"),
         ShizukuApp("Galaxy Enhancements", "Unlock One UI 7.0 features and S25 AI toggles on older Samsung devices.", "Community", "https://github.com/Feruzbek_101/GalaxyEnhancements", "https://github.com/Feruzbek_101/GalaxyEnhancements/releases/latest", "Samsung Backport", listOf("Backport", "Samsung", "Shizuku")),
         ShizukuApp("GCam (LMC 8.4)", "Advanced Google Camera port optimised for S22 Ultra 108MP sensor with Leica mode.", "Hasli", "https://github.com/HasliR/LMC8.4", "https://github.com/HasliR/LMC8.4/releases/latest", "Camera Enhancements", listOf("Backport")),
         ShizukuApp("GMS Phixit", "Toggle hidden Google Play Services flags to unlock AI features without root.", "Wanderer", "https://github.com/WandererV/GMS-Phixit", "https://github.com/WandererV/GMS-Phixit/releases/latest", "System Tools", listOf("Shizuku", "Root")),
-        ShizukuApp("Dhizuku", "Share Device Owner permissions across apps — enables persistent rootless freezing without Shizuku restart.", "iamr0s", "https://github.com/iamr0s/Dhizuku", "https://github.com/iamr0s/Dhizuku/releases/latest", "System Tools", listOf("Dhizuku", "Shizuku", "ADB"), "com.iamr0s.dhizuku"),
+        
+        // Advanced System Tools
         ShizukuApp("TrickyStore", "Advanced Keybox spoofer to bypass Strong Integrity API checks on rooted devices.", "5ec1cff", "https://github.com/5ec1cff/TrickyStore", "https://github.com/5ec1cff/TrickyStore/releases/latest", "Advanced Root", listOf("Root", "Magisk", "System")),
-        ShizukuApp("Iconify", "Modern GravityBox alternative — deep UI customisation for QS tiles, brightness slider, and status bar.", "Dr-Muda", "https://github.com/Dr-Muda/Iconify", "https://github.com/Dr-Muda/Iconify/releases/latest", "Advanced Root", listOf("Root", "LSPatch", "Theming"), "com.drdisagree.iconify"),
         ShizukuApp("Touch Me Not", "Blocks Power Menu and QS while device is locked to prevent thieves disabling networking.", "Xposed", "https://github.com/Xposed-Modules-Repo/com.drdisagree.touchmenot", "https://github.com/Xposed-Modules-Repo/com.drdisagree.touchmenot/releases/latest", "Security", listOf("LSPatch", "Root", "Security"), "com.drdisagree.touchmenot"),
         ShizukuApp("Disable Target API Block", "Bypass Android 14/15 restrictions preventing installation of legacy apps.", "Xposed", "https://github.com/Xposed-Modules-Repo/com.kieronquinn.app.disabletargetapiblock", "https://github.com/Xposed-Modules-Repo/com.kieronquinn.app.disabletargetapiblock/releases/latest", "System Tools", listOf("LSPatch", "Root", "Dev"), "com.kieronquinn.app.disabletargetapiblock"),
         ShizukuApp("GPS Mover", "System-level location spoofer that simulates live movement without triggering mock location detection.", "System", "https://github.com/System-Mods/GPSMover", "https://github.com/System-Mods/GPSMover/releases/latest", "Advanced Root", listOf("Root", "LSPatch", "Dev")),
@@ -177,4 +194,5 @@ object ShizukuRepoParser {
         ShizukuApp("Install with Options", "Bypass Android 16 Target SDK limits and downgrade apps without losing data.", "MuntashirAkon", "https://github.com/MuntashirAkon/InstallWithOptions", "https://github.com/MuntashirAkon/InstallWithOptions/releases/latest", "System Tools", listOf("Shizuku", "App Management"), "io.github.muntashirakon.adb"),
         ShizukuApp("SD Maid SE", "System cleaner for Android 16 — uses Shizuku to clear deep system cache and corpse files.", "darken", "https://github.com/darken/sdmaid-se", "https://github.com/darken/sdmaid-se/releases/latest", "System Tools", listOf("Shizuku", "Maintenance"), "eu.darken.sdmse")
     )
+
 }

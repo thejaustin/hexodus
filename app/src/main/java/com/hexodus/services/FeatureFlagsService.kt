@@ -11,7 +11,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import moe.shizuku.plus.ShizukuPlusAPI
 
 /**
  * FeatureFlagsService - Manages discovering and toggling system/Samsung feature flags
@@ -48,10 +47,6 @@ object FeatureFlagsService {
         return android.app.Service.START_STICKY
     }
 
-    private fun useEnhancedApi(): Boolean {
-        return prefsManager.preferShizukuPlus && ShizukuPlusAPI.isEnhancedApiSupported()
-    }
-
     // Maps UI feature keys → system/Samsung flag names
     private val featureFlags = mapOf(
         "circle_to_search"        to "sem_circle_to_search",
@@ -83,11 +78,7 @@ object FeatureFlagsService {
         scope.launch {
             try {
                 val state = if (enabled) "1" else "0"
-                if (useEnhancedApi()) {
-                    ShizukuPlusAPI.Settings.putGlobal(name, state)
-                } else {
-                    ShizukuBridge.executeShellCommand("settings put global $name $state")
-                }
+                ShizukuBridge.Settings.putGlobal(name, state)
                 HexodusApplication.context.sendBroadcast(Intent("FEATURE_FLAG_CHANGED").putExtra("name", name).putExtra("state", enabled))
             } catch (e: Exception) {
                 Log.e(TAG, "Error toggling flag $name", e)
@@ -101,11 +92,7 @@ object FeatureFlagsService {
             Log.d(TAG, "Restoring system defaults...")
             val flags = listOf("sem_enhanced_cpu_responsiveness", "notification_cooldown_enabled")
             for (flag in flags) {
-                if (useEnhancedApi()) {
-                    ShizukuPlusAPI.Settings.putGlobal(flag, "0")
-                } else {
-                    ShizukuBridge.executeShellCommand("settings put global $flag 0")
-                }
+                ShizukuBridge.Settings.putGlobal(flag, "0")
             }
             HexodusApplication.context.sendBroadcast(Intent("SYSTEM_DEFAULTS_RESTORED").putExtra("success", true))
         } catch (e: Exception) {
@@ -113,3 +100,4 @@ object FeatureFlagsService {
         }
     }
 }
+
