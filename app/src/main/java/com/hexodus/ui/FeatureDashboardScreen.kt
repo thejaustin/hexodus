@@ -1,6 +1,12 @@
 package com.hexodus.ui
 
+import android.widget.Toast
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,31 +19,24 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import android.widget.Toast
 import com.hexodus.services.CapabilityManager
 import com.hexodus.services.FeatureFlagsService
 import com.hexodus.services.ShizukuBridge
+import com.hexodus.ui.components.DeprecationInfo
+import com.hexodus.ui.components.FeatureToggleCard
 import com.hexodus.utils.PrefsManager
 import com.hexodus.utils.RedundancyEngine
-import com.hexodus.ui.components.FeatureToggleCard
-import com.hexodus.ui.components.DeprecationInfo
-
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
-
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -51,13 +50,14 @@ fun FeatureDashboardScreen(navController: NavController? = null) {
     var visible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { visible = true }
 
-    // ... (rest of feature states remains same)
+    // Quick Actions
     var circleToSearchEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("circle_to_search")) }
     var verticalDrawerEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("vertical_drawer")) }
     var nowBriefEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("now_brief")) }
     var batteryStatsEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("battery_stats")) }
     var enhancedProcessingEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("enhanced_processing")) }
 
+    // Android 16 features
     var notificationCooldownEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("notification_cooldown")) }
     var desktopModeEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("desktop_windowing")) }
     var screenOffFodEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("screen_off_fod")) }
@@ -65,6 +65,7 @@ fun FeatureDashboardScreen(navController: NavController? = null) {
     var priorityNotifsEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("priority_notifs")) }
     var glassmorphismEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("glassmorphism")) }
 
+    // Deprecated tools
     var legacyThemeEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("legacy_theme")) }
     var substratumEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("substratum")) }
     var gravityBoxEnabled by remember { mutableStateOf(prefs.getFeatureEnabled("gravitybox")) }
@@ -94,6 +95,119 @@ fun FeatureDashboardScreen(navController: NavController? = null) {
             enter = slideInVertically(animationSpec = tween(400, delayMillis = delay)) { it / 2 } +
                     fadeIn(animationSpec = tween(400, delayMillis = delay)),
             content = { content() }
+        )
+    }
+
+    @Composable
+    fun FrameworkChip(label: String, isActive: Boolean, icon: ImageVector) {
+        Surface(
+            color = if (isActive) MaterialTheme.colorScheme.primaryContainer
+                    else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+            shape = RoundedCornerShape(14.dp),
+            modifier = Modifier.padding(2.dp).clickable {
+                Toast.makeText(context, "$label status: ${if(isActive) "Active" else "Inactive"}", Toast.LENGTH_SHORT).show()
+            }
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                    tint = if (isActive) MaterialTheme.colorScheme.primary
+                           else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal,
+                    color = if (isActive) MaterialTheme.colorScheme.onPrimaryContainer
+                            else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun FeatureCard(
+        title: String,
+        description: String,
+        icon: ImageVector,
+        isEnabled: Boolean,
+        onToggle: (Boolean) -> Unit,
+        requirements: List<String>,
+        deprecationInfo: DeprecationInfo? = null
+    ) {
+        if (searchQuery.isNotEmpty() &&
+            !title.contains(searchQuery, ignoreCase = true) &&
+            !description.contains(searchQuery, ignoreCase = true)
+        ) return
+
+        val isCompatible = caps?.let { capabilityManager.isCompatible(requirements, it) } ?: true
+        if (!isCompatible && !showIncompatible) return
+
+        val conflictingApps = RedundancyEngine.getConflictingApps(title)
+        val installedConflicts = remember(conflictingApps) {
+            conflictingApps.filter { pkg ->
+                try { context.packageManager.getPackageInfo(pkg, 0); true }
+                catch (e: Exception) { false }
+            }
+        }
+
+        val switchEnabled = isCompatible || overrideCompat
+
+        Column {
+            if (installedConflicts.isNotEmpty()) {
+                Surface(
+                    color = MaterialTheme.colorScheme.errorContainer,
+                    shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Default.Warning,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            "Redundancy Detected: ${installedConflicts.joinToString()} installed.",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    }
+                }
+            }
+            FeatureToggleCard(
+                title = title,
+                description = description,
+                icon = icon,
+                isEnabled = isEnabled,
+                onToggle = onToggle,
+                switchEnabled = switchEnabled,
+                colorIndicator = if (isCompatible) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                modifier = Modifier.alpha(if (isCompatible) 1f else 0.65f),
+                deprecationInfo = deprecationInfo
+            )
+        }
+    }
+
+    @Composable
+    fun SectionLabel(text: String) {
+        if (searchQuery.isNotEmpty()) return
+        Text(
+            text = text,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.ExtraBold,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(start = 4.dp, top = 16.dp, bottom = 8.dp)
         )
     }
 
@@ -290,177 +404,149 @@ fun FeatureDashboardScreen(navController: NavController? = null) {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 SectionLabel("Standard Toggles")
 
-        FeatureCard(
-            title = "Circle to Search",
-            description = "AI search by circling anything on screen",
-            icon = Icons.Default.Search,
-            isEnabled = circleToSearchEnabled,
-            onToggle = { circleToSearchEnabled = it; prefs.setFeatureEnabled("circle_to_search", it); applyFlag("circle_to_search", it) },
-            requirements = listOf("Samsung", "Shizuku")
-        )
-        FeatureCard(
-            title = "Vertical App Drawer",
-            description = "Switch to vertical scroll for the app drawer",
-            icon = Icons.Default.ViewStream,
-            isEnabled = verticalDrawerEnabled,
-            onToggle = { verticalDrawerEnabled = it; prefs.setFeatureEnabled("vertical_drawer", it); applyFlag("vertical_drawer", it) },
-            requirements = listOf("Samsung", "Shizuku")
-        )
-        FeatureCard(
-            title = "Now Brief",
-            description = "Hidden smart suggestions summary (S25 exclusive)",
-            icon = Icons.Default.AutoAwesome,
-            isEnabled = nowBriefEnabled,
-            onToggle = { nowBriefEnabled = it; prefs.setFeatureEnabled("now_brief", it); applyFlag("now_brief", it) },
-            requirements = listOf("S22Ultra", "Samsung")
-        )
-        FeatureCard(
-            title = "Advanced Battery Stats",
-            description = "View real cycle count and actual health",
-            icon = Icons.Default.BatteryChargingFull,
-            isEnabled = batteryStatsEnabled,
-            onToggle = { batteryStatsEnabled = it; prefs.setFeatureEnabled("battery_stats", it); applyFlag("battery_stats", it) },
-            requirements = listOf("Shizuku")
-        )
-        FeatureCard(
-            title = "Enhanced Processing",
-            description = "Boost CPU responsiveness for smoother UI",
-            icon = Icons.Default.Bolt,
-            isEnabled = enhancedProcessingEnabled,
-            onToggle = { enhancedProcessingEnabled = it; prefs.setFeatureEnabled("enhanced_processing", it); applyFlag("enhanced_processing", it) },
-            requirements = listOf("Samsung", "Shizuku")
-        )
-
-        // Android 16
-        SectionLabel("Android 16 / Next-Gen")
-
-        FeatureCard(
-            title = "Notification Cooldown",
-            description = "Android 16 Baklava — quiet rapid-fire alerts",
-            icon = Icons.Default.NotificationsPaused,
-            isEnabled = notificationCooldownEnabled,
-            onToggle = { notificationCooldownEnabled = it; prefs.setFeatureEnabled("notification_cooldown", it); applyFlag("notification_cooldown", it) },
-            requirements = listOf("Shizuku")
-        )
-        FeatureCard(
-            title = "Desktop Windowing",
-            description = "Android 16 freeform resizable desktop mode",
-            icon = Icons.Default.DesktopWindows,
-            isEnabled = desktopModeEnabled,
-            onToggle = { desktopModeEnabled = it; prefs.setFeatureEnabled("desktop_windowing", it); applyFlag("desktop_windowing", it) },
-            requirements = listOf("Shizuku")
-        )
-        FeatureCard(
-            title = "Screen-Off FOD",
-            description = "Unlock without waking display (ultrasonic sensor required)",
-            icon = Icons.Default.Fingerprint,
-            isEnabled = screenOffFodEnabled,
-            onToggle = { screenOffFodEnabled = it; prefs.setFeatureEnabled("screen_off_fod", it); applyFlag("screen_off_fod", it) },
-            requirements = listOf("Shizuku")
-        )
-        FeatureCard(
-            title = "Vertical Quick Panel",
-            description = "One UI 8.5 vertical volume/brightness sliders",
-            icon = Icons.Default.ViewQuilt,
-            isEnabled = verticalQsEnabled,
-            onToggle = { verticalQsEnabled = it; prefs.setFeatureEnabled("vertical_qs", it); applyFlag("vertical_qs", it) },
-            requirements = listOf("Samsung", "Shizuku")
-        )
-        FeatureCard(
-            title = "Priority AI Notifications",
-            description = "One UI 8.5 smart glow effect for critical alerts",
-            icon = Icons.Default.NotificationsActive,
-            isEnabled = priorityNotifsEnabled,
-            onToggle = { priorityNotifsEnabled = it; prefs.setFeatureEnabled("priority_notifs", it); applyFlag("priority_notifs", it) },
-            requirements = listOf("Samsung", "Shizuku")
-        )
-        FeatureCard(
-            title = "3D Glassmorphism Icons",
-            description = "One UI 8.5 floating translucent icon design",
-            icon = Icons.Default.Layers,
-            isEnabled = glassmorphismEnabled,
-            onToggle = { glassmorphismEnabled = it; prefs.setFeatureEnabled("glassmorphism", it); applyFlag("glassmorphism", it) },
-            requirements = listOf("Samsung", "Shizuku")
-        )
-
-        // Deprecated
-        if (showDeprecated && searchQuery.isEmpty()) {
-            SectionLabel("Deprecated Tools")
-        }
-        if (showDeprecated) {
-            FeatureCard(
-                title = "Legacy Theme Engine",
-                description = "Old theme system via Xposed framework",
-                icon = Icons.Default.Palette,
-                isEnabled = legacyThemeEnabled,
-                onToggle = { legacyThemeEnabled = it },
-                requirements = listOf("Root"),
-                deprecationInfo = DeprecationInfo(
-                    message = "Use Hexodus Theme Engine v2 instead",
-                    replacement = "Hexodus Theme Engine v2",
-                    deprecatedSince = "2025.1",
-                    removeInVersion = "2026.2"
+                FeatureCard(
+                    title = "Circle to Search",
+                    description = "AI search by circling anything on screen",
+                    icon = Icons.Default.Search,
+                    isEnabled = circleToSearchEnabled,
+                    onToggle = { circleToSearchEnabled = it; prefs.setFeatureEnabled("circle_to_search", it); applyFlag("circle_to_search", it) },
+                    requirements = listOf("Samsung", "Shizuku")
                 )
-            )
-            FeatureCard(
-                title = "Substratum Overlay Manager",
-                description = "Classic overlay management system",
-                icon = Icons.Default.Layers,
-                isEnabled = substratumEnabled,
-                onToggle = { substratumEnabled = it },
-                requirements = listOf("Root"),
-                deprecationInfo = DeprecationInfo(
-                    message = "No longer maintained",
-                    replacement = "RRO Overlay System",
-                    deprecatedSince = "2024.3",
-                    removeInVersion = "2026.1"
+                FeatureCard(
+                    title = "Vertical App Drawer",
+                    description = "Switch to vertical scroll for the app drawer",
+                    icon = Icons.Default.ViewStream,
+                    isEnabled = verticalDrawerEnabled,
+                    onToggle = { verticalDrawerEnabled = it; prefs.setFeatureEnabled("vertical_drawer", it); applyFlag("vertical_drawer", it) },
+                    requirements = listOf("Samsung", "Shizuku")
                 )
-            )
-            FeatureCard(
-                title = "GravityBox Tweaks",
-                description = "System tweaks via GravityBox module",
-                icon = Icons.Default.Tune,
-                isEnabled = gravityBoxEnabled,
-                onToggle = { gravityBoxEnabled = it },
-                requirements = listOf("Xposed"),
-                deprecationInfo = DeprecationInfo(
-                    message = "Use native implementation instead",
-                    replacement = "System Tuner (Native)",
-                    deprecatedSince = "2025.2"
+                FeatureCard(
+                    title = "Now Brief",
+                    description = "Hidden smart suggestions summary (S25 exclusive)",
+                    icon = Icons.Default.AutoAwesome,
+                    isEnabled = nowBriefEnabled,
+                    onToggle = { nowBriefEnabled = it; prefs.setFeatureEnabled("now_brief", it); applyFlag("now_brief", it) },
+                    requirements = listOf("S22Ultra", "Samsung")
                 )
-            )
-        }
+                FeatureCard(
+                    title = "Advanced Battery Stats",
+                    description = "View real cycle count and actual health",
+                    icon = Icons.Default.BatteryChargingFull,
+                    isEnabled = batteryStatsEnabled,
+                    onToggle = { batteryStatsEnabled = it; prefs.setFeatureEnabled("battery_stats", it); applyFlag("battery_stats", it) },
+                    requirements = listOf("Shizuku")
+                )
+                FeatureCard(
+                    title = "Enhanced Processing",
+                    description = "Boost CPU responsiveness for smoother UI",
+                    icon = Icons.Default.Bolt,
+                    isEnabled = enhancedProcessingEnabled,
+                    onToggle = { enhancedProcessingEnabled = it; prefs.setFeatureEnabled("enhanced_processing", it); applyFlag("enhanced_processing", it) },
+                    requirements = listOf("Samsung", "Shizuku")
+                )
 
-        // Explore
-        SectionLabel("Explore")
+                // Android 16
+                SectionLabel("Android 16 / Next-Gen")
 
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClickLabel = "Browse Awesome Shizuku apps") { navController?.navigate(NavRoutes.AwesomeShizuku) },
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 14.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(Icons.Default.Explore, contentDescription = null, tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.size(22.dp))
-                Spacer(modifier = Modifier.width(12.dp))
-                Text("Awesome Shizuku & Repos", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onTertiaryContainer)
-                Spacer(modifier = Modifier.weight(1f))
-                Icon(Icons.Default.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
+                FeatureCard(
+                    title = "Notification Cooldown",
+                    description = "Android 16 Baklava — quiet rapid-fire alerts",
+                    icon = Icons.Default.NotificationsPaused,
+                    isEnabled = notificationCooldownEnabled,
+                    onToggle = { notificationCooldownEnabled = it; prefs.setFeatureEnabled("notification_cooldown", it); applyFlag("notification_cooldown", it) },
+                    requirements = listOf("Shizuku")
+                )
+                FeatureCard(
+                    title = "Desktop Windowing",
+                    description = "Android 16 freeform resizable desktop mode",
+                    icon = Icons.Default.DesktopWindows,
+                    isEnabled = desktopModeEnabled,
+                    onToggle = { desktopModeEnabled = it; prefs.setFeatureEnabled("desktop_windowing", it); applyFlag("desktop_windowing", it) },
+                    requirements = listOf("Shizuku")
+                )
+                FeatureCard(
+                    title = "Screen-Off FOD",
+                    description = "Unlock without waking display (ultrasonic sensor required)",
+                    icon = Icons.Default.Fingerprint,
+                    isEnabled = screenOffFodEnabled,
+                    onToggle = { screenOffFodEnabled = it; prefs.setFeatureEnabled("screen_off_fod", it); applyFlag("screen_off_fod", it) },
+                    requirements = listOf("Shizuku")
+                )
+                FeatureCard(
+                    title = "Vertical Quick Panel",
+                    description = "One UI 8.5 vertical volume/brightness sliders",
+                    icon = Icons.Default.ViewQuilt,
+                    isEnabled = verticalQsEnabled,
+                    onToggle = { verticalQsEnabled = it; prefs.setFeatureEnabled("vertical_qs", it); applyFlag("vertical_qs", it) },
+                    requirements = listOf("Samsung", "Shizuku")
+                )
+                FeatureCard(
+                    title = "Priority AI Notifications",
+                    description = "One UI 8.5 smart glow effect for critical alerts",
+                    icon = Icons.Default.NotificationsActive,
+                    isEnabled = priorityNotifsEnabled,
+                    onToggle = { priorityNotifsEnabled = it; prefs.setFeatureEnabled("priority_notifs", it); applyFlag("priority_notifs", it) },
+                    requirements = listOf("Samsung", "Shizuku")
+                )
+                FeatureCard(
+                    title = "3D Glassmorphism Icons",
+                    description = "One UI 8.5 floating translucent icon design",
+                    icon = Icons.Default.Layers,
+                    isEnabled = glassmorphismEnabled,
+                    onToggle = { glassmorphismEnabled = it; prefs.setFeatureEnabled("glassmorphism", it); applyFlag("glassmorphism", it) },
+                    requirements = listOf("Samsung", "Shizuku")
+                )
+
+                // Deprecated
+                if (showDeprecated && searchQuery.isEmpty()) {
+                    SectionLabel("Deprecated Tools")
+                }
+                if (showDeprecated) {
+                    FeatureCard(
+                        title = "Legacy Theme Engine",
+                        description = "Old theme system via Xposed framework",
+                        icon = Icons.Default.Palette,
+                        isEnabled = legacyThemeEnabled,
+                        onToggle = { legacyThemeEnabled = it },
+                        requirements = listOf("Root"),
+                        deprecationInfo = DeprecationInfo(
+                            message = "Use Hexodus Theme Engine v2 instead",
+                            replacement = "Hexodus Theme Engine v2",
+                            deprecatedSince = "2025.1",
+                            removeInVersion = "2026.2"
+                        )
+                    )
+                    FeatureCard(
+                        title = "Substratum Overlay Manager",
+                        description = "Classic overlay management system",
+                        icon = Icons.Default.Layers,
+                        isEnabled = substratumEnabled,
+                        onToggle = { substratumEnabled = it },
+                        requirements = listOf("Root"),
+                        deprecationInfo = DeprecationInfo(
+                            message = "No longer maintained",
+                            replacement = "RRO Overlay System",
+                            deprecatedSince = "2024.3",
+                            removeInVersion = "2026.1"
+                        )
+                    )
+                    FeatureCard(
+                        title = "GravityBox Tweaks",
+                        description = "System tweaks via GravityBox module",
+                        icon = Icons.Default.Tune,
+                        isEnabled = gravityBoxEnabled,
+                        onToggle = { gravityBoxEnabled = it },
+                        requirements = listOf("Xposed"),
+                        deprecationInfo = DeprecationInfo(
+                            message = "Use native implementation instead",
+                            replacement = "System Tuner (Native)",
+                            deprecatedSince = "2025.2"
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
-
-        CategoryButton("Device Specific", Icons.Default.Smartphone) { navController?.navigate(NavRoutes.Features("Device Specific")) }
-        CategoryButton("Camera Enhancements", Icons.Default.CameraAlt) { navController?.navigate(NavRoutes.Features("Camera")) }
-        CategoryButton("Custom Mod Extensions", Icons.Default.Extension) { navController?.navigate(NavRoutes.CustomMods) }
-        CategoryButton("Theming & Customization", Icons.Default.ColorLens) { navController?.navigate(NavRoutes.Features("Theming")) }
-        CategoryButton("System Integration", Icons.Default.Settings) { navController?.navigate(NavRoutes.Features("System")) }
-
-        Spacer(modifier = Modifier.height(8.dp))
     }
 }
