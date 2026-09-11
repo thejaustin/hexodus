@@ -37,7 +37,7 @@ jobs:
       run: ./gradlew assembleDebug --no-daemon
 
     - name: Upload Debug APK
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: hexodus-debug
         path: app/build/outputs/apk/debug/*.apk
@@ -77,7 +77,7 @@ jobs:
 
     - name: Upload Ktlint report
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: ktlint-report
         path: app/build/reports/ktlint/
@@ -89,7 +89,7 @@ jobs:
 
     - name: Upload Detekt report
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: detekt-report
         path: app/build/reports/detekt/
@@ -101,7 +101,7 @@ jobs:
 
     - name: Upload Lint report
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: lint-report
         path: app/build/reports/lint/
@@ -113,7 +113,7 @@ jobs:
 
     - name: Upload Test results
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: test-results
         path: app/build/reports/tests/
@@ -125,7 +125,7 @@ jobs:
 
     - name: Upload Paparazzi failure diffs
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: paparazzi-diffs
         path: app/build/paparazzi/failures/
@@ -144,7 +144,7 @@ jobs:
 
     - name: Upload JaCoCo HTML report
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: coverage-report
         path: app/build/reports/jacoco/
