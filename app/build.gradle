@@ -154,7 +154,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3'
 
     // Material Design components
-    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'com.google.android.material:material:1.13.0'
 
     // Window management (for foldables)
     implementation 'androidx.window:window:1.5.1'
