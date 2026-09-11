@@ -170,7 +170,7 @@ dependencies {
     implementation 'com.google.accompanist:accompanist-permissions:0.34.0'
 
     // Crash reporting
-    implementation 'io.sentry:sentry-android:7.14.0'
+    implementation 'io.sentry:sentry-android:8.33.0'
 
     // Memory leak detection (debug builds only)
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
